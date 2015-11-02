@@ -1,0 +1,97 @@
+<link rel="stylesheet" href="https://build.origami.ft.com/bundles/css?modules=o-fonts@^1.6.7,o-ft-icons@^2.3.6,o-header,o-grid,o-footer,o-forms,o-colors,o-buttons" />
+<style>
+	html {
+			/* Set a font family on the whole document */
+			font-family: BentonSans, sans-serif;
+
+			/* Prevent navigation menus from creating
+			extra space on sides of the page */
+			overflow-x: hidden;
+		}
+
+		body {
+			/* Remove space around the document */
+			margin: 0;
+		}
+
+	/* Add any other inline styles here */
+		#demo iframe, li iframe {
+			width: 100%;
+			height: 500px;
+		}
+</style>
+<body>
+{{>header}}
+<div class='page'>
+	<h1>Layout</h1>
+	<div class="o-grid-row">
+		<div data-o-grid-colspan="12" id="custom-layout">
+			<div class="o-forms-group">
+				<h3>Title (will be displayed on the Control Screens page)</h3>
+				<input class="o-forms-text" type="string" name="title" value="My Custom Layout">
+			</div>
+
+			<P>
+				You can choose any and all of the following panels by specifying a <B>url</B> and a non-zero <B>height</B> in the ones you want to use.
+				<BR/>Or, to put it another way, if you don't specify a url and a height, that panel will not be included in the layout.
+			</P>
+
+			<TABLE>
+				<TR>
+					<TD colspan="2">
+						<fieldset class="o-ft-forms__section" id="H">
+							<legend>Header (full width)</legend>
+							<label class="o-forms-label" for="url">url</label>
+							<input class="o-forms-text" type="url" name="url" value="http://labs.ft.com">
+							<label class="o-forms-label" for="size">Height in percent </label>
+							<input class="o-forms-text" type="number" name="height" value="20">
+						</fieldset>
+					</TD>
+				</TR>
+				<TR>
+					<TD>
+						<fieldset class="o-ft-forms__section" id="L">
+							<legend>Left (variable width)</legend>
+							<label class="o-forms-label" for="url">url</label>
+							<input class="o-forms-text" type="url" name="url" value="http://labs.ft.com">
+							<label class="o-forms-label" for="size">Height in percent</label>
+							<input class="o-forms-text" type="number" name="height" value="60">
+							<label class="o-forms-label" for="size">Width in percent</label>
+							<div>(should be 100 unless you specify a Right url)</div>
+							<input class="o-forms-text" type="number" name="width" value="100">
+						</fieldset>
+					</TD>
+					<TD>
+						<fieldset class="o-ft-forms__section" id="R">
+							<legend>Right</legend>
+							<label class="o-forms-label" for="url">url</label>
+							<input class="o-forms-text" type="url" name="url">
+							<P>If its url is specified, Right's height will the same as Left, and its width will be 100% - Left's width.</P>
+						</fieldset>
+					</TD>
+				</TR>
+				<TR>
+					<TD colspan="2">
+						<fieldset class="o-ft-forms__section" id="F">
+							<legend>Footer (full width)</legend>
+							<label class="o-forms-label" for="url">url</label>
+							<input class="o-forms-text" type="url" name="url" value="http://labs.ft.com">
+							<label class="o-forms-label" for="size">Height in percent</label>
+							<input class="o-forms-text" type="number" name="height" value="20">
+						</fieldset>
+					</TD>
+				</TR>
+			</TABLE>
+
+			<div class="button">
+				<button type="submit" class="o-buttons o-buttons--standout o-buttons--big">create dashboard</button>
+			</div>
+			<div>
+				<OL id="output_link"></OL>
+			</div>
+			<div id='demo'></div>
+		</div>
+	</div>
+	<script src="/build/generator-layout-admin/bundle.js"></script>
+</div>
+</body>

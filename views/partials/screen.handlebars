@@ -1,0 +1,29 @@
+	<tr class='screen' id='screen-{{{id}}}' data-id='{{id}}' data-filter='{{toLower id}} {{toLower name}}{{#tags}} {{toLower .}}{{/tags}}'>
+		<td class="screen-name-col" data-id='{{{id}}}'>
+			<input type='checkbox' class='screen-select o-forms-checkbox' name='screens' id='chkscreen-{{{id}}}' value='{{{id}}}'>
+			<label for='chkscreen-{{{id}}}' class='screen-name o-forms-label' title='{{#if name}}{{name}}{{else}}Screen #{{id}}{{/if}}'>{{#if name}}{{name}}{{else}}Screen #{{id}}{{/if}}</label> <i class="action-rename fa fa-pencil"></i>
+			<form class='rename-group'>
+				<input type='text' class='input-text rename-field' /> <button>Save</button> or <strong>ESC</strong> to cancel
+			</form>
+		</td>
+		<td>
+			{{#if items}}
+			<ol class='queue'>
+				{{#items}}
+				<li>
+					<span class="item-info-url">
+						<a class='screen-page {{#if active}}active{{/if}}' href='{{{url}}}' data-date-time-schedule='{{dateTimeSchedule}}' {{#if expires}}data-expires='{{expires}}'{{/if}} ><p>{{htmltitle url}}</p></a>
+					</span>
+					<div class="item-info-date">
+						<span class='item-info-scheduled' data-date-time-schedule='{{dateTimeSchedule}}'></span>
+						{{#if expires}}<span class="item-info-expires"> (expires {{relTime expires}})&nbsp;</span>{{/if}}
+					</div>
+					<div class="item-info-remove"><i class="action-remove fa fa-remove"></i></div>
+				</li>
+				{{/items}}
+			</ol>
+			{{else}}
+			Inactive
+			{{/if}}
+		</td>
+	</tr>

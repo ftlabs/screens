@@ -1,0 +1,16 @@
+{
+  "name": "screens",
+  "dependencies": {
+    "jquery": "~2.1.4",
+    "localforage": "^1.2.7",
+    "o-buttons": "~2.0.4",
+    "o-colors": "^3.0.0",
+    "o-fonts": "^1.6.7",
+    "o-forms": "^1.0.3",
+    "o-ft-icons": "~2.3.7",
+    "o-grid": "^3.0.3",
+    "o-header": "~3.0.6",
+    "o-hierarchical-nav": "~2.1.1",
+    "showdown": "^1.2.2"
+  }
+}

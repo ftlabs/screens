@@ -1,0 +1,80 @@
+{{>header}}
+<div class='page'>
+	<h1>FT Screens</h1>
+
+	<div class='filterbar'>
+		<div class='filterbar__selectall'>
+			<input type='checkbox' class='o-forms-checkbox' id='chkselectall' />
+			<label class='o-forms-label' for='chkselectall'>Select all screens matching filters</label>
+		</div>
+		<input class='filterbar__text' type='text' id='txtfilter' placeholder='Type ID or name here to filter screens' value='{{filter}}' />
+	</div>
+
+	<table class='screens' id='screens'>
+	<tbody>
+	{{#screens}}
+		{{>screen}}
+	{{/screens}}
+	</tbody>
+	</table>
+	<div class='actions'>
+		<select id='selection'>
+			<option value='set-content'>Assign content</option>
+			<option value='clone'>Clone from Screen</option>
+			<option value='hold'>Holding Page</option>
+			<option value='clear'>Clear</option>
+			<option value='reload'>Reload all Screens</option>
+			<option value='reload_some'>Reload selected screens</option>
+		</select>
+		<form class='action-options' id='actions_set-content' aria-selected='true'>
+			<input class='input-text' type='url' name='url' placeholder='Type URL to display' id='txturl' required>
+			<input class="input-date" type='date' id='date'>
+			<input class="input-time" type='time' id='time'>
+			<div class="action-form-group">
+				<select name='duration' id='selurlduration' required>
+					<option value=60>for 1 minute</option>
+					<option value=300>for 5 minutes</option>
+					<option value=900>for 15 minutes</option>
+					<option value=1800>for 30 minutes</option>
+					<option value=3600>for 1 hour</option>
+					<option value=7200>for 2 hours</option>
+					<option value=10800>for 3 hours</option>
+					<option value=86400>for 24 hours</option>
+					<option value=-1>until cancelled</option>
+				</select>
+				<button type='submit' id='btnsetcontent'>Save</button>
+			</div>
+		</form>
+		<form class='action-options' id='actions_clear'>
+			<button type='submit' id='btnclear'>Clear screens</button>
+		</form>
+		<form class='action-options' id='actions_hold'>
+			
+			<select name='duration' id='selholdduration' required>
+				<option value=-1>until cancelled</option>
+				<option value=60>for 1 minute</option>
+				<option value=300>for 5 minutes</option>
+				<option value=900>for 15 minutes</option>
+				<option value=1800>for 30 minutes</option>
+				<option value=3600>for 1 hour</option>
+				<option value=7200>for 2 hours</option>
+				<option value=10800>for 3 hours</option>
+				<option value=86400>for 24 hours</option>
+			</select>
+			<button type='submit' id='btnhold'>Show Holding Page</button>
+		</form>
+		<form class='action-options' id='actions_clone'>
+			<select name='screen' id='selscreen' required>
+			</select>
+			<button type='submit' id='btnclone'>Clone</button>
+		</form>
+		<form class='action-options' id='actions_reload'>
+			<button type='submit'>Reload screens</button>
+		</form>
+
+		<form class='action-options' id='actions_reload_some'>
+			<button type='submit'>Reload</button>
+		</form>
+
+	</div>
+</div>

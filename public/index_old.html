@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html class="core">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<title>Signage Client</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<!--
+		Perform your cuts the mustard test.
+		For information about what features come bundled with other
+		features in all browsers, see caniuse.com
+	-->
+	<script>
+		var cutsTheMustard = ('querySelector' in document && 'localStorage' in window && 'addEventListener' in window);
+
+		if (cutsTheMustard) {
+			// Swap the `core` class on the HTML element for an `enhanced` one
+			// We're doing it early in the head to avoid a flash of unstyled content
+			document.documentElement.className = document.documentElement.className.replace(/\bcore\b/g, 'enhanced');
+		}
+	</script>
+
+	<style>
+		/* Hide any enhanced experience content when in core mode, and vice versa. */
+		.core .o--if-js,
+		.enhanced .o--if-no-js { display: none !important; }
+
+		html {
+			/* Set a font family on the whole document */
+			font-family: MetricWeb, BentonSans, sans-serif;
+		
+			/* Prevent navigation menus from creating
+			   extra space on sides of the page */
+			overflow-x: hidden;
+		}
+
+		body {
+			/* Remove space around the document */
+			margin: 0;
+		}
+
+		*[data-is-active="false"]{
+			display: none;
+		}
+
+		.full{
+			position: fixed;
+			background: rgb(245,245,245);
+			width: 100%;
+			height: 100%;
+			top: 0%;
+			left: 0;
+		}
+
+		#loading{
+			padding-top: 25%;
+			text-align: center;
+		}
+
+		#hello{
+			font-size: 2.3em;
+			max-width: 750px;
+			position: fixed;
+			left: 50%;
+			margin-left: -375px;
+			top: 50%;
+			margin-top: -100px;
+			word-break: keep-all;
+		}
+
+		#disconnected{
+			width: 300px;
+			position: fixed;
+			right: 20px;
+			bottom: 20px;
+			border: 1px solid black;
+			padding: 10px;
+		}
+
+		#disconnected span{
+			clear: right;
+			display: block;
+			margin-bottom: 10px;
+		}
+
+		#disconnected p{
+			margin: 0;
+			display: inline;
+		}
+
+
+		h1, h3{
+			font-weight: 300;
+			margin: 0.2em 0;
+		}
+
+		/* Add any other inline styles here */
+	</style>
+
+	<!--
+		Load the Origami stylesheet, including fonts and icons by default.
+		Replace a,b,c with the names of the additional modules you want to load.
+	-->
+	<link rel="stylesheet" href="//build.origami.ft.com/bundles/css?modules=o-fonts@^1.8.2,o-colors@^3.0.0,o-ft-icons@^2.3.7,o-overlay@^1.5.0" />
+
+	<!--
+		Unconditionally load the polyfill service to provide the best support
+		possible for modern web standards.
+		Only features missing in this user agent will be filled.
+		If you want, you can provide a list of features to polyfill, otherwise
+		all features that can be polyfilled will be.
+		See the polyfill service home page for more details:
+		https://cdn.polyfill.io/
+	-->
+	<script src="//polyfill.webservices.ft.com/v1/polyfill.min.js"></script>
+
+	<!--
+		Load main JavaScript bundle (asynchronously, to make sure it's non-blocking).
+	-->
+	<script>
+		(function(src) {
+			if (cutsTheMustard) {
+				var o = document.createElement('script');
+				o.async = o.defer = true;
+				o.src = src;
+				var s = document.getElementsByTagName('script')[0];
+				s.parentNode.insertBefore(o, s);
+			}
+		}('//build.origami.ft.com/bundles/js?modules=o-fonts@^1.8.2,o-colors@^3.0.0,o-ft-icons@^2.3.7,o-overlay@^1.5.0'));
+	</script>
+</head>
+<body>
+
+	<!-- Body content here -->
+
+	<div id="loading" data-is-active="true" class="full">
+		<h1>Loading...</h1>
+	</div>
+
+	<div id="hello" data-is-active="false">
+			
+		<h3>To put something on this screen, go to ftlabs-screens.herokuapp.com and enter code</h3>
+		<h1 id="clientIdDisplay"></h1>
+
+	</div>
+
+
+	<iframe frameBorder="0" seamless data-is-active="false"></iframe>
+
+	<div id="disconnected" data-is-active="false">
+		<span><p>Screen </p><strong id="errorIdDisplay">22232</strong></span>
+		<p>This screen is having trouble connecting to the network. Content may not be up to date.</p>
+	</div>
+
+</body>
+
+<script src="/socket.io/socket.io.js"></script>
+<!-- <script src="scripts/core.js"></script> -->
+
+</html>

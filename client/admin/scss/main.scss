@@ -1,0 +1,283 @@
+// Output @font-face declarations
+$o-fonts-is-silent: false;
+$o-forms-is-silent: false;
+$o-ft-icons-is-silent: false;
+
+// Import Origami components
+@import 'o-grid/main';
+@import 'o-fonts/main';
+@import 'o-colors/main';
+@import 'o-forms/main';
+@import 'o-buttons/main';
+@import 'o-header/main';
+@import 'o-hierarchical-nav/main';
+@import 'o-ft-icons/main';
+
+$fa-font-path: "/fonts";
+@import './lib/font-awesome/font-awesome';
+
+// Store the default FT sans-serif font stack in a variable
+$sans-serif: oFontsGetFontFamilyWithFallbacks(BentonSans);
+
+html {
+	// The iconic pink background
+	@include oColorsFor(page, background);
+
+	// Set a font family on the whole document
+	font-family: $sans-serif;
+
+	// Prevent navigation menus from creating
+	// extra space on sides of the page
+	overflow-x: hidden;
+}
+
+body {
+	@include oGridRow;
+	font-family: metricweb;
+	margin: 0;
+	padding: 0;
+	flex-direction: column;
+	max-width: initial;
+}
+
+.o-header__primary__right.o-header__nav--tools-theme {
+	overflow: visible;
+	[data-o-hierarchical-nav-level='1'] > li > a {
+		width: auto;
+		font-size: 100%;
+	}
+}
+
+select {
+	@include oFormsCommonField;
+	@include oFormsSelect;
+	width: auto;
+}
+
+.input-text {
+	@include oFormsCommonField;
+	width: auto;
+}
+
+.input-date {
+	@include oFormsCommonField;
+	width: auto;
+	flex: 1;
+}
+
+.input-time {
+	@include oFormsCommonField;
+	width: auto;
+	flex: 1;
+}
+
+label {
+	user-select: none;
+}
+
+button {
+	@include oButtons(big, standout);
+}
+
+.page {
+	@include oGridColumn((default: 12, S: 11));
+	@include oGridCenter;
+	padding: 0 1em;
+}
+
+.filterbar {
+	display: flex;
+	align-items: center;
+}
+.filterbar__selectall {
+	padding-left: 5px;
+	flex: 0.6 1 auto;
+}
+.filterbar__text {
+	@include oFormsCommonField;
+	width: auto;
+	max-width: 500px;
+	flex: 0.4 1 auto;
+}
+
+.highlight {
+	font-weight: bold;
+	background-color: rgba(159, 36, 255, 0.3);
+}
+
+.screens {
+	border-collapse: collapse;
+	width: 100%;
+	border-bottom: 1px solid #bbbbbb;
+	margin: 5px 0;
+	td,
+	th {
+		border-top: 1px solid #bbbbbb;
+		padding: 5px;
+		position: relative;
+	}
+
+	.screen-name-col {
+		max-width: 14em;
+		min-width: 8em;
+	}
+}
+
+.rename-group {
+	display: none;
+	.action-rename {
+		display: none;
+	}
+}
+
+.rename-mode {
+	.rename-group {
+		display: block;
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+
+	.screen-name {
+		visibility: hidden;
+	}
+
+	.action-rename {
+		display: none;
+	}
+}
+.screen-name-col:after {
+	content: " (#" attr(data-id) ")";
+	.rename-mode & {
+		content: "";
+	}
+}
+.action-rename {
+	visibility: hidden;
+	cursor: pointer;
+}
+.screen:hover .action-rename {
+	visibility: visible;
+	cursor: pointer;
+}
+
+.screen-offline,
+.screen-remove {
+	opacity: 0.5;
+}
+
+.queue {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	font-size: 13px;
+}
+
+.queue li {
+	margin-bottom: 4px;
+	overflow: hidden;
+	display: flex;
+
+	.item-info-url,
+	.item-info-date {
+		flex: 2 0;
+		line-height: 1em;
+		max-height: 3em;
+	}
+
+	.item-info-url {
+		flex: 4 1;
+	}
+
+	.item-info-expires {
+		padding-right: 1em;
+	}
+
+	.active {
+		font-weight: bold;
+	}
+
+	a {
+		max-width: 100%;
+		max-height: 3em;
+		overflow: hidden;
+		display: inline-block;
+		p {
+			margin: 0;
+			overflow: hidden;
+			position: relative;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			max-width: 50vw;
+		}
+	}
+}
+
+.generator-select {
+	a {
+		text-decoration: none;
+
+		p {
+			margin: 0;
+		}
+	}
+	margin: 1em 0 0;
+	list-style: none;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-weight: 300;
+}
+.actions {
+	display: flex;
+	flex-direction: column;
+	@include oGridRespondTo(M) {
+		flex-direction: row;
+	}
+	margin: 0 -0.25em 0.5em;
+
+	.action-form-group {
+		display: flex;
+		flex: 1 0;
+		min-width: 85%;
+	}
+
+	input,
+	select,
+	button {
+		margin: 0 0.25em 0.5em;
+		min-width: 8em;
+	}
+
+	.action-options {
+		display: none;
+	}
+
+	.action-remove {
+		cursor: pointer;
+	}
+
+	.action-options[aria-selected=true] {
+		flex: 1;
+		display: flex;
+		flex-flow: row wrap;
+
+		#selurlduration,
+		#selholdduration {
+			flex: 1 0;
+		}
+
+		#txturl,
+		#selscreen {
+			flex: 1;
+			min-width: 85%;
+			@include oGridRespondTo(M) {
+				min-width: 200px;
+			}
+		}
+	}
+}

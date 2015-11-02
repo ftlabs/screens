@@ -1,0 +1,82 @@
+<link rel="stylesheet" href="http://build.origami.ft.com/bundles/css?modules=o-fonts@^1.6.7,o-ft-icons@^2.3.6,o-header,o-grid,o-footer,o-forms,o-colors,o-buttons" />
+<style>
+		
+	body, html, .holder{
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+	}
+
+	body{
+		background-color: #FFF1E0;
+		font-family: metricweb;
+	}
+
+	.holder{
+		background-repeat: no-repeat;
+		background-position: 50%;
+		background-size: cover;
+	}
+
+	.loading {
+		position: fixed;
+		top: 50%;
+		width: 100%;
+		text-align: center;
+		font-weight: 200;
+		margin-top: -5%;
+	}
+
+	.hidden{
+		display: none;
+	}
+
+</style>
+
+<div id="imgHolder" class="holder"></div>
+<h1 id="loading" class="loading">Loading Image...</h1>
+
+<script>
+
+	var sentURL = decodeURIComponent ( (window.location.href.split('?')[1]).split('&')[0]),
+		loading = document.getElementById('loading'),
+		holder = document.getElementById('imgHolder');
+
+	function setImage(url){
+		imgHolder.style.backgroundImage = "url(' " + url + " ')";
+		loading.setAttribute('class', 'loading hidden');
+	}
+
+	function assignEventsToImage(img){
+
+		img.onload = function(){
+			setImage(this.src);
+		};
+
+		img.onerror = function(e){
+
+			var altUrl = decodeURIComponent(sentURL.replace("https://image.webservices.ft.com/v1/images/raw/", ""));
+
+			loadNewImage(altUrl)
+
+		}
+			
+	}
+	
+	function loadNewImage(url){
+
+		var img = new Image();
+
+		assignEventsToImage(img);
+		img.src = url;
+		loading.setAttribute('class', 'loading');
+
+	}
+
+	loadNewImage(sentURL);
+		
+
+</script>
+
+

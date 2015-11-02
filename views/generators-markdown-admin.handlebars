@@ -1,0 +1,221 @@
+<link rel="stylesheet" href="https://build.origami.ft.com/bundles/css?modules=o-fonts@^1.6.7,o-ft-icons@^2.3.6,o-header,o-grid,o-footer,o-forms,o-colors,o-buttons" />
+<style>
+
+	html, body{
+		margin: 0;
+		padding: 0;
+		width: 100%;
+		height: 100%;
+		font-family: 'metricweb',sans-serif;
+		font-size: 1vw;
+	}
+
+	.full {
+		flex-grow: 1;
+	}
+
+	.preview {
+		display: flex;
+		justify-content: center;
+		align-content: center;
+		align-items: center;
+		color: #333333;
+	}
+
+	.preview.dark{
+		background-color: #333333;
+		color: #FFF1E0;
+	}
+
+	.preview .mdOutput {
+		max-width: 70%;
+		flex: 0 0 auto;
+	}
+
+	.corner{
+		position: fixed;
+		bottom: 20px;
+		right: 20px;
+		width: 400px;
+		background-color: rgba(255,255,255,.5);
+		box-shadow: 0 0 5px rgba(0,0,0,0.2);
+		outline: none;
+		padding: 5px;
+		text-align: center;
+	}
+
+	.corner > *{
+		font-size: 1em;
+	}
+
+	.mdInput > *{
+		display: inline;
+		clear: right;
+		box-sizing: border-box;
+	}
+
+	.mdInput textarea{
+		resize:none;
+		width: 100%;
+		min-height: 100px;
+		padding: 5px;
+	}
+
+	.mdInput select{
+		width: 90%;
+		margin: 1em;
+	}
+
+	.mdInput button{
+		margin-bottom: 0.8em;
+	}
+
+	.linkOutput{
+		overflow: hidden;
+		max-width: 100%;
+		text-overflow: ellipsis;
+		display: block;
+		white-space: nowrap;
+	}
+
+	.mdOutput h1, .mdOutput h2, .mdOutput h3, .mdOutput h4, .mdOutput h5, .mdOutput h6{
+		margin-bottom: 0.2em;
+		font-weight: 200;
+	}
+
+	.mdOutput h1{
+		font-size: 6em;
+		margin-top: 0;
+	}
+
+	.mdOutput h2{
+		font-size: 5.5em;
+	}
+
+	.mdOutput h3{
+		font-size: 5em;
+	}
+
+	.mdOutput h4{
+		font-size: 4em;
+	}
+
+	.mdOutput h5{
+		font-size: 3.5em;
+	}
+
+	.mdOutput h6{
+		font-size: 3em;
+	}
+
+	.mdOutput p, .mdOutput  a, .mdOutput  li{
+		margin-top: 0;
+		margin-bottom: 0.5em; 
+		font-size: 2em;
+	}
+
+	.mdOutput p > *, .mdOutput  li > *{
+		font-size: 1em;
+	}
+
+	.mdOutput ol, .mdOutput  ul{
+		margin-bottom: 2em;
+	}
+
+</style>
+
+
+{{>header}}
+<div id="container" class="preview full o-colors-page-background light">
+
+	<div id="mdOutput" class="mdOutput"></div>
+
+</div>
+
+<div class='corner'>
+
+	<form id="mdInput" class="mdInput">
+
+		<textarea></textarea>
+
+		<!--<label>Background Color</label>
+		<input id="backgroundColor" type="color" value="#FFF1E0">
+		<br>
+
+		<label>Text Color</label>
+		<input id="textColor" type="color" value="#000000">
+		<br>-->
+
+		<select name="scheme">
+			<option value="ConS" selected>Charcoal text on salmon background</option>
+			<option value="SonC">Salmon text on charcoal background</option>
+		</select>
+
+		<button id="convertMD" class="o-buttons o-buttons--standout">Generate</button>
+
+	</form>
+
+	<a id="linkOutput" class="linkOutput"></a>
+
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.2.2/showdown.min.js"></script>
+
+<script>
+	
+	var converter = new showdown.Converter(),
+		container = document.getElementById('container'),
+		mdForm = document.getElementById('mdInput'),
+		mdOutput = document.getElementById('mdOutput'),
+		linkOutput = document.getElementById('linkOutput');
+
+	function generateLinkForViewer(vals){
+
+		if(vals.md === undefined){
+			vals.md = "";
+		}
+
+		if(vals.backgroundColor === undefined){
+			vals.backgroundColor = "#FFF1E0";
+		}
+
+		if(vals.textColor === undefined){
+			vals.textColor = "#000000";
+		}
+
+		var link = window.location.origin + window.location.pathname + "?";
+
+		link += "md=" + encodeURIComponent(vals.md);
+		link += "&theme=" + encodeURIComponent(vals.theme);
+
+		return link;
+
+	}
+
+	mdForm[0].focus();
+
+	mdForm.addEventListener('submit', function(e){
+
+		e.preventDefault();
+
+		var theme = (this[1].value === "SonC") ? "dark" : "light";
+
+		mdOutput.innerHTML = converter.makeHtml(this[0].value);
+
+		container.setAttribute('class', "preview full o-colors-page-background " + theme);
+
+		var outputLink = generateLinkForViewer({
+			md : this[0].value,
+			theme : theme
+		});
+
+		linkOutput.textContent = outputLink;
+		linkOutput.setAttribute('href', outputLink);
+		linkOutput.setAttribute('target', '_blank');
+
+	}, false);
+
+
+</script>
+

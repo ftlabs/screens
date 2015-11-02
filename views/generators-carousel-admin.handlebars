@@ -1,0 +1,102 @@
+{{>header}}
+<script src="/build/generator-carousel-admin/bundle.js"></script>
+<div class='page'>
+	<div class="o-grid-row">
+		<div data-o-grid-colspan="12">
+			<P>
+				<FORM>
+					<div class="o-forms-group">
+						If you would like to edit an existing carousel,<BR/>
+						paste the URL in here: <input id="templateCarousel" type="url" name="copyfrom"/>
+					</div>
+				</FORM>
+			</P>
+			<FORM id="carouselForm" action="/generators/carousel" method="get">
+				<DIV><I>(A descriptive name for when this carousel<BR/>is listed the admin screen)</I></DIV>
+				<div class="url-and-duration o-forms-group">
+					<label>Title</label> <input name="title" />
+				</div>
+				<BR/>
+
+				<TABLE>
+					<TR class="url-and-duration o-forms-group">
+						<TD width="50%"><I>(Don't forget to include<BR/>the http:// part.<BR/>OK to leave urls blank)</I>
+						<BR/><BR/>
+						</TD>
+						<TD><I>(Duration is integer seconds.<BR/>Blank defaults to 10)</I>
+						</TD>
+					</TR>
+
+					<TR class="url-and-duration o-forms-group">
+						<TD><label>Url</label>     <input type="url" name="u" form="carouselForm"/></TD>
+						<TD><label>Duration</label><input type="text" name="d" size="4"/></TD>
+					</TR>
+
+					<TR class="url-and-duration o-forms-group">
+						<TD><label>Url</label>     <input type="url" name="u" /></TD>
+						<TD><label>Duration</label><input type="text" name="d"  size="4"/></TD>
+					</TR>
+
+					<TR class="url-and-duration o-forms-group">
+						<TD><label>Url</label>     <input type="url" name="u" /></TD>
+						<TD><label>Duration</label><input type="text" name="d"  size="4"/></TD>
+					</TR>
+
+					<TR class="url-and-duration o-forms-group">
+						<TD><label>Url</label>     <input type="url" name="u" /></TD>
+						<TD><label>Duration</label><input type="text" name="d"  size="4"/></TD>
+					</TR>
+
+					<TR class="url-and-duration o-forms-group">
+						<TD><label>Url</label>     <input type="url" name="u" /></TD>
+						<TD><label>Duration</label><input type="text" name="d"  size="4"/></TD>
+					</TR>
+
+					<TR class="url-and-duration o-forms-group">
+						<TD><label>Url</label>     <input type="url" name="u" /></TD>
+						<TD><label>Duration</label><input type="text" name="d"  size="4"/></TD>
+					</TR>
+
+					<TR class="url-and-duration o-forms-group">
+						<TD><label>Url</label>     <input type="url" name="u" /></TD>
+						<TD><label>Duration</label><input type="text" name="d"  size="4"/></TD>
+					</TR>
+
+					<TR class="url-and-duration o-forms-group">
+						<TD><label>Url</label>     <input type="url" name="u" /></TD>
+						<TD><label>Duration</label><input type="text" name="d"  size="4"/></TD>
+					</TR>
+
+					<TR class="url-and-duration o-forms-group">
+						<TD><label>Url</label>     <input type="url" name="u" /></TD>
+						<TD><label>Duration</label><input type="text" name="d"  size="4"/></TD>
+					</TR>
+
+					<TR class="url-and-duration o-forms-group">
+						<TD><label>Url</label>     <input type="url" name="u" /></TD>
+						<TD><label>Duration</label><input type="text" name="d"  size="4"/></TD>
+					</TR>
+				</TABLE>
+
+				<BR/>
+
+				<div class="button">
+					<BUTTON type="submit" class="o-buttons o-buttons--standout o-buttons--big">create carousel</BUTTON>
+				</div>
+			</FORM>
+
+			<DIV>
+				<a id="linkOutput" class="linkOutput"></a>
+			<DIV>
+
+			<H2>Example carousels</H2>
+
+			<P>Just click to enjoy.</P>
+
+			<UL>
+				<LI><A HREF="/generators/carousel?title=Wikipedia%20and%20Labs&u=http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FThomas_Robert_Malthus&d=3&u=http%3A%2F%2Fftlabs-six-degrees.herokuapp.com%2Fgraph.html&d=20&u=http%3A%2F%2Flabs.ft.com&d=3&u=&d=&u=&d=&u=&d=&u=&d=&u=&d=&u=&d=&u=&d=">wikipedia and labs stuff</A></LI>
+				<LI><A HREF="/generators/carousel?title=Guardian%20and%20BBC&u=http%3A%2F%2Fwww.theguardian.com%2Fuk&d=&u=http%3A%2F%2Fwww.bbc.co.uk%2Fnews&d=&u=&d=&u=&d=&u=&d=&u=&d=&u=&d=&u=&d=&u=&d=&u=&d=">guardian and bbc</A></LI>
+			</UL>
+		</div>
+	</div>
+</div>
