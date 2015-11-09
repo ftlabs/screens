@@ -131,11 +131,9 @@ router.get('/empty-screen', function(req, res, next) {
 });
 
 router.get('/youtube', function(req, res, next) {
-	// if (req.query.id !== undefined) {
-		res.render('generators-youtube-player', {
-			vidID: req.query.mediaURI
-		});
-	// }
+	res.render('generators-youtube-player', {
+		vidID: req.query.mediaURI
+	});
 });
 
 module.exports = router;

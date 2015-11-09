@@ -78,6 +78,13 @@ function transformYoutubeVideo(queryParams) {
 	return "https://www.youtube.com/embed/" + queryParams.v + "?autoplay=1&controls=0&loop=1&html5=1&showinfo=0&playlist=" + queryParams.v;
 }
 
+function transformYoutubeURL(queryParams, host){
+
+	var resourceURI = queryParams.list || queryParams.v;
+
+	return "http://" + host + "/generators/youtube?mediaURI=" + resourceURI;
+}
+
 function transformImageWithImageService(url, host) {
 	var title = url.match(/[^/]+$/)[0];
 	return "http://" + host + "/generators/image/?" + encodeURIComponent("https://image.webservices.ft.com/v1/images/raw/" + encodeURIComponent(url) + "?source=screens") + '&title=' + title;
@@ -105,10 +112,10 @@ module.exports = function transform (url, host) {
 
 		if (queryParams.list) {
 			console.log("transform: isYoutube .list, url=", url);
-			promise = Promise.resolve(transformYoutubePlaylist(queryParams));
+			promise = Promise.resolve(transformYoutubeURL(queryParams, host));
 		} else if (queryParams.v) {
 			console.log("transform: isYoutube .v, url=", url);
-			promise = Promise.resolve(transformYoutubeVideo(queryParams));
+			promise = Promise.resolve(transformYoutubeURL(queryParams, host));
 		} else {
 			console.log("transform: isYoutube but not .list or .v, url=", url);
 			promise = Promise.resolve(url);

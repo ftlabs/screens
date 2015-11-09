@@ -48,7 +48,6 @@
 	<div class="logo"></div>
 </div>
 
-<script src="https://www.youtube.com/iframe_api"></script>
 <script>
 
 'use strict';
@@ -160,6 +159,8 @@ function playerStateChange(evt){
 
 	console.log(playerStates[evt.data]);
 
+	console.log(player.getVideoData().title);
+
 	if(playerStates[evt.data] === "playing"){
 		hideCoverCard();
 	} else if(playerStates[evt.data] === "buffering"){
@@ -256,4 +257,9 @@ function playerError(error){
 
 }
 
+document.title = "FT Screens || Youtube Generator";
+
 </script>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+
