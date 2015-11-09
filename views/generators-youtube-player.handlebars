@@ -51,9 +51,10 @@
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
 
+'use strict';
+
 var player = undefined,
 	bufferingTO = undefined,
-	networkTI = undefined,
 	coverCard = document.getElementById('cover_card');
 
 var playerStates = {
@@ -134,21 +135,42 @@ function onYouTubeIframeAPIReady() {
 }
 
 function playerReady(evt) {
-	player.loadPlaylist({playlist : "{{vidID}}"});
+
+	var listID = "{{vidID}}";
+
+	var playListOptions = undefined;
+
+	if(listID.length > 11){
+		// This is a playlist URI.
+		playListOptions = {
+			list : listID
+		};
+	} else {
+		// This is a single video URI
+		playListOptions = {
+			playlist : listID
+		}
+	}
+
+	player.loadPlaylist(playListOptions);
+
 }
 
 function playerStateChange(evt){
 
 	console.log(playerStates[evt.data]);
 
-	if(playerStates[evt.data] === "buffering"){
+	if(playerStates[evt.data] === "playing"){
+		hideCoverCard();
+	} else if(playerStates[evt.data] === "buffering"){
 	
 		bufferingTO = setTimeout(function(){
 			
 			if(playerStates[player.getPlayerState()] === "buffering"){
 
-				destroyPlayer();
-				createPlayer();
+				showCoverCard();
+				handleNetworkIssues();
+
 				clearTimeout(bufferingTO);
 				bufferingTO = undefined;
 
@@ -165,22 +187,20 @@ function playerStateChange(evt){
 
 function handleNetworkIssues(){
 
+	console.log("Handling network issues");
+
 	checkNetworkState()
 		.then(function(networkStatus){
 			console.log(networkStatus);
 			destroyPlayer();
 			createPlayer();
 			hideCoverCard();
-			if(networkTI !== undefined){
-				clearInterval(networkTI);
-				networkTI = undefined;
-			}
 		})
 		.catch(function(err){
 			console.error(err);
 			// Fail gracefully - Check network periodically
 		
-			networkTI = setInterval(function(){
+			setTimeout(function(){
 
 				handleNetworkIssues();
 
