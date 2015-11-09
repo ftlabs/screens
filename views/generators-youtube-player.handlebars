@@ -152,6 +152,7 @@ function playerReady(evt) {
 	}
 
 	player.loadPlaylist(playListOptions);
+	player.setLoop(true);
 
 }
 
@@ -159,10 +160,9 @@ function playerStateChange(evt){
 
 	console.log(playerStates[evt.data]);
 
-	console.log(player.getVideoData().title);
-
 	if(playerStates[evt.data] === "playing"){
 		hideCoverCard();
+		console.log("Now playing: %s", player.getVideoData().title);
 	} else if(playerStates[evt.data] === "buffering"){
 	
 		bufferingTO = setTimeout(function(){
