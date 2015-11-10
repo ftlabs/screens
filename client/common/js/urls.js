@@ -1,7 +1,5 @@
 'use strict';
 var parseQueryString = require('query-string').parse,
-	http = require("http"),
-	https = require("https"),
 	fetch = require('node-fetch');
 
 function isGenerator(url) {
