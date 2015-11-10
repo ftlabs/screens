@@ -111,14 +111,11 @@ module.exports = function transform (url, host) {
 		console.log("transform: isYoutube, url=", url);
 		var queryParams = parseQueryString(url.split("?")[1]);
 
-		if (queryParams.list) {
-			console.log("transform: isYoutube .list, url=", url);
+		if (queryParams.list || queryParams.v) {
+			console.log("transform: isYoutube, url=", url);
 			promise = Promise.resolve(transformYoutubeURL(queryParams, host));
-		} else if (queryParams.v) {
-			console.log("transform: isYoutube .v, url=", url);
-			promise = Promise.resolve(transformYoutubeURL(queryParams, host));
-		} else {
-			console.log("transform: isYoutube but not .list or .v, url=", url);
+		}  else {
+			console.log("transform: isYoutube but not valid, url=", url);
 			promise = Promise.resolve(url);
 		}
 	} else if (isFTVideo(url)){
