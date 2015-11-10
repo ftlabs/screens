@@ -58,7 +58,11 @@ gulp.task('buildGeneratorRtcAdmin', function () {
 	return build('generator-rtc-admin');
 });
 
-gulp.task('buildGenerators', ['buildGeneratorLayoutView', 'buildGeneratorLayoutAdmin', 'buildGeneratorCarouselView', 'buildGeneratorCarouselAdmin', 'buildGeneratorRtcView', 'buildGeneratorRtcAdmin']);
+gulp.task('buildGeneratorYoutube', function () {
+	return build('generator-youtube-player');
+});
+
+gulp.task('buildGenerators', ['buildGeneratorLayoutView', 'buildGeneratorLayoutAdmin', 'buildGeneratorCarouselView', 'buildGeneratorCarouselAdmin', 'buildGeneratorRtcView', 'buildGeneratorRtcAdmin', 'buildGeneratorYoutube']);
 
 gulp.task('build', ['buildAdmin', 'buildViewer', 'buildGenerators']);
 

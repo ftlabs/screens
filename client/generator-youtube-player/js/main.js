@@ -1,64 +1,12 @@
-<!--<style>
+'use strict';
 
-	#yt-player{
-		position: fixed;
-		left: 0;
-		top: 0;
-		width: 100%;
-		height: 100%;
-	}
-
-	#cover_card{
-		background-color: #fff1e0;
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-	}
-
-	.logo {
-		width: 36vmax;
-		height: 36vmax;
-		background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI1NiAyNTYiPjxsaW5lYXJHcmFkaWVudCBpZD0iYSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIHgxPSIxMjcuOTk5IiB4Mj0iMTI3Ljk5OSIgeTI9IjI1NiI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjRkZFOENGIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjRkZEREI5Ii8+PC9saW5lYXJHcmFkaWVudD48cGF0aCBmaWxsPSJ1cmwoI2EpIiBkPSJNMCAwaDI1NnYyNTZoLTI1NnoiLz48cGF0aCBmaWxsPSIjMzMzIiBkPSJNNjUuNDcxIDEzMy42MDNjMCAxMi4wODEgMy4yMjUgMTMuNDM5IDE3LjAwMSAxMy45NTJ2NC40MjFoLTU0Ljc1NHYtNC40MjFjMTEuMzkzLS41MTMgMTQuNjIxLTEuODcxIDE0LjYyMS0xMy45NTJ2LTc4Ljg4OGMwLTEyLjA5Mi0zLjIyOS0xMy40NDktMTQuMjgxLTEzLjk1NHYtNC40MjJoOTYuNThsLjY4OCAyNS41MDVoLTQuNzYyYy00LjA4My0xMi45MjQtOC41MDctMTctMzEuMTIzLTE3aC0xNy41MTljLTUuMjYyIDAtNi40NTEgMS4xODMtNi40NTEgNS45NXYzNi41NjVoOC42MjhjMTguMDI5IDAgMjEuOTQyLTMuMjQgMjQuMTUtMTUuMzE1aDQuNDJ2NDAuODE0aC00LjQyYy0yLjM3OC0xMy42MDQtOS4xODQtMTcuMDAyLTI0LjE1LTE3LjAwMmgtOC42Mjh2MzcuNzQ3ek0yMzQuMDA3IDM2LjMzOWgtMTAxLjM0OGwtMi4zNTQgMjUuNTE0aDUuODFjMy43MTMtMTIuNDk3IDkuMTctMTcuMDA4IDIxLjM2OS0xNy4wMDhoMTQuMjg0djg4Ljc1OGMwIDEyLjA4MS0zLjIzIDEzLjQzOS0xNi4zMjMgMTMuOTUydjQuNDIxaDU1Ljc3OXYtNC40MjFjLTEzLjA5Ni0uNTEzLTE2LjMyNy0xLjg3MS0xNi4zMjctMTMuOTUydi04OC43NTloMTQuMjc4YzEyLjIwNiAwIDE3LjY2OSA0LjUxMiAyMS4zNzMgMTcuMDA4aDUuODFsLTIuMzUxLTI1LjUxM3oiLz48L3N2Zz4=);
-		background-repeat: no-repeat;
-		background-size: contain;
-		background-position: center center;
-		position: absolute;
-		transform: translate(-50%, -50%);
-		top: 50%;
-		left: 50%;
-	}
-
-	*[data-visible=false]{
-		display: none;
-	}
-
-</style>-->
-<link href='/build/generator-youtube-player/bundle.css' rel='stylesheet' type='text/css'>
-<link rel="stylesheet" href="https://build.origami.ft.com/bundles/css?modules=o-fonts@^1.6.7,o-ft-icons@^2.3.6,o-header,o-grid,o-footer,o-forms,o-colors,o-buttons" />
-
-
-<div class="logo"></div>
-
-
-</style>
-
-
-
-<div id="yt-player"></div>
-
-<div id="cover_card" data-visible="false">
-	<div class="logo"></div>
-</div>
-
-<!--<script>
-
-	'use strict';
+var YTG = (function(){
 
 	var player = undefined,
 		bufferingTO = undefined,
-		coverCard = document.getElementById('cover_card');
+		coverCard = document.getElementById('cover_card'),
+		mediaURI = window.location.href.split("mediaURI=")[1].split("&")[0],
+		mediaType = window.location.href.split("mediaType=")[1].split("&")[0];
 
 	var playerStates = {
 			"-1" : "unstarted",
@@ -134,24 +82,29 @@
 	}
 
 	function onYouTubeIframeAPIReady() {
+		
+		// mediaURI = window.location.href.split("mediaURI=")[1].split("&")[0];
+		// mediaType = window.location.href.split("mediaType=")[1].split("&")[0];
+
+		// console.log(mediaURI, mediaType);
+		// console.log(window.location.href.split("mediaURI=")[1].split("&")[0], window.location.href.split("mediaType=")[1].split("&")[0]);
+
 		createPlayer();
 	}
 
 	function playerReady(evt) {
 
-		var listID = "{{vidID}}";
-
 		var playListOptions = undefined;
 
-		if(listID.length > 11){
+		if(mediaType === "playlist"){
 			// This is a playlist URI.
 			playListOptions = {
-				list : listID
+				list : mediaURI
 			};
-		} else {
+		} else if(mediaType === "video") {
 			// This is a single video URI
 			playListOptions = {
-				playlist : listID
+				playlist : mediaURI
 			}
 		}
 
@@ -263,7 +216,10 @@
 
 	document.title = "FT Screens || Youtube Generator";
 
-</script>-->
-<script src="/build/generator-youtube-player/bundle.js"></script>
-<script src="https://www.youtube.com/iframe_api"></script>
+	return {
+		onYouTubeIframeAPIReady : onYouTubeIframeAPIReady
+	};
 
+})();
+
+window.onYouTubeIframeAPIReady = YTG.onYouTubeIframeAPIReady;

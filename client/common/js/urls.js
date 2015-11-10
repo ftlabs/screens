@@ -80,9 +80,10 @@ function transformYoutubeVideo(queryParams) {
 
 function transformYoutubeURL(queryParams, host){
 
-	var resourceURI = queryParams.list || queryParams.v;
+	var resourceURI = queryParams.list || queryParams.v,
+		mediaType = (queryParams.list) ? "playlist" : "video";
 
-	return "http://" + host + "/generators/youtube?mediaURI=" + resourceURI;
+	return "http://" + host + "/generators/youtube?mediaURI=" + resourceURI + "&mediaType=" + mediaType;
 }
 
 function transformImageWithImageService(url, host) {
