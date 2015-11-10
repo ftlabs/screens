@@ -10,7 +10,7 @@ function isGenerator(url) {
 }
 
 function isYoutube(url) {
-	var isYoutubeRegex = /^(https?:\/\/)?(www\.)youtube\.com\/watch\?/;
+	var isYoutubeRegex = /^(https?:\/\/)?(www\.)youtube\.com/;
 	return isYoutubeRegex.test(url);
 }
 
