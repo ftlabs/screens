@@ -130,4 +130,10 @@ router.get('/empty-screen', function(req, res, next) {
 	}
 });
 
+router.get('/youtube', function(req, res, next) {
+	res.render('generators-youtube-player', {
+		vidID: req.query.mediaURI
+	});
+});
+
 module.exports = router;

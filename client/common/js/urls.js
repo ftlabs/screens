@@ -10,7 +10,7 @@ function isGenerator(url) {
 }
 
 function isYoutube(url) {
-	var isYoutubeRegex = /^(https?:\/\/)?(www\.)youtube\.com\/watch\?/;
+	var isYoutubeRegex = /^(https?:\/\/)?(www\.)youtube\.com/;
 	return isYoutubeRegex.test(url);
 }
 
@@ -78,6 +78,14 @@ function transformYoutubeVideo(queryParams) {
 	return "https://www.youtube.com/embed/" + queryParams.v + "?autoplay=1&controls=0&loop=1&html5=1&showinfo=0&playlist=" + queryParams.v;
 }
 
+function transformYoutubeURL(queryParams, host){
+
+	var resourceURI = queryParams.list || queryParams.v,
+		mediaType = (queryParams.list) ? "playlist" : "video";
+
+	return "http://" + host + "/generators/youtube?mediaURI=" + resourceURI + "&mediaType=" + mediaType;
+}
+
 function transformImageWithImageService(url, host) {
 	var title = url.match(/[^/]+$/)[0];
 	return "http://" + host + "/generators/image/?" + encodeURIComponent("https://image.webservices.ft.com/v1/images/raw/" + encodeURIComponent(url) + "?source=screens") + '&title=' + title;
@@ -103,14 +111,11 @@ module.exports = function transform (url, host) {
 		console.log("transform: isYoutube, url=", url);
 		var queryParams = parseQueryString(url.split("?")[1]);
 
-		if (queryParams.list) {
-			console.log("transform: isYoutube .list, url=", url);
-			promise = Promise.resolve(transformYoutubePlaylist(queryParams));
-		} else if (queryParams.v) {
-			console.log("transform: isYoutube .v, url=", url);
-			promise = Promise.resolve(transformYoutubeVideo(queryParams));
-		} else {
-			console.log("transform: isYoutube but not .list or .v, url=", url);
+		if (queryParams.list || queryParams.v) {
+			console.log("transform: isYoutube, url=", url);
+			promise = Promise.resolve(transformYoutubeURL(queryParams, host));
+		}  else {
+			console.log("transform: isYoutube but not valid, url=", url);
 			promise = Promise.resolve(url);
 		}
 	} else if (isFTVideo(url)){
