@@ -31,17 +31,14 @@ function isImage(url){
 
 					responseStream.body.on('data', function(chunk){
 						buff = new Buffer(chunk, 'utf8').toString('hex');
-						responseStream.body.end();
+						responseStream.body.end(function(){
+							if(buff !== undefined){
+								resolve(buff.substring(0,8));
+							} else {
+								resolve();
+							}
+						});
 					});
-
-					responseStream.body.on('end', function(){
-						if(buff !== undefined){
-							resolve(buff.substring(0,8));
-						} else {
-							resolve();
-						}
-					});
-
 				});
 
 			})
@@ -52,7 +49,7 @@ function isImage(url){
 				} else {
 					return false;
 				}
-				
+
 			})
 		;
 
