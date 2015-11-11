@@ -4,6 +4,44 @@ var default_url      = 'https://en.wikipedia.org/wiki/Financial_Times';
 var default_duration = 10;
 var default_url = "https://en.wikipedia.org/wiki/Static_web_page";
 
+var keyUpTimeout = null,
+	table = undefined;
+
+function appendNewInputToForm(where){
+
+	var existingInput = table.getElementsByClassName('url-and-duration')[1],
+		clone = existingInput.cloneNode(true),
+		inputs = clone.getElementsByTagName('input');
+
+	for(var g = 0; g < inputs.length; g += 1){
+		inputs[g].value = "";
+	}
+
+	table.appendChild(clone);
+
+}
+
+function allInputsHaveContent(inputs){
+	keyUpTimeout = null;
+
+	var numberOfInputsWithContent = 0;
+
+	for(var f = 0; f < inputs.length; f += 1){
+
+		if(inputs[f].value !== ""){
+			numberOfInputsWithContent += 1
+		}
+
+	}
+
+	if(numberOfInputsWithContent === inputs.length){
+		return true;
+	} else {
+		return false;
+	}
+
+}
+
 function parseParams( paramsString ) {
 	var params = [];
 	var tmp = [];
@@ -69,9 +107,16 @@ function populateFields( titleAndFrames ) {
 
 	inputFields[0].value = title;
 
-	for (var j = 0; j < numCopiableFrames; j++) {
+	for (var j = 0; j < numGivenFrames; j++) {
 		url      = frames[j][0];
 		duration = frames[j][1];
+
+
+		if(inputFields[1 + (2 * j)] === undefined){
+			appendNewInputToForm(table);
+			inputFields = document.getElementById('carouselForm').querySelectorAll('input');
+		}
+
 		inputFields[1 + (2 * j)    ].value = url;
 		inputFields[1 + (2 * j) + 1].value = duration;
 	}
@@ -116,6 +161,10 @@ document.addEventListener("DOMContentLoaded", function() {
 	// check for an example carousel being pasted in
 	// first unpack the copyFrom param (if it exists), then wait for a paste event
 
+	table = document.getElementsByTagName('table')[0];
+
+	debugger;
+
 	var copyFrom = findCopyFrom();
 	if (copyFrom !== "") {
 		unpackCarousel( copyFrom );
@@ -145,3 +194,18 @@ document.addEventListener("DOMContentLoaded", function() {
 	}, false);
 
 });
+
+window.addEventListener('keyup', function(){
+
+	clearTimeout(keyUpTimeout);
+	keyUpTimeout = setTimeout(function(){
+
+		if(allInputsHaveContent(table.querySelectorAll('input[type=url]') ) ){
+
+			appendNewInputToForm(table);
+
+		}
+
+	}, 200);
+
+}, false);

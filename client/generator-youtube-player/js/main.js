@@ -64,7 +64,7 @@ var YTG = (function(){
 			}
 
 			nR.timeout = 8000;
-			nR.open("GET", window.location.origin);
+			nR.open("GET", window.location.origin + "/viewer");
 			nR.send();
 
 		});
@@ -82,13 +82,6 @@ var YTG = (function(){
 	}
 
 	function onYouTubeIframeAPIReady() {
-		
-		// mediaURI = window.location.href.split("mediaURI=")[1].split("&")[0];
-		// mediaType = window.location.href.split("mediaType=")[1].split("&")[0];
-
-		// console.log(mediaURI, mediaType);
-		// console.log(window.location.href.split("mediaURI=")[1].split("&")[0], window.location.href.split("mediaType=")[1].split("&")[0]);
-
 		createPlayer();
 	}
 
