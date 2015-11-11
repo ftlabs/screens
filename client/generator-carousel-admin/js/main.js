@@ -163,8 +163,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	table = document.getElementsByTagName('table')[0];
 
-	debugger;
-
 	var copyFrom = findCopyFrom();
 	if (copyFrom !== "") {
 		unpackCarousel( copyFrom );
