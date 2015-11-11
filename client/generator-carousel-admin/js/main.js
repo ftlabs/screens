@@ -7,7 +7,7 @@ var default_url = "https://en.wikipedia.org/wiki/Static_web_page";
 var keyUpTimeout = null,
 	table = undefined;
 
-function appendNewInputToForm(where){
+function appendNewInputToForm(){
 
 	var existingInput = table.getElementsByClassName('url-and-duration')[1],
 		clone = existingInput.cloneNode(true),
