@@ -36,5 +36,11 @@
   },
   "engines": {
     "node": "0.12.x"
+  },
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "mocha": "^2.3.3",
+    "mockery": "^1.4.0",
+    "sinon": "^1.17.2"
   }
 }
