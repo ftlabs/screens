@@ -7,11 +7,26 @@ var default_url = "https://en.wikipedia.org/wiki/Static_web_page";
 function parseParams() {
 	var params = [];
 	var tmp = [];
-	location.search.substr(1).split("&")
-		.forEach(function(item) {
-			tmp = item.split("=");
-			params.push( [tmp[0], decodeURIComponent(tmp[1])] );
-		});
+	
+	var urlParams = location.search.substr(1).split("&");
+
+	for(var x = 1; x < urlParams.length; x += 2){
+
+		var u = urlParams[x].split('='),
+			d = urlParams[x + 1].split('=');
+
+		if(u[1] !== ""){
+			console.log(decodeURIComponent(u[1]));
+
+			params.push({
+				u : decodeURIComponent(u[1]),
+				d : decodeURIComponent(d[1])
+			});
+
+		}
+
+	}
+
 	return params;
 }
 
@@ -21,25 +36,10 @@ function getPanels() {
 	var current_url = null;
 	var name, val, duration;
 
-	// looking for d= and u=
-
 	params.forEach(function(param) {
-		name = param[0];
-		val  = param[1];
-		if (name === "d") {
-			if (current_url !== null) {
-				duration = parseInt(val,10);
-				duration = isNaN(duration)? default_duration : duration;
-				panels.push([current_url, duration]);
-				current_url = null;
-			}
-		} else if(name === "u") {
-			if (current_url !== null) {
-				panels.push([current_url, default_duration]);
-			}
 
-			current_url = (val !== "")? val : null;
-		}
+		panels.push([param.u, param.d]);
+
 	});
 	
 	if (current_url !== null) {

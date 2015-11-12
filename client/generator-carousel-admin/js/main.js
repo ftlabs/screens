@@ -72,8 +72,8 @@ function getTitleAndFrames( params ) {
 		var duration = parseInt(durations_of_urls[url]);
 		duration = isNaN(duration)? default_duration : duration;
 		return [url, duration];
-	})
-	.filter(function(pair) {return (pair[0] !== "");});
+	});
+	// .filter(function(pair) {return (pair[0] !== "");});
 
 	if (frames.length === 0) {
 		frames = [ [default_url, default_duration] ];
@@ -117,8 +117,10 @@ function populateFields( titleAndFrames ) {
 			inputFields = document.getElementById('carouselForm').querySelectorAll('input');
 		}
 
-		inputFields[1 + (2 * j)    ].value = url;
-		inputFields[1 + (2 * j) + 1].value = duration;
+		if(url !== ""){
+			inputFields[1 + (2 * j)    ].value = url;
+			inputFields[1 + (2 * j) + 1].value = duration;	
+		}
 	}
 }
 
