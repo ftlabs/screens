@@ -4,6 +4,10 @@ var	fetch = require('node-fetch');
 var default_duration = 10;
 var default_url = "https://en.wikipedia.org/wiki/Static_web_page";
 
+function checkIfViewerIsRunningInElectron(){
+	return (navigator.userAgent.indexOf('Electron') > 0 && navigator.userAgent.indexOf('FTLabs-Screens') > 0);
+}
+
 function parseParams() {
 	var params = [];
 	var tmp = [];
@@ -89,9 +93,10 @@ var transforms = panels.map(function(panel){
 
 Promise.all(transforms)
 	.then(function(tfmd_panels){
-		var iframe = document.createElement('iframe');
-		iframe.id = 'frame';
-		document.body.appendChild(iframe);
+
+		var frame = document.createElement( checkIfViewerIsRunningInElectron() ? "webview" : "iframe" );
+		frame.id = 'frame';
+		document.body.appendChild(frame);
 
 		changeFrame(tfmd_panels, 0);
 	});
