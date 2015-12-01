@@ -172,19 +172,20 @@ document.addEventListener("DOMContentLoaded", function ready() {
 	if (document.ready) return;
 	document.ready = true;
 
-	// check for an example carousel being pasted in
-	// first unpack the copyFrom param (if it exists), then wait for a paste event
 	tableBody = document.getElementsByTagName('tbody')[0];
 	templateInputBox = tableBody.getElementsByClassName('url-and-duration')[0];
 	tableBody.removeChild(templateInputBox);
 	appendNewInputToForm(3);
 
 
+	// check for an example carousel being pasted in
+	// first unpack the copyFrom param (if it exists), then wait for a paste event
 	var copyFrom = findCopyFrom();
 	if (copyFrom !== "") {
 		unpackCarousel( copyFrom );
 	}
 
+	// When it is pasted in populate the rows
 	document.getElementById('templateCarousel')
 		.addEventListener("input", function(e) {
 			e.preventDefault();
