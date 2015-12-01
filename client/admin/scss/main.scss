@@ -1,5 +1,8 @@
 @import "../../common/scss/admin-common";
 
+$fa-font-path: "/fonts";
+@import './lib/font-awesome/font-awesome';
+
 select {
 	@include oFormsCommonField;
 	@include oFormsSelect;
