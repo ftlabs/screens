@@ -7,7 +7,13 @@ var renderAdminPage = require('../renderAdminPage');
 router.route('/').all(auth);
 
 // GET home page
-router.get('/', renderAdminPage);
+router.get('/', function(req, res, next) {
+	res.render('viewer', {
+		app: 'viewer',
+		hostname: req.headers.host,
+		title: req.query.title
+	});
+});
 
 // Vanity redirect for screen filtering
 router.get('/:id(\\d{3,5})', function(req, res) {
