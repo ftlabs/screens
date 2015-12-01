@@ -43,7 +43,7 @@ router.get('/carousel', function(req, res, next) {
 		});
 	} else {
 		res.render('generators-carousel-admin', {
-			app:'admin'
+			app:'generator-carousel-admin'
 		});
 	}
 });

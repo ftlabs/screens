@@ -1,24 +1,31 @@
 'use strict';
-var transformUrl     = require('../../common/js/urls');
 var default_url      = 'https://en.wikipedia.org/wiki/Financial_Times';
 var default_duration = 10;
 var default_url = "https://en.wikipedia.org/wiki/Static_web_page";
 
 var keyUpTimeout = null,
-	table = undefined;
+	tableBody,
+	templateInputBox;
 
-function appendNewInputToForm(){
+function removeRow(e) {
 
-	var existingInput = table.getElementsByClassName('url-and-duration')[1],
-		clone = existingInput.cloneNode(true),
-		inputs = clone.getElementsByTagName('input');
-
-	for(var g = 0; g < inputs.length; g += 1){
-		inputs[g].value = "";
+	var row;
+	if(e.target.className === 'remove') {
+		row = e.currentTarget;
+		row.removeEventListener('click', removeRow);
+		tableBody.removeChild(row);
 	}
+	checkAndAddMoreForms();
+}
 
-	table.appendChild(clone);
-
+function appendNewInputToForm(n){
+	var newRow;
+	for (var i = 0,l = n||1; i<l; i++) {
+		newRow = templateInputBox.cloneNode(true);
+		tableBody.appendChild(newRow);
+		newRow.addEventListener('click', removeRow);
+	}
+	return newRow;
 }
 
 function allInputsHaveContent(inputs){
@@ -29,7 +36,7 @@ function allInputsHaveContent(inputs){
 	for(var f = 0; f < inputs.length; f += 1){
 
 		if(inputs[f].value !== ""){
-			numberOfInputsWithContent += 1
+			numberOfInputsWithContent += 1;
 		}
 
 	}
@@ -85,41 +92,32 @@ function getTitleAndFrames( params ) {
 	};
 }
 
+function getNextEmptySlot() {
+	var inputFields = Array.prototype.slice.call(tableBody.querySelectorAll('.url-and-duration'));
+	var i, l,field;
+	for (i=0, l=inputFields.length; i<l; i++) {
+		field = inputFields[i];
+		if (field.querySelector('input[type="url"]').value === "") return field;
+	}
+	return appendNewInputToForm();
+}
+
 function populateFields( titleAndFrames ) {
 	var title             = titleAndFrames['title'];
 	var frames            = titleAndFrames['frames'];
-	var inputFields       = document.getElementById('carouselForm').querySelectorAll('input');
 	var numGivenFrames    = frames.length;
-	var numInputFrames    = Math.round( inputFields.length / 2 );
-	var numCopiableFrames = Math.min( numGivenFrames, numInputFrames );
-	var url, duration;
+	var url, duration, inputField;
 
-	// inputFields = [title, url, duration, url, duration, ...]
-
-	// clear the fields before we inject new content into them
-	if (numCopiableFrames !== 0) {
-		for (var i = 0; i < inputFields.length; i++) {
-			inputFields[i].value = "";
-		}
-	}
-
-	// don't forget the first input is the title
-
-	inputFields[0].value = title;
+	document.querySelector('.title-form-item').value = title;
 
 	for (var j = 0; j < numGivenFrames; j++) {
 		url      = frames[j][0];
 		duration = frames[j][1];
-
-
-		if(inputFields[1 + (2 * j)] === undefined){
-			appendNewInputToForm(table);
-			inputFields = document.getElementById('carouselForm').querySelectorAll('input');
-		}
+		inputField  = getNextEmptySlot().querySelectorAll('input');
 
 		if(url !== ""){
-			inputFields[1 + (2 * j)    ].value = url;
-			inputFields[1 + (2 * j) + 1].value = duration;	
+			inputField[0].value = url;
+			inputField[1].value = duration;	
 		}
 	}
 }
@@ -159,11 +157,28 @@ function generateLinkForViewer(carouselForm){
 	return link;
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+function checkAndAddMoreForms() {
+
+	if(allInputsHaveContent(tableBody.querySelectorAll('input[type=url]') ) ){
+
+		appendNewInputToForm();
+
+	}
+}
+
+document.addEventListener("DOMContentLoaded", function ready() {
+
+	// Prevent listeners being added multiple times with multiple DOM Content Loads
+	if (document.ready) return;
+	document.ready = true;
+
 	// check for an example carousel being pasted in
 	// first unpack the copyFrom param (if it exists), then wait for a paste event
+	tableBody = document.getElementsByTagName('tbody')[0];
+	templateInputBox = tableBody.getElementsByClassName('url-and-duration')[0];
+	tableBody.removeChild(templateInputBox);
+	appendNewInputToForm(3);
 
-	table = document.getElementsByTagName('table')[0];
 
 	var copyFrom = findCopyFrom();
 	if (copyFrom !== "") {
@@ -178,7 +193,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 
 	// check for the submit of a carousel being generated
-
 	var carouselForm = document.getElementById('carouselForm');
 	// carouselForm[0].focus();
 
@@ -193,19 +207,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	}, false);
 
+	carouselForm.addEventListener('keyup', function(){
+
+		clearTimeout(keyUpTimeout);
+		keyUpTimeout = setTimeout(checkAndAddMoreForms, 200);
+
+	}, false);
+
 });
-
-window.addEventListener('keyup', function(){
-
-	clearTimeout(keyUpTimeout);
-	keyUpTimeout = setTimeout(function(){
-
-		if(allInputsHaveContent(table.querySelectorAll('input[type=url]') ) ){
-
-			appendNewInputToForm(table);
-
-		}
-
-	}, 200);
-
-}, false);
