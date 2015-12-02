@@ -72,9 +72,10 @@ app.io.on('connection', function(socket) {
 	if(socket.handshake.headers.cookie !== undefined){
 
 		const cookies = cookie.parse(socket.handshake.headers.cookie);
-
-		if (cookies.electrondata !== null) {
+		
+		if (cookies.electrondata !== null && cookies.electrondata !== undefined) {
 			const id = JSON.parse(cookies.electrondata).id;
+
 			console.log(id);
 			if (id in previouslySeenScreens) {
 				console.log('seen', id);
