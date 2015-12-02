@@ -1,6 +1,5 @@
 /* global console */
-'use strict';
-
+'use strict'; //eslint-disable-line strict
 const gulp = require('gulp');
 const obt = require('origami-build-tools');
 const spawn = require('child_process').spawn;

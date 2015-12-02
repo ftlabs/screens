@@ -1,10 +1,8 @@
-'use strict';
+const router = require('express').Router(); // eslint-disable-line new-cap
 
-var router = require('express').Router();
+const auth = require('../middleware/auth');
 
-var auth = require('../middleware/auth');
-
-var renderAdminPage = require('../renderAdminPage');
+const renderAdminPage = require('../renderAdminPage');
 
 router.route('/').all(auth);
 router.get('/', renderAdminPage);

@@ -1,5 +1,4 @@
 /* eslint-env browser */
-'use strict';
 const default_url = 'https://en.wikipedia.org/wiki/Financial_Times';
 const default_duration = 10;
 

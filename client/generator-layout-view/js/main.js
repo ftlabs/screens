@@ -1,6 +1,5 @@
 /* eslint-env browser */
 /* global console */
-'use strict';
 const parseQueryString = require('query-string').parse;
 
 const params = parseQueryString(window.location.search);

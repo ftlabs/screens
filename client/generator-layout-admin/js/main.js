@@ -1,5 +1,4 @@
 /* eslint-env browser*/
-'use strict';
 const output_link = document.querySelector('#output_link');
 const submit = document.querySelector('button');
 

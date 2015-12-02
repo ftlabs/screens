@@ -1,6 +1,4 @@
 /* global fetch */
-'use strict';
-
 module.exports = function api(method, data) {
 	const qs = Object.keys(data).reduce(function(a,k){ a.push(k+'='+encodeURIComponent(data[k])); return a }, []).join('&');
 	return fetch('/api/'+method, {

@@ -1,6 +1,5 @@
 /* global process, console */
-'use strict';
-
+'use strict'; //eslint-disable-line strict
 const router = require('express').Router(); // eslint-disable-line new-cap
 const debug = require('debug')('screens:api');
 const screens = require('../screens');

@@ -1,15 +1,13 @@
-'use strict';
-
-var $;
-var timer;
-var $txt;
+let $;
+let timer;
+let $txt;
 
 function applyFilters() {
 	clearTimeout(timer);
 	timer = setTimeout(function() {
 		if ($txt.val()) {
-			var regex = new RegExp("^(.*?)("+$txt.val()+")(.*?)$", 'ig');
-			var $matching = $('.screen[data-filter*="'+$txt.val().toLowerCase()+'"]');
+			const regex = new RegExp('^(.*?)('+$txt.val()+')(.*?)$', 'ig');
+			const $matching = $('.screen[data-filter*="'+$txt.val().toLowerCase()+'"]');
 			$matching.show().find('.screen-name').each(function() {
 				$(this).html(this.title.replace(regex, '$1<span class="highlight">$2</span>$3'));
 			});

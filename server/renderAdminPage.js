@@ -1,11 +1,11 @@
-"use strict";
-var screens = require('./screens');
+'use strict'; //eslint-disable-line strict
+const screens = require('./screens');
 
-module.exports = function renderAdminPage(req, res, next) {
-	var title = '';
+module.exports = function renderAdminPage(req, res) {
+	let title = '';
 
 	if (req.query.filter) {
-		var name = screens.get(req.query.filter).map(function(screen) {
+		const name = screens.get(req.query.filter).map(function(screen) {
 			return screen.name || screen.id;
 		})[0];
 
@@ -17,8 +17,8 @@ module.exports = function renderAdminPage(req, res, next) {
 	res.render('admin', {
 		app:'admin',
 		screens: screens.get().sort(function(a,b) {
-			a = a.name || "Screen #" + a.id;
-			b = b.name || "Screen #" + b.id;
+			a = a.name || 'Screen #' + a.id;
+			b = b.name || 'Screen #' + b.id;
 
 			if(a < b) return -1;
 			if(a > b) return 1;

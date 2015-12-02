@@ -1,5 +1,4 @@
-'use strict';
-
+'use strict'; //eslint-disable-line strict
 const cache = require('lru-cache')({
 	max: 10*1024*1024,
 	length: function(n) { return n.length; },

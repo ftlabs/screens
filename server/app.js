@@ -1,6 +1,4 @@
 /* global __dirname */
-'use strict';
-
 const express = require('express');
 const path = require('path');
 const favicon = require('serve-favicon');
@@ -72,7 +70,7 @@ app.io.on('connection', function(socket) {
 	if(socket.handshake.headers.cookie !== undefined){
 
 		const cookies = cookie.parse(socket.handshake.headers.cookie);
-		
+
 		if (cookies.electrondata !== null && cookies.electrondata !== undefined) {
 			const id = JSON.parse(cookies.electrondata).id;
 

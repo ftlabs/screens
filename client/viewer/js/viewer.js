@@ -1,4 +1,4 @@
-'use strict';
+/* eslint-env browser */
 const moment = require('moment');
 
 const DOM = {
@@ -37,7 +37,7 @@ const __client = (function(moment) {
 
 		// document.cookie = "name=electrondata";
 		// document.cookie = "path=/";
-		document.cookie = "electrondata=" + JSON.stringify(data);
+		document.cookie = 'electrondata=' + JSON.stringify(data);
 
 	}
 
@@ -122,7 +122,7 @@ const __client = (function(moment) {
 
 	function switchOutIframeForWebview(){
 
-		var webViewElement = document.createElement('webview');
+		const webViewElement = document.createElement('webview');
 
 		webViewElement.setAttribute('class', DOM.Iframe.getAttribute('class'));
 
@@ -154,6 +154,6 @@ const __client = (function(moment) {
 		DOM : DOM
 	};
 
-})(moment);
+}(moment));
 
 module.exports = __client;

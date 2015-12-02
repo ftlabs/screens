@@ -1,4 +1,3 @@
-'use strict';
 const authS3O = require('s3o-middleware');
 
 module.exports = function(req, res, next) {

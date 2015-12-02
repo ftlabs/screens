@@ -1,7 +1,5 @@
 /* eslint-env browser */
 /* global YT, console */
-'use strict';
-
 const YTG = (function(){
 
 	let player;

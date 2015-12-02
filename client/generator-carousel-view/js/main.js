@@ -1,6 +1,5 @@
 /* global console */
 /* eslint-env browser */
-'use strict';
 const default_duration = 10;
 const default_url = 'https://en.wikipedia.org/wiki/Static_web_page';
 

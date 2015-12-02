@@ -1,4 +1,3 @@
-'use strict';
 /* global describe, it, before */
 const expect = require('chai').expect;
 const sinon = require('sinon');

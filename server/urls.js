@@ -1,4 +1,4 @@
-'use strict';
+'use strict'; //eslint-disable-line strict
 const parseQueryString = require('query-string').parse;
 const	fetch = require('node-fetch');
 
