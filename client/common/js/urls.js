@@ -39,17 +39,24 @@ function isImage(url){
 							}
 						});
 					});
+
+					responseStream.body.on('error', function(err){
+						console.log(err);
+						resolve();
+					});
+
 				});
 
 			})
 			.then(function(hexChunk) {
-
 				if(hexChunk !== undefined){
 					return (hexChunk.substring(0, 8) in lookup);
 				} else {
 					return false;
 				}
-
+			})
+			.catch(err => {
+				console.log(err);
 			})
 		;
 
@@ -133,6 +140,9 @@ module.exports = function transform (url, host) {
 					}
 
 					return url;
+					})
+					.catch(err => {
+						console.log(err);
 					})
 				;
 	}
