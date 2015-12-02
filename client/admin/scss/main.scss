@@ -1,52 +1,7 @@
-// Output @font-face declarations
-$o-fonts-is-silent: false;
-$o-forms-is-silent: false;
-$o-ft-icons-is-silent: false;
-
-// Import Origami components
-@import 'o-grid/main';
-@import 'o-fonts/main';
-@import 'o-colors/main';
-@import 'o-forms/main';
-@import 'o-buttons/main';
-@import 'o-header/main';
-@import 'o-hierarchical-nav/main';
-@import 'o-ft-icons/main';
+@import "../../common/scss/admin-common";
 
 $fa-font-path: "/fonts";
 @import './lib/font-awesome/font-awesome';
-
-// Store the default FT sans-serif font stack in a variable
-$sans-serif: oFontsGetFontFamilyWithFallbacks(BentonSans);
-
-html {
-	// The iconic pink background
-	@include oColorsFor(page, background);
-
-	// Set a font family on the whole document
-	font-family: $sans-serif;
-
-	// Prevent navigation menus from creating
-	// extra space on sides of the page
-	overflow-x: hidden;
-}
-
-body {
-	@include oGridRow;
-	font-family: metricweb;
-	margin: 0;
-	padding: 0;
-	flex-direction: column;
-	max-width: initial;
-}
-
-.o-header__primary__right.o-header__nav--tools-theme {
-	overflow: visible;
-	[data-o-hierarchical-nav-level='1'] > li > a {
-		width: auto;
-		font-size: 100%;
-	}
-}
 
 select {
 	@include oFormsCommonField;
@@ -77,12 +32,6 @@ label {
 
 button {
 	@include oButtons(big, standout);
-}
-
-.page {
-	@include oGridColumn((default: 12, S: 11));
-	@include oGridCenter;
-	padding: 0 1em;
 }
 
 .filterbar {
