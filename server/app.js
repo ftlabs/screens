@@ -1,34 +1,34 @@
 /* global __dirname */
 'use strict';
 
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var morganLogger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var exphbs  = require('express-handlebars');
-var moment = require('moment');
-var debug = require('debug')('screens:app');
-var cookie = require('cookie');
-var pages = require('./pages');
-var screens = require('./screens');
+const express = require('express');
+const path = require('path');
+const favicon = require('serve-favicon');
+const morganLogger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const exphbs = require('express-handlebars');
+const moment = require('moment');
+const debug = require('debug')('screens:app');
+const cookie = require('cookie');
+const pages = require('./pages');
+const screens = require('./screens');
 
-var app = express();
+const app = express();
 
 // Create Socket.io instance
 app.io = require('socket.io')();
 screens.setApp(app);
 
 // Use Handlebars for templating
-var hbs = exphbs.create({
+const hbs = exphbs.create({
 	defaultLayout: 'main',
 	helpers: {
 		ifEq: function(a, b, options) { return (a === b) ? options.fn(this) : options.inverse(this); },
-		join: function(arr, options) { return [].concat(arr).join(', '); },
-		htmltitle: function(url, options) { return pages(url).getTitle() || url; },
+		join: function(arr) { return [].concat(arr).join(', '); },
+		htmltitle: function(url) { return pages(url).getTitle() || url; },
 		revEach: function(context, options) { return context.reduceRight(function(acc, item) { acc += options.fn(item); return acc; }, ''); },
-		relTime: function(time, options) { return moment(time).fromNow(); },
+		relTime: function(time) { return moment(time).fromNow(); },
 		toLower: function(str) { return String(str).toLowerCase(); },
 	}
 });
@@ -64,17 +64,17 @@ app.all('*', function(req, res, next) {
 	next();
 });
 
-var previouslySeenScreens = {};
+const previouslySeenScreens = {};
 
 // Serve websocket connections
 app.io.on('connection', function(socket) {
 
 	if(socket.handshake.headers.cookie !== undefined){
 
-		var cookies = cookie.parse(socket.handshake.headers.cookie);
-	
-		if (cookies.electrondata != null) {
-			var id = JSON.parse(cookies.electrondata).id;
+		const cookies = cookie.parse(socket.handshake.headers.cookie);
+
+		if (cookies.electrondata !== null) {
+			const id = JSON.parse(cookies.electrondata).id;
 			console.log(id);
 			if (id in previouslySeenScreens) {
 				console.log('seen', id);
@@ -82,7 +82,7 @@ app.io.on('connection', function(socket) {
 				console.log('not seen', id, 'reloading screen');
 				socket.emit('reload');
 				previouslySeenScreens[id] = true;
-			}		
+			}
 		};
 
 	}
@@ -91,10 +91,10 @@ app.io.on('connection', function(socket) {
 
 app.io.of('/screens').on('connection', function(socket) {
 	screens.add(socket);
-	socket.emit("heartbeat");
+	socket.emit('heartbeat');
 	debug('connection started');
-	socket.on("heartbeat",function() {
-	    socket.emit("heartbeat");
+	socket.on('heartbeat',function() {
+		socket.emit('heartbeat');
 	});
 });
 
@@ -106,7 +106,7 @@ app.io.of('/admins').on('connection', function(socket) {
 
 // Catch anything not served by a defined route and return a 404
 app.use(function(req, res, next) {
-	var err = new Error('Not Found');
+	const err = new Error('Not Found');
 	err.status = 404;
 	next(err);
 });
@@ -116,7 +116,7 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-	app.use(function(err, req, res, next) {
+	app.use(function(err, req, res) {
 		res.status(err.status || 500);
 		res.render('error', {
 			message: err.message,
@@ -127,7 +127,7 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res) {
 	res.status(err.status || 500);
 	res.render('error', {
 		message: err.message,
