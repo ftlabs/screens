@@ -28,6 +28,7 @@
     "node-uuid": "^1.4.3",
     "origami-build-tools": "^3.0.0",
     "query-string": "^2.4.0",
+    "redis": "^2.4.2",
     "s3o-middleware": "^1.1.0",
     "serve-favicon": "~2.2.0",
     "showdown": "^1.2.2",
