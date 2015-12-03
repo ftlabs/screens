@@ -47,6 +47,15 @@ const eventTypes = {
 };
 let redis;
 
+module.exports = {
+	eventTypes, // Object
+	emptyLogs, // Function
+	trimLogs, // Function
+	logApi, // Function
+	logConnect, // Function
+	renderView // Function
+};
+
 if (process.env.REDISTOGO_URL) {
 	const rtg   = require("url").parse(process.env.REDISTOGO_URL);
 	redis = Redis.createClient(rtg.port, rtg.hostname);
@@ -54,14 +63,6 @@ if (process.env.REDISTOGO_URL) {
 } else {
 	redis = Redis.createClient();
 }
-
-module.exports = {
-	emptyLogs,
-	trimLogs,
-	eventTypes,
-	logApi,
-	logConnect
-};
 
 function getTypeDescription({eventType, screenId, username}) {
 	const event = Object.keys(eventTypes)
@@ -160,3 +161,14 @@ function logConnect({
 	console.log(message.eventDesc);
 }
 
+function renderView(req, res) {
+	redis.lrange(LOG_KEY, -500, -1, function (error, logs) {
+		if (error) {
+			return res.render('error', {error, app: 'admin'});
+		}
+		res.render('logs', {
+			logs: logs.reverse().map(JSON.parse),
+			app: 'logs'
+		});
+	});
+}

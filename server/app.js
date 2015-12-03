@@ -13,6 +13,7 @@ var debug = require('debug')('screens:app');
 var cookie = require('cookie');
 var pages = require('./pages');
 var screens = require('./screens');
+var log = require('./log');
 
 var app = express();
 
@@ -55,6 +56,7 @@ app.use('/api', require('./routes/api'));
 app.use('/admin', require('./routes/admin'));
 app.use('/viewer', require('./routes/viewer'));
 app.use('/generators', require('./routes/generators'));
+app.use('/logs', log.renderView);
 
 app.all('*', function(req, res, next) {
 	res.set('Access-Control-Allow-Origin', '*');
@@ -120,7 +122,8 @@ if (app.get('env') === 'development') {
 		res.status(err.status || 500);
 		res.render('error', {
 			message: err.message,
-			error: err
+			error: err,
+			app:'logs'
 		});
 	});
 }
@@ -131,7 +134,8 @@ app.use(function(err, req, res, next) {
 	res.status(err.status || 500);
 	res.render('error', {
 		message: err.message,
-		error: {}
+		error: {},
+		app:'logs'
 	});
 });
 

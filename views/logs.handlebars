@@ -1,0 +1,19 @@
+{{>header}}
+<div class='page'>
+<table>
+	<thead>
+		<tr>
+			<td>Timestamp</td><td>Summary</td><td>User</td>
+		</tr>
+	</thead>
+	<tbody>
+		{{#logs}}<tr>
+			<td>{{timestamp}}</td>
+			<td class="main">{{eventDesc}}<pre>
+{{#each details}}{{@key}}: {{this}}
+{{/each}}</pre></td>
+			<td>{{username}}</td>
+		</tr>{{/logs}}
+	</tbody>
+</table>
+</div>

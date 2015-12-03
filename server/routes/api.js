@@ -133,21 +133,26 @@ router.post('/clear', function(req, res, next) {
 
 router.post('/rename', function(req, res, next) {
 	var name = req.body.name;
+	var screen = screens.get(id)[0];
+	var oldName = screen ? screen.name : 'No screen present';
 	var id = getScreenIDsForRequest(req);
-	screens.set(id, {name});
 	debug(req.cookies.s3o_username + ' renamed screen ' + id[0] + ' to ' + name);
 	log.logApi({
 		eventType: log.eventTypes.screenRenamed.id,
 		screenId: id[0],
 		username: req.cookies.s3o_username,
-		details: {name}
+		details: {
+			newName: name,
+			oldName
+		}
 	});
+	screens.set(id, {name});
 	res.json(true);
 });
 
 router.post('/remove', function(req, res, next) {
 
-	const oldUrl = screens.get(req.body.screen)[0].items[req.body.idx];
+	const oldUrl = screens.get(req.body.screen)[0].items[req.body.idx].url;
 	log.logApi({
 		eventType: log.eventTypes.screenContentRemoval.id,
 		screenId: req.body.screen,
@@ -164,7 +169,7 @@ router.post('/remove', function(req, res, next) {
 
 router.post('/reload', function(req, res, next) {
 
-	if(req.body !== ""){
+	if(Object.keys(req.body).length !== 0){
 		var ids = getScreenIDsForRequest(req);
 		screens.reload(ids);
 		ids.forEach(id => {
@@ -177,11 +182,9 @@ router.post('/reload', function(req, res, next) {
 	} else {
 		debug(req.cookies.s3o_username + ' reloaded all screens');
 		screens.reload();
-		ids.forEach(id => {
-			log.logApi({
-				eventType: log.eventTypes.allScreensReloaded.id,
-				username: req.cookies.s3o_username
-			});
+		log.logApi({
+			eventType: log.eventTypes.allScreensReloaded.id,
+			username: req.cookies.s3o_username
 		});
 	}
 

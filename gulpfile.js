@@ -27,9 +27,15 @@ function build(app) {
 		buildFolder: 'public/build/'+app
 	});
 }
+
+gulp.task('buildLogs', function () {
+	return build('logs');
+});
+
 gulp.task('buildAdmin', function() {
 	return build('admin');
 });
+
 gulp.task('buildViewer', function() {
 	return build('viewer');
 });
@@ -64,7 +70,7 @@ gulp.task('buildGeneratorYoutube', function () {
 
 gulp.task('buildGenerators', ['buildGeneratorLayoutView', 'buildGeneratorLayoutAdmin', 'buildGeneratorCarouselView', 'buildGeneratorCarouselAdmin', 'buildGeneratorRtcView', 'buildGeneratorRtcAdmin', 'buildGeneratorYoutube']);
 
-gulp.task('build', ['buildAdmin', 'buildViewer', 'buildGenerators']);
+gulp.task('build', ['buildLogs', 'buildAdmin', 'buildViewer', 'buildGenerators']);
 
 gulp.task('verify', function() {
 	return obt.verify(gulp, {
