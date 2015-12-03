@@ -3,85 +3,50 @@
 <div class='page'>
 	<div class="o-grid-row">
 		<div data-o-grid-colspan="12">
-			<P>
-				<FORM>
-					<div class="o-forms-group">
-						If you would like to edit an existing carousel,<BR/>
-						paste the URL in here: <input id="templateCarousel" type="url" name="copyfrom"/>
-					</div>
-				</FORM>
-			</P>
+			<div class="o-forms-group">
+				<p> If you would like to edit an existing carousel,
+				paste the URL in here: <br><label>Paste Url:</label> <input id="templateCarousel" type="url" name="copyfrom"/></p>
+			</div>
 			<FORM id="carouselForm" action="/generators/carousel" method="get">
-				<DIV><I>(A descriptive name for when this carousel<BR/>is listed the admin screen)</I></DIV>
-				<div class="url-and-duration o-forms-group">
-					<label>Title</label> <input name="title" />
+				<div class="title-form-item o-forms-group">
+					A descriptive name for when this carousel is listed in the admin screen)<br>
+					<label>Title:</label> <input name="title" />
 				</div>
 				<BR/>
 
 				<TABLE>
-					<TR class="url-and-duration o-forms-group">
-						<TD width="50%"><I>(Don't forget to include<BR/>the http:// part.<BR/>OK to leave urls blank)</I>
-						<BR/><BR/>
-						</TD>
-						<TD><I>(Duration is integer seconds.<BR/>Blank defaults to 10)</I>
-						</TD>
-					</TR>
 
-					<TR class="url-and-duration o-forms-group">
-						<TD><label>Url</label>     <input type="url" name="u" form="carouselForm"/></TD>
-						<TD><label>Duration</label><input type="text" name="d" size="4"/></TD>
-					</TR>
+					<thead>
+						<TR class="o-forms-group">
+							<td width="50%">
+								<I>(Don't forget to include the http:// part. OK to leave urls blank)</I>
+							</td><td>
+								<I>(Duration is integer seconds. Blank defaults to 10)</I>
+							</td>
+						</TR>
+					</thead>
 
-					<TR class="url-and-duration o-forms-group">
-						<TD><label>Url</label>     <input type="url" name="u" /></TD>
-						<TD><label>Duration</label><input type="text" name="d"  size="4"/></TD>
-					</TR>
-
-					<TR class="url-and-duration o-forms-group">
-						<TD><label>Url</label>     <input type="url" name="u" /></TD>
-						<TD><label>Duration</label><input type="text" name="d"  size="4"/></TD>
-					</TR>
-
-					<TR class="url-and-duration o-forms-group">
-						<TD><label>Url</label>     <input type="url" name="u" /></TD>
-						<TD><label>Duration</label><input type="text" name="d"  size="4"/></TD>
-					</TR>
-
-					<TR class="url-and-duration o-forms-group">
-						<TD><label>Url</label>     <input type="url" name="u" /></TD>
-						<TD><label>Duration</label><input type="text" name="d"  size="4"/></TD>
-					</TR>
-
-					<TR class="url-and-duration o-forms-group">
-						<TD><label>Url</label>     <input type="url" name="u" /></TD>
-						<TD><label>Duration</label><input type="text" name="d"  size="4"/></TD>
-					</TR>
-
-					<TR class="url-and-duration o-forms-group">
-						<TD><label>Url</label>     <input type="url" name="u" /></TD>
-						<TD><label>Duration</label><input type="text" name="d"  size="4"/></TD>
-					</TR>
-
-					<TR class="url-and-duration o-forms-group">
-						<TD><label>Url</label>     <input type="url" name="u" /></TD>
-						<TD><label>Duration</label><input type="text" name="d"  size="4"/></TD>
-					</TR>
-
-					<TR class="url-and-duration o-forms-group">
-						<TD><label>Url</label>     <input type="url" name="u" /></TD>
-						<TD><label>Duration</label><input type="text" name="d"  size="4"/></TD>
-					</TR>
-
-					<TR class="url-and-duration o-forms-group">
-						<TD><label>Url</label>     <input type="url" name="u" /></TD>
-						<TD><label>Duration</label><input type="text" name="d"  size="4"/></TD>
-					</TR>
+					<tbody>
+						<TR class="url-and-duration o-forms-group">
+							<td class="url-form-item">
+								<label>Url</label>
+								<input type="url" name="u" form="carouselForm"/>
+							</td>
+							<td>
+								<label>Duration</label>
+								<input type="text" name="d" size="4"/>
+							</td>
+							<td>
+								<a href="javascript: void(0)" class="remove">×</a>
+							</td>
+						</TR>
+					</tbody>
 				</TABLE>
 
 				<BR/>
 
 				<div class="button">
-					<BUTTON type="submit" class="o-buttons o-buttons--standout o-buttons--big">create carousel</BUTTON>
+					<BUTTON type="submit" class="o-buttons o-buttons--standout o-buttons--big">Create Carousel</BUTTON>
 				</div>
 			</FORM>
 
