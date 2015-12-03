@@ -1,23 +1,23 @@
-'use strict';
+/* eslint-env browser */
+/* global YT, console */
+const YTG = (function(){
 
-var YTG = (function(){
+	let player;
+	let bufferingTO;
+	const coverCard = document.getElementById('cover_card');
+	const mediaURI = window.location.href.split('mediaURI=')[1].split('&')[0];
+	const mediaType = window.location.href.split('mediaType=')[1].split('&')[0];
 
-	var player = undefined,
-		bufferingTO = undefined,
-		coverCard = document.getElementById('cover_card'),
-		mediaURI = window.location.href.split("mediaURI=")[1].split("&")[0],
-		mediaType = window.location.href.split("mediaType=")[1].split("&")[0];
-
-	var playerStates = {
-			"-1" : "unstarted",
-			"0" : "ended",
-			"1" : "playing",
-			"2" : "paused",
-			"3" : "buffering",
-			"5" : "cued"
+	const playerStates = {
+			'-1' : 'unstarted',
+			'0' : 'ended',
+			'1' : 'playing',
+			'2' : 'paused',
+			'3' : 'buffering',
+			'5' : 'cued'
 		};
 
-	var playerOptions = {
+	const playerOptions = {
 			width: window.innerWidth,
 			height: window.innerHeight,
 			events: {
@@ -25,46 +25,46 @@ var YTG = (function(){
 				'onStateChange': playerStateChange,
 				'onError' : playerError
 			},
-			playerVars : {
+			playerconsts : {
 				controls : 0,
 				modestbranding : 1
 			}
 		};
 
 	function showCoverCard(){
-		coverCard.setAttribute('data-visible', "true");
+		coverCard.setAttribute('data-visible', 'true');
 	}
 
 	function hideCoverCard(){
-		coverCard.setAttribute('data-visible', "false");
+		coverCard.setAttribute('data-visible', 'false');
 	}
 
 	function checkNetworkState(){
 
 		return new Promise(function(resolve, reject){
 
-			var nR = new XMLHttpRequest();
-			
-			nR.onload = function(res){
+			const nR = new XMLHttpRequest();
+
+			nR.onload = function(){
 
 				if(nR.status === 200){
-					resolve("A-OK");
+					resolve('A-OK');
 				} else {
-					reject("The network test endpoint returned a status code other than 200");
+					reject('The network test endpoint returned a status code other than 200');
 				}
 
 			};
-			
+
 			nR.ontimeout = function(){
-				reject("The test request timed out");
-			}
+				reject('The test request timed out');
+			};
 
 			nR.onerror = function(){
-				reject("There was an error when testing the connectivity of the network");
-			}
+				reject('There was an error when testing the connectivity of the network');
+			};
 
 			nR.timeout = 8000;
-			nR.open("GET", window.location.origin + "/viewer");
+			nR.open('GET', window.location.origin + '/viewer');
 			nR.send();
 
 		});
@@ -72,12 +72,12 @@ var YTG = (function(){
 	}
 
 	function destroyPlayer(){
-		console.log("PLAYER DESTROYED");
+		console.log('PLAYER DESTROYED');
 		player.destroy();
 	}
 
 	function createPlayer(){
-		console.log("PLAYER CREATED");
+		console.log('PLAYER CREATED');
 		player = new YT.Player('yt-player', playerOptions);
 	}
 
@@ -85,20 +85,20 @@ var YTG = (function(){
 		createPlayer();
 	}
 
-	function playerReady(evt) {
+	function playerReady() {
 
-		var playListOptions = undefined;
+		let playListOptions;
 
-		if(mediaType === "playlist"){
+		if(mediaType === 'playlist'){
 			// This is a playlist URI.
 			playListOptions = {
 				list : mediaURI
 			};
-		} else if(mediaType === "video") {
+		} else if(mediaType === 'video') {
 			// This is a single video URI
 			playListOptions = {
 				playlist : mediaURI
-			}
+			};
 		}
 
 		player.loadPlaylist(playListOptions);
@@ -110,14 +110,14 @@ var YTG = (function(){
 
 		console.log(playerStates[evt.data]);
 
-		if(playerStates[evt.data] === "playing"){
+		if(playerStates[evt.data] === 'playing'){
 			hideCoverCard();
-			console.log("Now playing: %s", player.getVideoData().title);
-		} else if(playerStates[evt.data] === "buffering"){
-		
+			console.log('Now playing: %s', player.getVideoData().title);
+		} else if(playerStates[evt.data] === 'buffering'){
+
 			bufferingTO = setTimeout(function(){
-				
-				if(playerStates[player.getPlayerState()] === "buffering"){
+
+				if(playerStates[player.getPlayerState()] === 'buffering'){
 
 					showCoverCard();
 					handleNetworkIssues();
@@ -128,7 +128,7 @@ var YTG = (function(){
 				}
 
 			}, 10000);
-		
+
 		} else if(bufferingTO !== undefined){
 			clearTimeout(bufferingTO);
 			bufferingTO = undefined;
@@ -138,7 +138,7 @@ var YTG = (function(){
 
 	function handleNetworkIssues(){
 
-		console.log("Handling network issues");
+		console.log('Handling network issues');
 
 		checkNetworkState()
 			.then(function(networkStatus){
@@ -150,7 +150,7 @@ var YTG = (function(){
 			.catch(function(err){
 				console.error(err);
 				// Fail gracefully - Check network periodically
-			
+
 				setTimeout(function(){
 
 					handleNetworkIssues();
@@ -164,41 +164,41 @@ var YTG = (function(){
 
 	function playerError(error){
 
-		var errCode = error.data;
+		const errCode = error.data;
 
-		var errors = {
-			"-1" : {
-				shortReason : "unstarted",
-				longReason : "Something has gone wrong with the player. It likely can't access the video resource on the network"
+		const errors = {
+			'-1' : {
+				shortReason : 'unstarted',
+				longReason : 'Something has gone wrong with the player. It likely can\'t access the video resource on the network'
 			},
-			"2" : {
-				shortReason : "invalidparameter",
-				longReason : "The request contains an invalid parameter value."
+			'2' : {
+				shortReason : 'invalidparameter',
+				longReason : 'The request contains an invalid parameter value.'
 			},
-			"5" : {
-				shortReason : "html-error",
-				longReason : "The requested content cannot be played in an HTML5 player or another error related to the HTML5 player has occurred."
+			'5' : {
+				shortReason : 'html-error',
+				longReason : 'The requested content cannot be played in an HTML5 player or another error related to the HTML5 player has occurred.'
 			},
-			"100" : {
-				shortReason : "no-video",
-				longReason : "This error occurs when a video has been removed (for any reason) or has been marked as private."
+			'100' : {
+				shortReason : 'no-video',
+				longReason : 'This error occurs when a video has been removed (for any reason) or has been marked as private.'
 			},
-			"101" : {
-				shortReason : "no-embed",
-				longReason : "The owner of the requested video does not allow it to be played in embedded players."
+			'101' : {
+				shortReason : 'no-embed',
+				longReason : 'The owner of the requested video does not allow it to be played in embedded players.'
 			},
-			"105" : {
-				shortReason : "no-embed",
-				longReason : "The owner of the requested video does not allow it to be played in embedded players."
+			'105' : {
+				shortReason : 'no-embed',
+				longReason : 'The owner of the requested video does not allow it to be played in embedded players.'
 			}
-		
-		}
 
-		if (errors[errCode].shortReason === "html-error" || errors[errCode].shortReason === "unstarted"){
+		};
+
+		if (errors[errCode].shortReason === 'html-error' || errors[errCode].shortReason === 'unstarted'){
 
 			console.log(errors[errCode].longReason);
 
-			//Check network status, if connected -> restart - if not -> handle gracefully, alert admin 
+			//Check network status, if connected -> restart - if not -> handle gracefully, alert admin
 
 			showCoverCard();
 			handleNetworkIssues();
@@ -207,12 +207,12 @@ var YTG = (function(){
 
 	}
 
-	document.title = "FT Screens || Youtube Generator";
+	document.title = 'FT Screens || Youtube Generator';
 
 	return {
 		onYouTubeIframeAPIReady : onYouTubeIframeAPIReady
 	};
 
-})();
+}());
 
 window.onYouTubeIframeAPIReady = YTG.onYouTubeIframeAPIReady;

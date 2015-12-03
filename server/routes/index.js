@@ -1,13 +1,13 @@
-'use strict';
-
-var router = require('express').Router();
-var auth = require('../middleware/auth');
-var renderAdminPage = require('../renderAdminPage');
-
-router.route('/').all(auth);
+const router = require('express').Router(); // eslint-disable-line new-cap
 
 // GET home page
-router.get('/', renderAdminPage);
+router.get('/', function(req, res) {
+	res.render('viewer', {
+		app: 'viewer',
+		hostname: req.headers.host,
+		title: req.query.title
+	});
+});
 
 // Vanity redirect for screen filtering
 router.get('/:id(\\d{3,5})', function(req, res) {

@@ -1,13 +1,12 @@
-"use strict";
+/* eslint-env browser */
+/* global SimpleWebRTC*/
+const parseQueryString = require('query-string').parse;
+const parameters = parseQueryString(window.location.search);
 
-var simplewebrtc = require('simplewebrtc');
-var parseQueryString = require('query-string').parse;
-var parameters = parseQueryString(window.location.search);
+const roomID = parameters.room;
+const broadcasterID = parameters.id;
 
-var roomID = parameters.room;
-var broadcasterID = parameters.id;
-
-var webrtc = new simplewebrtc({
+const webrtc = new SimpleWebRTC({
 	remoteVideosEl: '',
 	autoRequestMedia: false
 });
@@ -16,8 +15,8 @@ webrtc.joinRoom(roomID);
 
 webrtc.on('videoAdded', function (video, peer) {
 	if (peer.id === broadcasterID) {
-		var remotes = document.getElementById('remoteVideos');
-		var container = document.createElement('div');
+		const remotes = document.getElementById('remoteVideos');
+		const container = document.createElement('div');
 		container.appendChild(video);
 
 		// suppress contextmenu
