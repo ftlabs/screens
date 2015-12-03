@@ -9,11 +9,41 @@ const Redis = require("redis");
 const logLength = 5000;
 const logTrimInterval = 1000*3600; //Trim the logs hourly
 const LOG_KEY = 'FTLABS_SCREENS_LOG';
+const screens = require('./screens');
+
 const eventTypes = {
-	SCREEN_DISCONNECTED: 0,
-	SCREEN_CONNECTED: 1,
-	SCREEN_CONTENT_ASSIGNMENT: 2,
-	SCREEN_CONTENT_REMOVAL: 4
+	screenDisconnected: {
+		id: 0,
+		longDesc: 'Viewer Disconnected'
+	},
+	screenConnected: {
+		id: 1,
+		longDesc: 'Viewer Connected'
+	},
+	screenReloaded: {
+		id: 2,
+		longDesc: 'Viewer Reloaded'
+	},
+	screenRenamed: {
+		id: 4,
+		longDesc: 'Viewer Renamed'
+	},
+	screenContentAssignment: {
+		id: 8,
+		longDesc: 'New content has been added to the screen'
+	},
+	screenContentRemoval: {
+		id: 16,
+		longDesc: 'Content has been removed from the screen'
+	},
+	screenContentCleared: {
+		id: 32,
+		longDesc: 'All content has been cleared from the screen'
+	},
+	allScreensReloaded: {
+		id: 64,
+		longDesc: 'All viewers were reloaded'
+	}
 };
 let redis;
 
@@ -29,28 +59,47 @@ module.exports = {
 	emptyLogs,
 	trimLogs,
 	eventTypes,
-	log
-}
+	logApi,
+	logConnect
+};
 
-function getTypeDescription(type) {
-	switch (type) {
-		case 0:
-			return 'Viewer Disconnected';
-		case 1:
-			return 'Viewer Connected';
-		case 2:
-			return 'New content has been added to the screen.';
-		case 4:
-			return 'Content has been removed from the screen.';
+function getTypeDescription({eventType, screenId, username}) {
+	const event = Object.keys(eventTypes)
+		.map(k => eventTypes[k])
+		.filter(event => event.id === eventType)[0];
+
+	let longDesc;
+
+	if (!event) {
+		longDesc = `No Description for request with eventType ${eventType}`;
+	} else {
+		longDesc = event.longDesc;
 	}
+
+
+	if (screenId) {
+		longDesc = longDesc + `, on screen ${screenId}`;
+		const data = screens.get(screenId);
+		if (data && data.name) {
+			longDesc += ` (${data.name})`;
+		}
+	}
+
+	if (username) {
+		longDesc = longDesc + `, by '${username}'`;
+	}
+
+	return longDesc;
 }
 
-function getMessageWrapper(type, id) {
+
+function getMessageWrapper({eventType, screenId, username}) {
 	return {
 		timestamp: Date.now(),
-		type,
-		typeDesc: getTypeDescription(type, id),
-		id,
+		eventType,
+		eventDesc: getTypeDescription({eventType, screenId, username}),
+		screenId,
+		username,
 		details: {}
 	};
 }
@@ -82,13 +131,32 @@ setInterval(trimLogs, logTrimInterval);
 trimLogs();
 
 
-function log({
-	id,
-	type
+function logApi({
+	eventType,
+	screenId,
+	username,
+	details
 }) {
 
-	const message = getMessageWrapper(type, id);
-	console.log(message);
-	// if (redis) redis.rpush(LOG_KEY, JSON.stringify(message));
+	const message = getMessageWrapper({
+		eventType,
+		screenId,
+		username
+	});
+	message.details = details;
+	const messageStr = JSON.stringify(message);
+	if (redis) redis.rpush(LOG_KEY, messageStr);
+	console.log(message.eventDesc);
+}
+
+function logConnect({
+	screenId,
+	eventType
+}) {
+
+	const message = getMessageWrapper({eventType, screenId});
+	const messageStr = JSON.stringify(message);
+	if (redis) redis.rpush(LOG_KEY, messageStr);
+	console.log(message.eventDesc);
 }
 
