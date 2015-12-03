@@ -1,6 +1,6 @@
 'use strict'; //eslint-disable-line strict
 const parseQueryString = require('query-string').parse;
-const	fetch = require('node-fetch');
+const fetch = require('node-fetch');
 
 function isGenerator(url) {
 	const isGeneratorRegex = /^(https?:\/\/[^\/]*(localhost:\d+|herokuapp.com))?\/generators\/.+/;
@@ -24,8 +24,11 @@ function isImage(url){
 			.then(function(responseStream){
 
 				return new Promise(function(resolve){
+
+					let buff;
+
 					responseStream.body.on('data', function(chunk){
-						const buff = new Buffer(chunk, 'utf8').toString('hex');
+						buff = new Buffer(chunk, 'utf8').toString('hex');
 						responseStream.body.end(function(){
 							if(buff !== undefined){
 								resolve(buff.substring(0,8));
@@ -34,17 +37,24 @@ function isImage(url){
 							}
 						});
 					});
+
+					responseStream.body.on('error', function(err){
+						console.log(err);
+						resolve();
+					});
+
 				});
 
 			})
 			.then(function(hexChunk) {
-
 				if(hexChunk !== undefined){
 					return (hexChunk.substring(0, 8) in lookup);
 				} else {
 					return false;
 				}
-
+			})
+			.catch(err => {
+				console.log(err);
 			})
 		;
 
@@ -120,6 +130,9 @@ module.exports = function transform (url, host) {
 					}
 
 					return url;
+					})
+					.catch(err => {
+						console.log(err);
 					})
 				;
 	}

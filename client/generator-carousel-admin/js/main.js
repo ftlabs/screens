@@ -179,8 +179,8 @@ document.addEventListener('DOMContentLoaded', function ready() {
 	tableBody = document.getElementsByTagName('tbody')[0];
 	templateInputBox = tableBody.getElementsByClassName('url-and-duration')[0];
 	tableBody.removeChild(templateInputBox);
-	appendNewInputToForm(3);
 
+	appendNewInputToForm(3);
 
 	// check for an example carousel being pasted in
 	// first unpack the copyFrom param (if it exists), then wait for a paste event
@@ -195,6 +195,7 @@ document.addEventListener('DOMContentLoaded', function ready() {
 			e.preventDefault();
 			e.stopPropagation();
 			unpackCarousel(e.target.value);
+			e.target.value = "";
 		});
 
 	// check for the submit of a carousel being generated
