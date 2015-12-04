@@ -1,9 +1,7 @@
-'use strict';
-
 exports.init = function($) {
 
-	var keys = require('./keycodes');
-	var api = require('../../common/js/api');
+	const keys = require('./keycodes');
+	const api = require('../../common/js/api');
 
 	$('.screens')
 		.on('click', '.action-rename', function() {
@@ -17,7 +15,7 @@ exports.init = function($) {
 			}
 		})
 		.on('submit', '.rename-group', function(e) {
-			var newname = $(this).find('input').val();
+			const newname = $(this).find('input').val();
 			e.preventDefault();
 			$(this).closest('.screen').removeClass('rename-mode').find('label').attr('title', newname).html(newname);
 			api('rename', {

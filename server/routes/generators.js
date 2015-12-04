@@ -1,17 +1,15 @@
-'use strict';
-
-var router = require('express').Router();
-var showdown  = require('showdown');
-var converter = new showdown.Converter();
-var cheerio = require('cheerio');
-var fetch = require('node-fetch');
+const router = require('express').Router(); // eslint-disable-line new-cap
+const showdown = require('showdown');
+const converter = new showdown.Converter();
+const cheerio = require('cheerio');
+const fetch = require('node-fetch');
 
 function applyCSP(res) {
-	res.set("content_security_policy", "default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self';");
+	res.set('content_security_policy', 'default-src \'none\'; script-src \'self\'; connect-src \'self\'; img-src \'self\'; style-src \'self\';');
 }
 
 // List generators
-router.get('/', function(req, res, next) {
+router.get('/', function(req, res) {
   res.render('generators-home', {
 		app:'admin'
 	});
@@ -19,10 +17,10 @@ router.get('/', function(req, res, next) {
 
 // Render a generator
 
-var auth = require('../middleware/auth');
+const auth = require('../middleware/auth');
 
 router.route('/').all(auth);
-router.get('/layout', function(req, res, next) {
+router.get('/layout', function(req, res) {
 	if (req.query.layout !== undefined) {
 		applyCSP(res);
 		res.render('generators-layout-view', {
@@ -35,7 +33,7 @@ router.get('/layout', function(req, res, next) {
 	}
 });
 
-router.get('/carousel', function(req, res, next) {
+router.get('/carousel', function(req, res) {
 	if (req.query.u !== undefined || req.query.d !== undefined ) {
 		applyCSP(res);
 		res.render('generators-carousel-view', {
@@ -48,7 +46,7 @@ router.get('/carousel', function(req, res, next) {
 	}
 });
 
-router.get('/markdown', function(req, res, next) {
+router.get('/markdown', function(req, res) {
 	if (req.query.md !== undefined) {
 		applyCSP(res);
 		req.query.title = cheerio.load('<body>' + converter.makeHtml(decodeURIComponent(req.query.md)) + '</body>')('body').text();
@@ -60,7 +58,7 @@ router.get('/markdown', function(req, res, next) {
 	}
 });
 
-router.get('/image', function(req, res, next) {
+router.get('/image', function(req, res) {
 	applyCSP(res);
 	res.render('generators-image-viewer', {
 		title: req.query.title || 'Image'
@@ -68,7 +66,7 @@ router.get('/image', function(req, res, next) {
 });
 
 
-router.get('/ftvideo', function(req, res, next) {
+router.get('/ftvideo', function(req, res) {
 	if (req.query.id !== undefined) {
 		applyCSP(res);
 		fetch('http://next-video.ft.com/'+req.query.id)
@@ -76,7 +74,7 @@ router.get('/ftvideo', function(req, res, next) {
 				return respStream.json();
 			})
 			.then(function(data) {
-				var largestRendition = data.renditions.sort(function(a, b) {
+				const largestRendition = data.renditions.sort(function(a, b) {
 					return a.frameWidth < b.frameWidth;
 				})[0];
 				res.render('generators-ftvideo-viewer', {
@@ -90,14 +88,14 @@ router.get('/ftvideo', function(req, res, next) {
 	}
 });
 
-router.get('/standby', function(req, res, next) {
+router.get('/standby', function(req, res) {
 	applyCSP(res);
 	res.render('generators-standby-viewer', {
 		title: req.query.title
 	});
 });
 
-router.get('/ticker', function(req, res, next) {
+router.get('/ticker', function(req, res) {
 	if (req.query.src !== undefined || req.query.msg !== undefined) {
 		res.render('generators-ticker-viewer');
 	} else {
@@ -107,8 +105,8 @@ router.get('/ticker', function(req, res, next) {
 	}
 });
 
-router.get('/rtc', function(req, res, next) {
-		
+router.get('/rtc', function(req, res) {
+
 	if (req.query.room !== undefined && req.query.id !== undefined) {
 		res.render('generators-rtc-viewer', {
 			app: 'generator-rtc-view'
@@ -121,7 +119,7 @@ router.get('/rtc', function(req, res, next) {
 
 });
 
-router.get('/empty-screen', function(req, res, next) {
+router.get('/empty-screen', function(req, res) {
 	if (req.query.id !== undefined) {
 		res.render('generators-id-viewer', {
 			hostname: req.headers.host,
@@ -130,7 +128,7 @@ router.get('/empty-screen', function(req, res, next) {
 	}
 });
 
-router.get('/youtube', function(req, res, next) {
+router.get('/youtube', function(req, res) {
 	res.render('generators-youtube-player', {
 		vidID: req.query.mediaURI
 	});

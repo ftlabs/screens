@@ -1,11 +1,10 @@
-/* global console*/
-'use strict';
+/* eslint-env browser */
+/* global console, io*/
+const viewer = require('./viewer.js');
+const port = location.port ? ':'+location.port : '';
+const socket = io('//'+location.hostname+port+'/screens');
 
-var viewer = require('./viewer.js');
-var port = location.port ? ':'+location.port : '';
-var socket = require('socket.io-client')('//'+location.hostname+port+'/screens');
-
-console.log("Initialising socket.io...");
+console.log('Initialising socket.io...');
 
 socket.on('connect', function() {
 	viewer.setConnectionState(true);
@@ -16,9 +15,9 @@ socket.on('disconnect', function() {
 	viewer.setConnectionState(false);
 });
 
-socket.on("heartbeat",function() {
+socket.on('heartbeat',function() {
 	setTimeout(function() {
-		socket.emit("heartbeat");
+		socket.emit('heartbeat');
 	}, 3000);
 });
 
@@ -32,20 +31,20 @@ socket.on('requestUpdate', function() {
 });
 
 socket.on('update', function(data){
-	console.log("Received update", data.items.length, data);
+	console.log('Received update', data.items.length, data);
 	viewer.setConnectionState(true);
 	viewer.update(data);
 });
 
 function syncUp() {
-	var storedData = viewer.getData();
-	console.log("Sending update", storedData.items.length, storedData);
+	const storedData = viewer.getData();
+	console.log('Sending update', storedData.items.length, storedData);
 	socket.emit('update', storedData);
 }
 
 // Called by the script loader
 window.screensInit = function() {
-	var name = viewer.getData('name') || viewer.getData('id');
+	const name = viewer.getData('name') || viewer.getData('id');
 	document.title = name + ' : FT Screens';
 
 	if (viewer.isElectron()) {
