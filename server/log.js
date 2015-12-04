@@ -161,8 +161,11 @@ function logApi(options) {
 function logConnect(options) {
 	const eventType = options.eventType;
 	const screenId = options.screenId;
+	const details = options.details;
 
 	const message = getMessageWrapper({eventType, screenId});
+	message.details = details;
+
 	const messageStr = JSON.stringify(message);
 	if (redis) redis.rpush(LOG_KEY, messageStr);
 	console.log(message.eventDesc);
