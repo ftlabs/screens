@@ -92,10 +92,12 @@ router.post('/addUrl', function(req, res, next) {
 			// if dateTimeSchedule is not set have it expire after a certain amount of time
 			// if the client or server time is incorrect then this will be wrong.
 			screens.pushItem(ids, {
-				url: url,
+				url,
 				expires: (dur !== -1) ? (req.body.dateTimeSchedule ? moment(dateTimeSchedule, 'x') : moment()).add(dur, 'seconds').valueOf() : undefined,
 				dateTimeSchedule: dateTimeSchedule
 			});
+
+			const title = pages(url).getTitle();
 
 			debug(req.cookies.s3o_username + ' added URL '+req.body.url+' to screens '+ids);
 			ids.forEach(id => {
@@ -104,7 +106,9 @@ router.post('/addUrl', function(req, res, next) {
 					screenId: id,
 					username: req.cookies.s3o_username,
 					details: {
-						url: req.body.url
+						url: req.body.url,
+						title,
+						duration: dur
 					}
 				});
 			});
@@ -158,7 +162,6 @@ router.post('/remove', function(req, res, next) {
 		screenId: req.body.screen,
 		username: req.cookies.s3o_username,
 		details: {
-			item: req.body.idx,
 			itemTitle: pages(oldUrl).getTitle(),
 			itemUrl: oldUrl
 		}

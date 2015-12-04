@@ -8,7 +8,7 @@
 	</thead>
 	<tbody>
 		{{#logs}}<tr>
-			<td>{{timestamp}}</td>
+			<td class="convert-timestamp" data-timestamp="{{timestamp}}">{{timestamp}}</td>
 			<td class="main">{{eventDesc}}<pre>
 {{#each details}}{{@key}}: {{this}}
 {{/each}}</pre></td>

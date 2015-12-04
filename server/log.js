@@ -64,7 +64,11 @@ if (process.env.REDISTOGO_URL) {
 	redis = Redis.createClient();
 }
 
-function getTypeDescription({eventType, screenId, username}) {
+function getTypeDescription(options) {
+	const eventType = options.eventType;
+	const screenId = options.screenId;
+	const username = options.username;
+
 	const event = Object.keys(eventTypes)
 		.map(k => eventTypes[k])
 		.filter(event => event.id === eventType)[0];
@@ -94,7 +98,11 @@ function getTypeDescription({eventType, screenId, username}) {
 }
 
 
-function getMessageWrapper({eventType, screenId, username}) {
+function getMessageWrapper(options) {
+	const eventType = options.eventType;
+	const screenId = options.screenId;
+	const username = options.username;
+
 	return {
 		timestamp: Date.now(),
 		eventType,
@@ -132,12 +140,12 @@ setInterval(trimLogs, logTrimInterval);
 trimLogs();
 
 
-function logApi({
-	eventType,
-	screenId,
-	username,
-	details
-}) {
+function logApi(options) {
+	const eventType = options.eventType;
+	const screenId = options.screenId;
+	const username = options.username;
+	const details = options.details;
+
 
 	const message = getMessageWrapper({
 		eventType,
@@ -150,10 +158,9 @@ function logApi({
 	console.log(message.eventDesc);
 }
 
-function logConnect({
-	screenId,
-	eventType
-}) {
+function logConnect(options) {
+	const eventType = options.eventType;
+	const screenId = options.screenId;
 
 	const message = getMessageWrapper({eventType, screenId});
 	const messageStr = JSON.stringify(message);
@@ -162,12 +169,25 @@ function logConnect({
 }
 
 function renderView(req, res) {
-	redis.lrange(LOG_KEY, -500, -1, function (error, logs) {
+	redis.lrange(LOG_KEY, -500, -1, function (error, logEntries) {
+
 		if (error) {
+			console.log(error);
 			return res.render('error', {error, app: 'admin'});
 		}
+
+		const logs = logEntries.map(JSON.parse);
+
+		logs.forEach(log => {
+
+			// Don't use the stored one in case we update the descriptions.
+			log.eventDesc = getTypeDescription(log);
+		});
+
+		logs.reverse();
+
 		res.render('logs', {
-			logs: logs.reverse().map(JSON.parse),
+			logs,
 			app: 'logs'
 		});
 	});
