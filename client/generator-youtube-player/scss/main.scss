@@ -1,4 +1,4 @@
-#yt-player{
+#yt-player {
 	position: fixed;
 	left: 0;
 	top: 0;
@@ -6,7 +6,7 @@
 	height: 100%;
 }
 
-#cover_card{
+#cover_card {
 	background-color: #fff1e0;
 	position: fixed;
 	top: 0;
@@ -28,6 +28,6 @@
 	left: 50%;
 }
 
-*[data-visible=false]{
+*[data-visible=false] {
 	display: none;
 }

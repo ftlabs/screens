@@ -9,7 +9,7 @@ form {
 		width: 100%;
 	}
 
-	tr.o-forms-group {
+	.o-forms-group {
 		display: flex;
 		margin-bottom: 0.5em;
 		padding: 0;
@@ -18,7 +18,7 @@ form {
 			padding-right: 0.3em;
 		}
 
-		td.url-form-item {
+		.url-form-item {
 			flex-grow: 1;
 			display: flex;
 			margin-right: 1em;
@@ -39,7 +39,7 @@ form {
 	}
 
 
-	thead tr.o-forms-group {
+	.o-forms-group.row {
 		margin-bottom: 1em;
 
 		td {

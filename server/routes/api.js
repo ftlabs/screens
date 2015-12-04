@@ -1,7 +1,7 @@
 /* global process, console */
-'use strict';
 
-const router = require('express').Router();
+'use strict'; //eslint-disable-line strict
+const router = require('express').Router(); // eslint-disable-line new-cap
 const debug = require('debug')('screens:api');
 const screens = require('../screens');
 const moment = require('moment');
@@ -12,12 +12,12 @@ const log = require('../log');
 const pages = require('../pages');
 
 function cachedTransform( url, host ){
-	var promise;
+	let promise;
 	if (url in transformedUrls) {
-		console.log("cachedTransform: cache hit: url=", url);
+		console.log('cachedTransform: cache hit: url=', url);
 		promise = Promise.resolve( transformedUrls[url] );
 	} else {
-		console.log("cachedTransform: cache miss: url=", url);
+		console.log('cachedTransform: cache miss: url=', url);
 		promise = transform( url, host)
 			.then(function(transformedUrl){
 				transformedUrls[url] = transformedUrl;
@@ -34,21 +34,21 @@ function getScreenIDsForRequest(req) {
 }
 
 router.post('/getShortUrl', function (req, res) {
-	if (!req.body.id) return res.status(400).send("Missing ID");
+	if (!req.body.id) return res.status(400).send('Missing ID');
 
-	var longUrl = 'http://' + req.get('host') + '/admin?filter=' + req.body.id + '&redirect=true';
-	var responsePromise = Promise.resolve({});
+	const longUrl = 'http://' + req.get('host') + '/admin?filter=' + req.body.id + '&redirect=true';
+	let responsePromise = Promise.resolve({});
 
 	if (process.env.BITLY_LOGIN && process.env.BITLY_API_KEY) {
-		var postdata = {
+		const postdata = {
 			login: process.env.BITLY_LOGIN,
 			apiKey: process.env.BITLY_API_KEY,
 			longUrl: longUrl
 		};
-		var qs = Object.keys(postdata).reduce(function(a,k){ a.push(k+'='+encodeURIComponent(postdata[k])); return a }, []).join('&');
+		const qs = Object.keys(postdata).reduce(function(a,k){ a.push(k+'='+encodeURIComponent(postdata[k])); return a }, []).join('&');
 		responsePromise = fetch('https://api-ssl.bitly.com/v3/shorten', {
 			method: 'POST',
-			headers: { "Content-type": "application/x-www-form-urlencoded; charset=UTF-8" },
+			headers: { 'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8' },
 			body: qs
 		}).then(function (respStream) {
 			return respStream.json();
@@ -58,14 +58,14 @@ router.post('/getShortUrl', function (req, res) {
 	}
 
 	return responsePromise.then(function(resp) {
-		var response = {
+		const response = {
 			url: resp.url || longUrl
 		};
 		res.json(response);
 	});
 });
 
-router.get('/transformUrl/:url', function(req, res, next){
+router.get('/transformUrl/:url', function(req, res){
 	cachedTransform( req.params.url, req.get('host'))
 	.then(function(tfmd_url){
 		res.send(tfmd_url);
@@ -121,8 +121,8 @@ router.post('/addUrl', function(req, res, next) {
 
 });
 
-router.post('/clear', function(req, res, next) {
-	var ids = getScreenIDsForRequest(req);
+router.post('/clear', function(req, res) {
+	const ids = getScreenIDsForRequest(req);
 	screens.clearItems(ids);
 	debug(req.cookies.s3o_username + ' cleared screens ' + ids);
 	ids.forEach(id => {
@@ -136,10 +136,10 @@ router.post('/clear', function(req, res, next) {
 });
 
 router.post('/rename', function(req, res, next) {
-	var name = req.body.name;
-	var screen = screens.get(id)[0];
-	var oldName = screen ? screen.name : 'No screen present';
-	var id = getScreenIDsForRequest(req);
+	const name = req.body.name;
+	const screen = screens.get(id)[0];
+	const oldName = screen ? screen.name : 'No screen present';
+	const id = getScreenIDsForRequest(req);
 	debug(req.cookies.s3o_username + ' renamed screen ' + id[0] + ' to ' + name);
 	log.logApi({
 		eventType: log.eventTypes.screenRenamed.id,
@@ -166,14 +166,15 @@ router.post('/remove', function(req, res, next) {
 			itemUrl: oldUrl
 		}
 	});
+
 	screens.removeItem(req.body.screen, req.body.idx);
 	res.json(true);
 });
 
-router.post('/reload', function(req, res, next) {
+router.post('/reload', function(req, res) {
 
 	if(Object.keys(req.body).length !== 0){
-		var ids = getScreenIDsForRequest(req);
+		const ids = getScreenIDsForRequest(req);
 		screens.reload(ids);
 		ids.forEach(id => {
 			log.logApi({

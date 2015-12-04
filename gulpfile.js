@@ -1,15 +1,14 @@
 /* global console */
-'use strict';
-
-var gulp = require('gulp');
-var obt = require('origami-build-tools');
-var spawn = require('child_process').spawn;
-var node;
+'use strict'; //eslint-disable-line strict
+const gulp = require('gulp');
+const obt = require('origami-build-tools');
+const spawn = require('child_process').spawn;
+let node;
 
 gulp.task('serve', function() {
 	if (node) node.kill();
 	node = spawn('bin/start', [], {stdio: 'inherit'});
-	console.log("Spawned server as PID "+node.pid);
+	console.log('Spawned server as PID '+node.pid);
 	node.on('exit', function (code, signal) {
 		console.log('Service exit. '+code+' '+signal);
 	});

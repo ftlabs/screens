@@ -1,4 +1,4 @@
-'use strict';
+'use strict'; //eslint-disable-line strict
 
 const extend = require('lodash').extend;
 const debug = require('debug')('screens:screens');
@@ -46,7 +46,8 @@ module.exports.add = function(socket) {
 		id: null,
 		items: []
 	};
-	debug("New screen connected on socket " + socket.id);
+
+	debug(`New screen connected on socket ${socket.id}`);
 
 	// Request registration on connect so that registration is done on reconnects as well as the initial connect
 	socket.emit('requestUpdate');
@@ -60,7 +61,7 @@ module.exports.add = function(socket) {
 		data.id = parseInt(data.id, 10);
 
 		if (!socket.data.id) {
-			debug("New screen on socket "+socket.id+" now identifies as "+data.id+" ("+data.name+")");
+			debug('New screen on socket '+socket.id+' now identifies as '+data.id+' ('+data.name+')');
 		}
 
 		logs.logConnect({
@@ -114,7 +115,7 @@ module.exports.pushItem = function(ids, item) {
 };
 
 module.exports.removeItem = function(id, idx) {
-	var sock = socketsForIDs([parseInt(id, 10)])[0];
+	const sock = socketsForIDs([parseInt(id, 10)])[0];
 	if (sock) {
 		sock.data.items.splice(idx, 1);
 		syncDown(sock);
@@ -135,13 +136,13 @@ module.exports.generateAdminUpdate = function(ids) {
 module.exports.reload = function(ids){
 
 	if(ids === undefined){
-		app.io.of('/screens').emit('reload');	
+		app.io.of('/screens').emit('reload');
 	} else {
 		socketsForIDs(ids).map(function(socket){
 			socket.emit('reload');
-		})		
+		})
 	}
 
-	
+
 
 };
