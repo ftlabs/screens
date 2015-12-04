@@ -1,6 +1,9 @@
 'use strict'; //eslint-disable-line strict
 const parseQueryString = require('query-string').parse;
-const fetch = require('node-fetch');
+const http = require('http');
+const https = require('https');
+const imageType = require('image-type');
+const parseUrl = require('url').parse;
 
 function isGenerator(url) {
 	const isGeneratorRegex = /^(https?:\/\/[^\/]*(localhost:\d+|herokuapp.com))?\/generators\/.+/;
@@ -13,51 +16,25 @@ function isYoutube(url) {
 }
 
 function isImage(url){
-	const lookup = {
-		'ffd8ffe0': 'jpeg',
-		'ffd8ffe1': 'jpeg',
-		'47494638': 'gif',
-		'89504e47': 'png'
-	};
 
-	return fetch(url)
-			.then(function(responseStream){
+	const isHttps = parseUrl(url).protocol === 'https:';
+	const get = isHttps ? https.get.bind(https) : http.get.bind(http);
 
-				return new Promise(function(resolve){
+	return new Promise(function(resolve, reject) {
 
-					let buff;
-
-					responseStream.body.on('data', function(chunk){
-						buff = new Buffer(chunk, 'utf8').toString('hex');
-						responseStream.body.end(function(){
-							if(buff !== undefined){
-								resolve(buff.substring(0,8));
-							} else {
-								resolve();
-							}
-						});
-					});
-
-					responseStream.body.on('error', function(err){
-						console.log(err);
-						resolve();
-					});
-
-				});
-
-			})
-			.then(function(hexChunk) {
-				if(hexChunk !== undefined){
-					return (hexChunk.substring(0, 8) in lookup);
-				} else {
-					return false;
-				}
-			})
-			.catch(err => {
-				console.log(err);
-			})
-		;
-
+		get(url, function (res) {
+			res.once('data', function (chunk) {
+				res.destroy();
+				const imageMimeType = imageType(chunk) ? imageType(chunk).mime : '';
+				const isImage = imageMimeType ? imageMimeType.indexOf('image') > -1 : false;
+				resolve(isImage);
+			});
+		})
+		.on('error', function(e) {
+  		console.log('Got error: ' + e.message);
+			reject(e);
+		});
+	});
 }
 
 function isSupportedByImageService(url){
