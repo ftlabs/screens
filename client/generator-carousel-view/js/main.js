@@ -35,7 +35,7 @@ function getPanels() {
 
 	params.forEach(function(param) {
 
-		panels.push([param.u, param.d]);
+		panels.push([param.u, param.d || default_duration]);
 
 	});
 
