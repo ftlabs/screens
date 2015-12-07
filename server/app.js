@@ -13,7 +13,7 @@ const debug = require('debug')('screens:app');
 const cookie = require('cookie');
 const pages = require('./pages');
 const screens = require('./screens');
-const ftwebservice = require('ftwebservice');
+const ftwebservice = require('express-ftwebservice');
 
 const app = express();
 
@@ -47,7 +47,7 @@ app.use('/bower_components', express.static(path.join(__dirname, '../bower_compo
 
 // /__gtg, /__health, and /__about.
 ftwebservice(app, {
-	manifestPath: require('../package.json'),
+	manifestPath: path.join(__dirname, '../package.json'),
 	about: require('../runbook.json'),
 	healthCheck: require('../tests/healthcheck'),
 
