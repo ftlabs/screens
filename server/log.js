@@ -6,10 +6,11 @@
  */
 
 const Redis = require("redis");
-const logLength = 5000;
-const logTrimInterval = 1000*3600; //Trim the logs hourly
-const LOG_KEY = 'FTLABS_SCREENS_LOG';
 const screens = require('./screens');
+
+const logLength = process.env.REDIS_LOG_LENGTH || 5000;
+const logTrimInterval = 1000 * (process.env.REDIS_LOG_TRIM_INTERVAL || 3600); //Trim the logs hourly
+const LOG_KEY = process.env.REDIS_LOG_KEY || 'FTLABS_SCREENS_LOG';
 
 const eventTypes = {
 	screenDisconnected: {
