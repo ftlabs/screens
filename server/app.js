@@ -1,4 +1,6 @@
 /* global __dirname */
+'use strict';
+
 const express = require('express');
 const path = require('path');
 const favicon = require('serve-favicon');
@@ -11,6 +13,7 @@ const debug = require('debug')('screens:app');
 const cookie = require('cookie');
 const pages = require('./pages');
 const screens = require('./screens');
+const ftwebservice = require('ftwebservice');
 
 const app = express();
 
@@ -37,15 +40,25 @@ app.hbs = hbs;
 // Write HTTP request log using Morgan
 app.use(morganLogger('dev'));
 
-// Parse requests for body content and cookies
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-
 // Serve static files
 app.use(favicon(path.join(__dirname, '../public/favicon.ico')));
 app.use(express.static(path.join(__dirname, '../public')));
 app.use('/bower_components', express.static(path.join(__dirname, '../bower_components')));
+
+// /__gtg, /__health, and /__about.
+ftwebservice(app, {
+	manifestPath: require('../package.json'),
+	about: require('../runbook.json'),
+	healthCheck: require('../tests/healthcheck'),
+
+	// TODO AE07122015: Once logging is merged check that the database can be connected to
+	goodToGoTest: () => Promise.resolve(true)
+});
+
+// Parse requests for body content and cookies
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 // Serve routes
 app.use('/', require('./routes/index'));
