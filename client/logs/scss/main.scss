@@ -1,0 +1,19 @@
+@import "../../common/scss/admin-common";
+
+table {
+	width: 100%;
+}
+
+tr:nth-child(even) {
+	background: rgba(0,0,0,0.1);
+}
+
+td {
+	padding: 0.2em 1em;
+}
+
+thead tr td {
+	margin-bottom: 1em;
+	font-weight: bold;
+	border-bottom: 1px solid black;
+}
