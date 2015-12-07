@@ -54,6 +54,7 @@ app.use('/', require('./routes/index'));
 app.use('/api', require('./routes/api'));
 app.use('/admin', require('./routes/admin'));
 app.use('/viewer', require('./routes/viewer'));
+app.use('/listen', require('./routes/listen'));
 app.use('/generators', require('./routes/generators'));
 
 app.all('*', function(req, res, next) {

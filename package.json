@@ -33,7 +33,8 @@
     "showdown": "^1.2.2",
     "simplewebrtc": "^1.19.1",
     "socket.io": "^1.3.6",
-    "socket.io-client": "^1.3.6"
+    "socket.io-client": "^1.3.6",
+    "sonic-net" : "git@github.com:seanmtracey/sonicnet.js.git"
   },
   "engines": {
     "node": "4.2.2"
