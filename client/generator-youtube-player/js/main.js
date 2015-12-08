@@ -115,15 +115,14 @@ const YTG = (function(){
 			console.log('Now playing: %s', player.getVideoData().title);
 		} else if(playerStates[evt.data] === 'buffering'){
 
+			clearTimeout(bufferingTO);
+			bufferingTO = undefined;
+
 			bufferingTO = setTimeout(function(){
 
 				if(playerStates[player.getPlayerState()] === 'buffering'){
 
-					showCoverCard();
 					handleNetworkIssues();
-
-					clearTimeout(bufferingTO);
-					bufferingTO = undefined;
 
 				}
 
@@ -143,14 +142,15 @@ const YTG = (function(){
 		checkNetworkState()
 			.then(function(networkStatus){
 				console.log(networkStatus);
+				
 				destroyPlayer();
-				createPlayer();
-				hideCoverCard();
+				createPlayer();	
+
 			})
 			.catch(function(err){
 				console.error(err);
 				// Fail gracefully - Check network periodically
-
+				showCoverCard();
 				setTimeout(function(){
 
 					handleNetworkIssues();
