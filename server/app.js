@@ -1,6 +1,8 @@
 /* global __dirname */
 'use strict';
 
+const SENTRY_DSN = process.env.SENTRY_DSN;
+
 const express = require('express');
 const path = require('path');
 const favicon = require('serve-favicon');
@@ -15,6 +17,13 @@ const pages = require('./pages');
 const screens = require('./screens');
 const log = require('./log');
 const ftwebservice = require('express-ftwebservice');
+const isProduction = process.env.NODE_ENV === 'production';
+
+if (isProduction) {
+	const raven = require('raven');
+	const client = new raven.Client(SENTRY_DSN);
+	client.patchGlobal();
+}
 
 const app = express();
 
