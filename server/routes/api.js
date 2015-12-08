@@ -1,4 +1,5 @@
 /* global process, console */
+
 'use strict'; //eslint-disable-line strict
 const router = require('express').Router(); // eslint-disable-line new-cap
 const debug = require('debug')('screens:api');
@@ -7,6 +8,8 @@ const moment = require('moment');
 const fetch = require('node-fetch');
 const transform = require('../urls');
 const transformedUrls = {};
+const log = require('../log');
+const pages = require('../pages');
 
 function cachedTransform( url, host ){
 	let promise;
@@ -16,11 +19,11 @@ function cachedTransform( url, host ){
 	} else {
 		console.log('cachedTransform: cache miss: url=', url);
 		promise = transform( url, host)
-					.then(function(transformedUrl){
-						transformedUrls[url] = transformedUrl;
-						return transformedUrl;
-					})
-					;
+			.then(function(transformedUrl){
+				transformedUrls[url] = transformedUrl;
+				return transformedUrl;
+			})
+		;
 	}
 
 	return promise;
@@ -70,31 +73,51 @@ router.get('/transformUrl/:url', function(req, res){
 	;
 });
 
-router.post('/addUrl', function(req, res) {
-	if (!req.body.url) return res.status(400).send('Missing url');
+router.post('*', function (req, res, next) {
+	if (!req.cookies.s3o_username) return res.status(403).send("Not logged in.");
+	next();
+});
+
+router.post('/addUrl', function(req, res, next) {
+	if (!req.body.url) return res.status(400).send("Missing url");
 	cachedTransform(req.body.url, req.get('host'))
-			.then(function(url){
+		.then(function(url){
 
-				const ids = getScreenIDsForRequest(req);
-				const dur = parseInt(req.body.duration, 10);
+			const ids = getScreenIDsForRequest(req);
+			const dur = parseInt(req.body.duration, 10);
 
-				// Ensure items with no schedule appear before each other but after scheduled content
-				const dateTimeSchedule = req.body.dateTimeSchedule || parseInt(Date.now()/100, 10);
+			// Ensure items with no schedule appear before each other but after scheduled content
+			const dateTimeSchedule = req.body.dateTimeSchedule || parseInt(Date.now()/100, 10);
 
-				// if dateTimeSchedule is not set have it expire after a certain amount of time
-				// if the client or server time is incorrect then this will be wrong.
-				screens.pushItem(ids, {
-					url: url,
-					expires: (dur !== -1) ? (req.body.dateTimeSchedule ? moment(dateTimeSchedule, 'x') : moment()).add(dur, 'seconds').valueOf() : undefined,
-					dateTimeSchedule: dateTimeSchedule
+			// if dateTimeSchedule is not set have it expire after a certain amount of time
+			// if the client or server time is incorrect then this will be wrong.
+			screens.pushItem(ids, {
+				url,
+				expires: (dur !== -1) ? (req.body.dateTimeSchedule ? moment(dateTimeSchedule, 'x') : moment()).add(dur, 'seconds').valueOf() : undefined,
+				dateTimeSchedule: dateTimeSchedule
+			});
+
+			const title = pages(url).getTitle();
+
+			debug(req.cookies.s3o_username + ' added URL '+req.body.url+' to screens '+ids);
+			ids.forEach(id => {
+				log.logApi({
+					eventType: log.eventTypes.screenContentAssignment.id,
+					screenId: id,
+					username: req.cookies.s3o_username,
+					details: {
+						url: req.body.url,
+						title,
+						duration: dur
+					}
 				});
+			});
 
-				debug(req.cookies.s3o_username + ' added URL '+req.body.url+' to screens '+ids);
 
-				res.json(true);
+			res.json(true);
 
-			})
-		;
+		})
+	;
 
 });
 
@@ -102,30 +125,71 @@ router.post('/clear', function(req, res) {
 	const ids = getScreenIDsForRequest(req);
 	screens.clearItems(ids);
 	debug(req.cookies.s3o_username + ' cleared screens ' + ids);
+	ids.forEach(id => {
+		log.logApi({
+			eventType: log.eventTypes.screenContentCleared.id,
+			screenId: id,
+			username: req.cookies.s3o_username
+		});
+	});
 	res.json(true);
 });
 
-router.post('/rename', function(req, res) {
+router.post('/rename', function(req, res, next) {
 	const name = req.body.name;
+	const screen = screens.get(id)[0];
+	const oldName = screen ? screen.name : 'No screen present';
 	const id = getScreenIDsForRequest(req);
-	screens.set(id, {name:name});
-	debug(req.cookies.s3o_username + ' renamed screen ' + id + ' to ' + name);
+	debug(req.cookies.s3o_username + ' renamed screen ' + id[0] + ' to ' + name);
+	log.logApi({
+		eventType: log.eventTypes.screenRenamed.id,
+		screenId: id[0],
+		username: req.cookies.s3o_username,
+		details: {
+			newName: name,
+			oldName
+		}
+	});
+	screens.set(id, {name});
 	res.json(true);
 });
 
-router.post('/remove', function(req, res) {
+router.post('/remove', function(req, res, next) {
+
+	const oldUrl = screens.get(req.body.screen)[0].items[req.body.idx].url;
+	log.logApi({
+		eventType: log.eventTypes.screenContentRemoval.id,
+		screenId: req.body.screen,
+		username: req.cookies.s3o_username,
+		details: {
+			itemTitle: pages(oldUrl).getTitle(),
+			itemUrl: oldUrl
+		}
+	});
+
 	screens.removeItem(req.body.screen, req.body.idx);
 	res.json(true);
 });
 
 router.post('/reload', function(req, res) {
 
-	if(req.body !== ''){
+	if(Object.keys(req.body).length !== 0){
 		const ids = getScreenIDsForRequest(req);
 		screens.reload(ids);
+		ids.forEach(id => {
+			log.logApi({
+				eventType: log.eventTypes.screenReloaded.id,
+				screenId: id,
+				username: req.cookies.s3o_username
+			});
+		});
 	} else {
 		debug(req.cookies.s3o_username + ' reloaded all screens');
 		screens.reload();
+		log.logApi({
+			eventType: log.eventTypes.allScreensReloaded.id,
+			username: req.cookies.s3o_username
+		});
 	}
 
 	res.json(true);

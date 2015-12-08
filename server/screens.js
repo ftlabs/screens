@@ -1,7 +1,8 @@
 'use strict'; //eslint-disable-line strict
-const extend = require('lodash').extend;
 
+const extend = require('lodash').extend;
 const debug = require('debug')('screens:screens');
+const logs = require('./log');
 
 let app;
 
@@ -45,7 +46,8 @@ module.exports.add = function(socket) {
 		id: null,
 		items: []
 	};
-	debug('New screen connected on socket '+socket.id);
+
+	debug(`New screen connected on socket ${socket.id}`);
 
 	// Request registration on connect so that registration is done on reconnects as well as the initial connect
 	socket.emit('requestUpdate');
@@ -62,6 +64,14 @@ module.exports.add = function(socket) {
 			debug('New screen on socket '+socket.id+' now identifies as '+data.id+' ('+data.name+')');
 		}
 
+		logs.logConnect({
+			eventType: logs.eventTypes.screenConnected.id,
+			screenId: data.id,
+			details: {
+				name: data.name,
+			}
+		});
+
 		// Record the updated data against the socket
 		extend(socket.data, data);
 
@@ -71,6 +81,14 @@ module.exports.add = function(socket) {
 
 	socket.on('disconnect', function() {
 		debug('Screen disconnected: '+this.data.id+ ' from socket '+this.id);
+		logs.logConnect({
+			eventType: logs.eventTypes.screenDisconnected.id,
+			screenId: this.data.id,
+			details: {
+				name: this.data.name,
+			}
+		});
+
 		app.io.of('/admins').emit('screenData', { id: this.data.id });
 	});
 };

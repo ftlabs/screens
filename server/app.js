@@ -13,6 +13,7 @@ const debug = require('debug')('screens:app');
 const cookie = require('cookie');
 const pages = require('./pages');
 const screens = require('./screens');
+const log = require('./log');
 const ftwebservice = require('express-ftwebservice');
 
 const app = express();
@@ -66,6 +67,7 @@ app.use('/api', require('./routes/api'));
 app.use('/admin', require('./routes/admin'));
 app.use('/viewer', require('./routes/viewer'));
 app.use('/generators', require('./routes/generators'));
+app.use('/logs', log.renderView);
 
 app.all('*', function(req, res, next) {
 	res.set('Access-Control-Allow-Origin', '*');
@@ -95,7 +97,7 @@ app.io.on('connection', function(socket) {
 				socket.emit('reload');
 				previouslySeenScreens[id] = true;
 			}
-		};
+		}
 
 	}
 
@@ -132,7 +134,8 @@ if (app.get('env') === 'development') {
 		res.status(err.status || 500);
 		res.render('error', {
 			message: err.message,
-			error: err
+			error: err,
+			app:'logs'
 		});
 	});
 }
@@ -143,7 +146,8 @@ app.use(function(err, req, res) {
 	res.status(err.status || 500);
 	res.render('error', {
 		message: err.message,
-		error: {}
+		error: {},
+		app:'logs'
 	});
 });
 
