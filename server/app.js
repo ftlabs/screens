@@ -19,13 +19,19 @@ const log = require('./log');
 const ftwebservice = require('express-ftwebservice');
 const isProduction = process.env.NODE_ENV === 'production';
 
+const app = express();
+
 if (isProduction) {
 	const raven = require('raven');
 	const client = new raven.Client(SENTRY_DSN);
 	client.patchGlobal();
-}
 
-const app = express();
+	// The request handler must be the first item
+	app.use(raven.middleware.express.requestHandler(SENTRY_DSN));
+
+	// The error handler must be before any other error middleware
+	app.use(raven.middleware.express.errorHandler(SENTRY_DSN));
+}
 
 // Create Socket.io instance
 app.io = require('socket.io')();
