@@ -137,9 +137,9 @@ router.post('/clear', function(req, res) {
 
 router.post('/rename', function(req, res, next) {
 	const name = req.body.name;
+	const id = getScreenIDsForRequest(req);
 	const screen = screens.get(id)[0];
 	const oldName = screen ? screen.name : 'No screen present';
-	const id = getScreenIDsForRequest(req);
 	debug(req.cookies.s3o_username + ' renamed screen ' + id[0] + ' to ' + name);
 	log.logApi({
 		eventType: log.eventTypes.screenRenamed.id,
