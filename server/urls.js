@@ -4,6 +4,7 @@ const http = require('http');
 const https = require('https');
 const imageType = require('image-type');
 const parseUrl = require('url').parse;
+const request = require('request');
 
 function isGenerator(url) {
 	const isGeneratorRegex = /^(https?:\/\/[^\/]*(localhost:\d+|herokuapp.com))?\/generators\/.+/;
@@ -17,24 +18,24 @@ function isYoutube(url) {
 
 function isImage(url){
 
-	const isHttps = parseUrl(url).protocol === 'https:';
-	const get = isHttps ? https.get.bind(https) : http.get.bind(http);
+	return new Promise(function(resolve, reject){
 
-	return new Promise(function(resolve, reject) {
-
-		get(url, function (res) {
-			res.once('data', function (chunk) {
+		request(url)
+			.on('response', function(res){
 				res.destroy();
+			})
+			.on('data', function(chunk) {
 				const imageMimeType = imageType(chunk) ? imageType(chunk).mime : '';
 				const isImage = imageMimeType ? imageMimeType.indexOf('image') > -1 : false;
 				resolve(isImage);
-			});
-		})
-		.on('error', function(e) {
-  		console.log('Got error: ' + e.message);
-			reject(e);
-		});
+			})
+			.on('error', function(err){
+				reject(err);
+			})
+		;
+
 	});
+
 }
 
 function isSupportedByImageService(url){
@@ -107,10 +108,10 @@ module.exports = function transform (url, host) {
 					}
 
 					return url;
-					})
-					.catch(err => {
-						console.log(err);
-					})
+				})
+				.catch(err => {
+					console.log('hi', err);
+				})
 				;
 	}
 
