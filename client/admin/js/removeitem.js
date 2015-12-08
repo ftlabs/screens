@@ -4,6 +4,7 @@ exports.init = function($) {
 
 	$('.screens')
 		.on('click', '.action-remove', function() {
+
 			const $li = $(this).closest('li');
 			const $list = $li.closest('ol').find('li');
 			const idx = $list.index($li);
