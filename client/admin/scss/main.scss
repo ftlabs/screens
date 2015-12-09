@@ -70,6 +70,12 @@ button {
 		max-width: 14em;
 		min-width: 8em;
 	}
+
+	@include oGridRespondTo(M) {
+
+		// Add some extra space for the floating action baron large screen
+		margin-bottom: 8em;
+	}
 }
 
 .rename-group {
@@ -184,10 +190,22 @@ h6 {
 .actions {
 	display: flex;
 	flex-direction: column;
+	margin: 0 -0.25em 0.5em;
+
 	@include oGridRespondTo(M) {
 		flex-direction: row;
+
+		// On large screen float the action bar to give it easy access,
+		// not on small because it takes up a lot screen real estate
+		position: fixed;
+		box-shadow: 0 0 1em rgba(0,0,0,0.5);
+		background: #fff1e0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		padding: 0.5em;
+		margin: 0;
 	}
-	margin: 0 -0.25em 0.5em;
 
 	.action-form-group {
 		display: flex;
