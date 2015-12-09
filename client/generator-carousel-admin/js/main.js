@@ -1,4 +1,5 @@
 /* eslint-env browser */
+'use strict';
 const default_url = 'https://en.wikipedia.org/wiki/Financial_Times';
 const default_duration = 10;
 
@@ -111,7 +112,7 @@ function populateFields( titleAndFrames ) {
 	let duration;
 	let inputField;
 
-	document.querySelector('.title-form-item').value = title;
+	document.querySelector('.title-form-item input').value = title;
 
 	for (let j = 0; j < numGivenFrames; j++) {
 		url = frames[j][0];

@@ -5,41 +5,42 @@
 		<div data-o-grid-colspan="12">
 			<div class="o-forms-group">
 				<p> If you would like to edit an existing carousel,
-				paste the URL in here: <br><label>Paste Url:</label> <input id="templateCarousel" type="url" name="copyfrom"/></p>
+				paste the URL in here:</p> <input id="templateCarousel" placeholder="Paste Here" type="url" name="copyfrom"/>
 			</div>
 			<FORM id="carouselForm" action="/generators/carousel" method="get">
 				<div class="title-form-item o-forms-group">
-					A descriptive name for when this carousel is listed in the admin screen)<br>
-					<label>Title:</label> <input name="title" />
+					<p>
+						<label>Title</label>
+						A descriptive name for when this carousel is listed in the admin screen)
+					</p>
+					<input name="title" placeholder="Title" type="text" />
 				</div>
 				<BR/>
 
 				<TABLE>
 
 					<thead>
-						<TR class="o-forms-group row">
-							<td width="50%">
-								<I>(Don't forget to include the http:// part. OK to leave urls blank)</I>
+						<tr "row">
+							<td>
+								URL, Remember to include http://
 							</td><td>
-								<I>(Duration is integer seconds. Blank defaults to 10)</I>
+								Duration (seconds).
 							</td>
-						</TR>
+						</tr>
 					</thead>
 
 					<tbody>
-						<TR class="url-and-duration o-forms-group row">
+						<tr class="url-and-duration row">
 							<td class="url-form-item">
-								<label>Url</label>
 								<input type="url" name="u" form="carouselForm"/>
 							</td>
 							<td>
-								<label>Duration</label>
-								<input type="text" name="d" size="4"/>
+								<input type="text" name="d" placeholder="10" size="4"/>
 							</td>
 							<td>
 								<a href="javascript: void(0)" class="remove">×</a>
 							</td>
-						</TR>
+						</tr>
 					</tbody>
 				</TABLE>
 
