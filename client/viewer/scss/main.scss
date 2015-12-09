@@ -21,6 +21,11 @@ body,
 	margin: 0;
 	width: 100%;
 	height: 100%;
+	/*
+	 * cursor: none; not supported until Firefox 3, Safari 5, and Chrome 5. Not at all supported in IE or Opera. Image URL cursors not supported in Opera.
+   * If we want to work everywhere we could use a 1x1 png with an opacity of 1%.
+	*/
+	cursor: none;
 }
 
 .full {
