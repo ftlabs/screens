@@ -165,7 +165,30 @@ button {
 			white-space: nowrap;
 			max-width: 50vw;
 		}
+
+		&[data-troublesome-url="true"]{
+			background: #DA6A6A;
+		    color: white;
+		    padding: 3px 0;
+		    text-decoration: none;
+		}
+
+		&[data-troublesome-url="true"]:hover{
+
+				&:after{
+					content: "This content may not show properly on some screens";
+				    position: absolute;
+				    font-weight: 200;
+				    background-color: inherit;
+				    color: white;
+				    padding: 3px;
+				    margin-top: -1.2em;
+				}
+
+		}
+
 	}
+
 }
 
 .generator-select {

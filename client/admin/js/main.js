@@ -13,6 +13,59 @@ const HierarchicalNav = require('o-hierarchical-nav');
 const nav = document.querySelector('.o-hierarchical-nav');
 new HierarchicalNav(nav);
 
+const troubleURLS = [];
+
+function checkHeaders(url){
+
+	return new Promise(function(resolve, reject){
+
+		window.fetch(url, {
+			method: 'head',
+			mode : "cors"
+		})
+		.then(function(){
+			return response.headers.get('x-frame-options');
+		})
+		.then(function(headers){
+
+			if(headers !== null){
+				reject()
+			} else {
+				resolve();
+			}
+
+		})
+		.catch(function(err){
+			// console.log(err);
+			reject(url);
+		});
+
+	});
+
+	
+
+};
+
+function pointOutTroubleMakers(){
+	const activeLinks = Array.from(document.querySelectorAll('.screen-page'));
+
+	activeLinks.forEach(function(activeLink){
+
+		const link = activeLink.getAttribute('href');
+
+		debugger;
+
+		troubleURLS.forEach(function(url){
+			if(url === link){
+				activeLink.setAttribute('data-troublesome-url', 'true');
+			}
+		});
+
+
+	})
+
+}
+
 function updateScreen(data) {
 	const $el = $('#screen-'+data.id);
 	console.log('Screen update', data.id, $el);
@@ -32,6 +85,7 @@ function updateScreen(data) {
 	resizeTable();
 	dateTime();
 	orderTable();
+	pointOutTroubleMakers();
 }
 
 function orderTable() {
@@ -130,6 +184,16 @@ window.screensInit = function() {
 			if ($('#date').val() || $('#time').val()) {
 				data.dateTimeSchedule = moment(`${$('#date').val() || moment().format('YYYY-MM-DD')} ${$('#time').val() || moment().format('HH:mm')}`).valueOf();
 			}
+
+			checkHeaders(data.url)
+				.catch(function(url){
+					console.log("Might not be able to show this url:", url);
+					if(troubleURLS.indexOf(url) === -1){
+						troubleURLS.push(url);					
+					}
+				})
+			;
+
 			api('addUrl', data);
 		} else if ($(this).is('#actions_clear')) {
 			api('clear', data);
