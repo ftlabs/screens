@@ -15,8 +15,14 @@ const pages = require('./pages');
 const screens = require('./screens');
 const log = require('./log');
 const ftwebservice = require('express-ftwebservice');
-
+const sentry = require('./sentry');
 const app = express();
+
+// The request handler must be the first item
+app.use(sentry.requestHandler);
+
+// The error handler must be before any other error middleware
+app.use(sentry.errorHandler);
 
 // Create Socket.io instance
 app.io = require('socket.io')();
