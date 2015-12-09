@@ -5,11 +5,54 @@ const router = require('express').Router(); // eslint-disable-line new-cap
 const debug = require('debug')('screens:api');
 const screens = require('../screens');
 const moment = require('moment');
-const fetch = require('node-fetch');
+const request = require('request');
 const transform = require('../urls');
 const transformedUrls = {};
 const log = require('../log');
 const pages = require('../pages');
+const curry = require('lodash').curry;
+
+// createJsonResponse :: Response-object -> Int -> Boolean -> Object -> IO
+function createJsonResponse (res, statusCode, success, data){
+  res.status(statusCode)
+  .json({
+    success,
+    data,
+    statusCode: code
+  });
+}
+
+const response = curry(createJsonResponse);
+
+function checkIsViewable(url){
+
+	return new Promise(function(resolve, reject){
+
+		request({
+		    method: 'head',
+		    uri: url
+		}, function(err, res, body){
+
+			console.log(res.headers);
+
+			if(err){
+				reject(err);
+			} else {
+
+				if(res.headers['x-frame-options'] === undefined){
+					resolve(true);
+				} else {
+					resolve(false);
+				}
+
+			}
+
+		});
+
+
+	});
+
+}
 
 function cachedTransform( url, host ){
 	let promise;
@@ -80,6 +123,7 @@ router.post('*', function (req, res, next) {
 
 router.post('/addUrl', function(req, res, next) {
 	if (!req.body.url) return res.status(400).send("Missing url");
+
 	cachedTransform(req.body.url, req.get('host'))
 		.then(function(url){
 
@@ -113,8 +157,16 @@ router.post('/addUrl', function(req, res, next) {
 				});
 			});
 
-
-			res.json(true);
+			return checkIsViewable(url)
+				.then(isViewable => {
+					res.json({
+						viewable : isViewable
+					});
+				})
+				.catch(err => {
+					res.json(true);
+				})
+			;
 
 		})
 	;
@@ -193,6 +245,42 @@ router.post('/reload', function(req, res) {
 	}
 
 	res.json(true);
+});
+
+router.post('/is-viewable', function(req, res){
+
+	const url = req.body.url;
+
+	fetch(url, {
+			method: 'head'
+		})
+		.then(function(response){
+			return response.headers.get('x-frame-options');
+		})
+		.then(function(xFrameHeader){
+
+			if(xFrameHeader === null){
+				res.json({
+					viewable : true,
+					header : null
+				});
+			} else {
+				res.json({
+					viewable : false,
+					header : xFrameHeader
+				});
+			}
+
+		})
+		.catch(function(err){
+
+			res.status(500).json({
+				error : err
+			});
+
+		})
+	;
+
 });
 
 module.exports = router;

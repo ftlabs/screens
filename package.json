@@ -25,6 +25,7 @@
     "image-type": "^2.1.0",
     "is-url-superb": "^2.0.0",
     "lodash": "^3.10.1",
+    "lodash.curry": "^3.0.2",
     "lru-cache": "^2.6.5",
     "mocha": "^2.3.3",
     "mockery": "^1.4.0",

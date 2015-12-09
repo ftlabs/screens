@@ -15,37 +15,6 @@ new HierarchicalNav(nav);
 
 const troubleURLS = [];
 
-function checkHeaders(url){
-
-	return new Promise(function(resolve, reject){
-
-		window.fetch(url, {
-			method: 'head',
-			mode : "cors"
-		})
-		.then(function(){
-			return response.headers.get('x-frame-options');
-		})
-		.then(function(headers){
-
-			if(headers !== null){
-				reject()
-			} else {
-				resolve();
-			}
-
-		})
-		.catch(function(err){
-			// console.log(err);
-			reject(url);
-		});
-
-	});
-
-	
-
-};
-
 function pointOutTroubleMakers(){
 	const activeLinks = Array.from(document.querySelectorAll('.screen-page'));
 
@@ -185,16 +154,19 @@ window.screensInit = function() {
 				data.dateTimeSchedule = moment(`${$('#date').val() || moment().format('YYYY-MM-DD')} ${$('#time').val() || moment().format('HH:mm')}`).valueOf();
 			}
 
-			checkHeaders(data.url)
-				.catch(function(url){
-					console.log("Might not be able to show this url:", url);
-					if(troubleURLS.indexOf(url) === -1){
-						troubleURLS.push(url);					
+			api('addUrl', data)
+				.then(function(res){
+					const canBeViewed = res.viewable;
+
+					if(!canBeViewed){
+
+						if(troubleURLS.indexOf(data.url) === -1){
+							troubleURLS.push(data.url);
+						}
+
 					}
 				})
 			;
-
-			api('addUrl', data);
 		} else if ($(this).is('#actions_clear')) {
 			api('clear', data);
 		} else if ($(this).is('#actions_clone')) {
