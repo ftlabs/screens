@@ -7,7 +7,7 @@ web:
   ports:
     - '8080:8080'
   volumes:
-    - '.:/app/user'
+    - '.:/app/user' # This overwrites the /app/user directory in the container with the files/folders in this projects directory
   links:
     - redis
 redis:
