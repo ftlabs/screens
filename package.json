@@ -21,7 +21,7 @@
     "express-handlebars": "^2.0.1",
     "fetch-er": "0.0.10",
     "ftlabs-screens-carousel": "github:ftlabs/screens-carousel#v1.0.5",
-    "ftlabs-screens-viewer": "github:ftlabs/screens-viewer#v1.0.8",
+    "ftlabs-screens-viewer": "github:ftlabs/screens-viewer#v1.0.9",
     "gulp": "latest",
     "htmlparser": "^1.7.7",
     "image-type": "^2.1.0",
