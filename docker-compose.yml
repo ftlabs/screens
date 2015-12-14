@@ -13,4 +13,4 @@ web:
 redis:
   image: redis
   volumes:
-    - .:/data
+    - ./redis/data:/data
