@@ -151,9 +151,6 @@ const __client = (function(moment) {
 
 	data = JSON.parse(localStorage.getItem(LSKEY) || '{"items":[]}');
 	data.type = checkIfViewerIsRunningInElectron() ? "electron" : checkIfChromeExtension() ? "extension" : "web";
-
-	console.log(data.type);
-
 	// Backwards compat
 	if (data.url) delete data.url;
 	if (!data.items) data.items = [];
