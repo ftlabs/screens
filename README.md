@@ -31,3 +31,11 @@ We can deploy either by using Heroku's Docker plugin or by the Git plugin.
 
 - Deploy a new release using Heroku's Docker plugin -- `heroku docker:release --app {APP_NAME}`
 - Deploy using Heroku's Git plugin -- `git push {HEROKU_GIT_REMOTE_NAME} master`
+
+These are not equivalent deployment processes:
+
+The Docker plugin will build a docker image, mount the container, tarball the app directory and send that to Heroku's releases API. 
+
+The Git plugin will push a branch to Heroku's Git repository, which will then be built using Heroku's buildpack, on installation of the application it will run `bower install && gulp build` as that is defined in the "post-install" script in the `package.json` file.
+
+By using the Docker plugin approach, we would be able to remove the development tools from being deployed to Heroku alongside the appliaction.
