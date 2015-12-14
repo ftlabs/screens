@@ -3,6 +3,7 @@
 const extend = require('lodash').extend;
 const debug = require('debug')('screens:screens');
 const logs = require('./log');
+const assignedIDs = [];
 
 let app;
 
@@ -33,6 +34,25 @@ function generateAdminUpdate(sock) {
 	});
 }
 
+function generateID(){
+	return parseInt(Math.random() * 99999 | 0, 10);
+}
+
+function checkForConflictingIDs(screenData){
+
+	for(var x = 0; x < assignedIDs.length; x += 1){
+
+		if(screenData.id == assignedIDs[x].data){
+			screenData.id = generateID();
+			x = 0;
+		}
+
+	}
+
+	return screenData.id;
+
+}
+
 module.exports.setApp = function(_app) {
 	app = _app;
 };
@@ -56,9 +76,12 @@ module.exports.add = function(socket) {
 
 		// If screen has not cited a specific ID, assign one
 		if (!data.id || !parseInt(data.id, 10)) {
-			data.id = Math.random() * 99999 | 0;
+			data.id = generateID();
 		}
-		data.id = parseInt(data.id, 10);
+
+		const conflictFreeId = checkForConflictingIDs(data);
+
+		data.id = conflictFreeId;
 
 		if (!socket.data.id) {
 			debug('New screen on socket '+socket.id+' now identifies as '+data.id+' ('+data.name+')');

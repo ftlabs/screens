@@ -21,8 +21,13 @@ const __client = (function(moment) {
 		data = newdata;
 		// If ID of this screen has changed, update the UI
 		if (newdata.id && newdata.id !== olddata.id) {
+			newdata.idUpdated = Date.now();
 			populateIDs();
 			updateTitle();
+		}
+
+		if(!olddata.idUpdated && !newdata.idUpdated){
+			newdata.idUpdated = Date.now()
 		}
 
 		if (newdata.name && newdata.name !== olddata.name) {
