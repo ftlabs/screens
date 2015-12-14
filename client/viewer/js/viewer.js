@@ -116,6 +116,22 @@ const __client = (function(moment) {
 		document.title = name + ' : FT Screens';
 	}
 
+	function checkIfChromeExtension(){
+
+		if(window.chrome !== undefined){
+
+			if(window.chrome.runtime.id !== "web"){
+				return true
+			} else {
+				return false;
+			}
+
+		} else {
+			return false;
+		}
+
+	}
+
 	function checkIfViewerIsRunningInElectron(){
 		return (navigator.userAgent.indexOf('Electron') > 0 && navigator.userAgent.indexOf('FTLabs-Screens') > 0);
 	}
@@ -134,6 +150,9 @@ const __client = (function(moment) {
 	}
 
 	data = JSON.parse(localStorage.getItem(LSKEY) || '{"items":[]}');
+	data.type = checkIfViewerIsRunningInElectron() ? "electron" : checkIfChromeExtension() ? "extension" : "web";
+
+	console.log(data.type);
 
 	// Backwards compat
 	if (data.url) delete data.url;
