@@ -12,7 +12,7 @@
 - Change in repository directory -- `cd screens`
 - If running OS X or Windows, [follow these steps for creating a virtual machine for Docker](#creating-a-virtual-machine-for-docker) -- This is a section in this file.
 - Build a Docker image -- `docker build .`
-- Spin up the web process in a container -- `docker-compose up web` -- `web` is defined in `docker-compose.yml`
+- Spin up the web process in a container -- `docker-compose up`
 - Open the application in your browser of choice -- `open "http://$(docker-machine ip default):8080"`
 
 ##### [Creating a virtual machine for Docker](#creating-a-virtual-machine-for-docker)
