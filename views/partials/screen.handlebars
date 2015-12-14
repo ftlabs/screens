@@ -14,11 +14,11 @@
 					<span class="item-info-url">
 						<a class='screen-page {{#if active}}active{{/if}}' href='{{{url}}}' data-date-time-schedule='{{dateTimeSchedule}}' {{#if expires}}data-expires='{{expires}}'{{/if}} ><p>{{htmltitle url}}</p></a>
 					</span>
+					<div class="item-info-remove"><i class="action-remove fa fa-remove"></i></div>
 					<div class="item-info-date">
 						<span class='item-info-scheduled' data-date-time-schedule='{{dateTimeSchedule}}'></span>
 						{{#if expires}}<span class="item-info-expires"> (expires {{relTime expires}})&nbsp;</span>{{/if}}
 					</div>
-					<div class="item-info-remove"><i class="action-remove fa fa-remove"></i></div>
 				</li>
 				{{/items}}
 			</ol>
