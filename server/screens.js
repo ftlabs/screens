@@ -34,26 +34,56 @@ function generateAdminUpdate(sock) {
 	});
 }
 
-function generateID(){
-	return parseInt(Math.random() * 99999 | 0, 10);
-}
-
 function decideWhichScreenGetsToKeepAnID(screenA, screenB){
 
-	console.log("A:", screenA, " B:", screenB);
-
+	// Emit an event to the screens to reassign using the ID and the timestamp 
+	// of when that id was assigned as the identifier for the screen that needs
+	// to reassign. The original screen (and the rest) can ignore this message.
 	const screenToChange = screenA.idUpdated > screenB.idUpdated ? screenA : screenB ;
-
-	app.io.of('/screens').emit('reassign', { id : screenToChange.id, idUpdated : screenToChange.idUpdated });
+	app.io.of('/screens').emit('reassign', { id : screenToChange.id, idUpdated : screenToChange.idUpdated, newID : generateID() });
 
 }
 
-function checkForConflictingIDs(screenData){
+
+function checkForConflictingId(id){
 
 	return assignedIDs.some(existingScreen => {
-		return existingScreen.id == screenData.id;
+		return existingScreen.id == id;
 	});
 
+}
+
+function checkForConflictingScreens(data){
+
+	return assignedIDs.some(existingScreen => {
+
+		if(existingScreen.id === data.id){
+			// Screen has a matching id
+			if(existingScreen.idUpdated === data.idUpdated){
+				// Screen is the same screen as the one it's checking against 
+				return false;
+			} else {
+				/// Screen is different, there is a conflict
+				return true;
+			}
+
+		} else {
+			return false;
+		}
+
+	});
+
+}
+
+function generateID(){
+
+	var newID = parseInt(Math.random() * 99999 | 0, 10);
+
+	while(checkForConflictingId(newID) === true){
+		newID = parseInt(Math.random() * 99999 | 0, 10);
+	}
+
+	return newID;
 }
 
 module.exports.setApp = function(_app) {
@@ -82,12 +112,11 @@ module.exports.add = function(socket) {
 			data.id = generateID();
 		}
 
-		const thereIsAConflict = checkForConflictingIDs(data);
-
-		console.log("Conflict?", thereIsAConflict);
+		const thereIsAConflict = checkForConflictingScreens(data);
 
 		if(thereIsAConflict){
 			decideWhichScreenGetsToKeepAnID(data, assignedIDs.filter(s => { return s.id == data.id; } )[0] );
+			return;
 		} else {
 			assignedIDs.push({id : data.id, idUpdated : data.idUpdated});
 		}
