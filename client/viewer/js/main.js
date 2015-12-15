@@ -40,14 +40,16 @@ socket.on('reassign', function(data){
 
 	console.log("Reassign", data);
 
-	var currentData = viewer.getData();
+	const currentData = viewer.getData();
 
 	if(currentData.id === data.id && currentData.idUpdated === data.idUpdated){
 
-		var n = Object.assign({}, currentData);
-			n.id = data.newID
-		viewer.update(n);
+		const newData = Object.assign({}, currentData);
+		newData.id = data.newID
+		
+		viewer.update(newData);
 		syncUp();
+	
 	}
 
 });

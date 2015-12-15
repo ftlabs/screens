@@ -28,7 +28,7 @@ const __client = (function(moment) {
 		}
 
 		if(!olddata.idUpdated && !newdata.idUpdated){
-			newdata.idUpdated = Date.now()
+			newdata.idUpdated = Date.now();
 		}
 
 		if (newdata.name && newdata.name !== olddata.name) {

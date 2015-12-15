@@ -40,7 +40,12 @@ function decideWhichScreenGetsToKeepAnID(screenA, screenB){
 	// of when that id was assigned as the identifier for the screen that needs
 	// to reassign. The original screen (and the rest) can ignore this message.
 	const screenToChange = screenA.idUpdated > screenB.idUpdated ? screenA : screenB ;
-	app.io.of('/screens').emit('reassign', { id : screenToChange.id, idUpdated : screenToChange.idUpdated, newID : generateID() });
+
+	app.io.of('/screens').emit('reassign', { 
+		id : screenToChange.id,
+		idUpdated : screenToChange.idUpdated,
+		newID : generateID()
+	});
 
 }
 
@@ -48,7 +53,7 @@ function decideWhichScreenGetsToKeepAnID(screenA, screenB){
 function checkForConflictingId(id){
 
 	return assignedIDs.some(existingScreen => {
-		return existingScreen.id == id;
+		return existingScreen.id === id;
 	});
 
 }
