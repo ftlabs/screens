@@ -5,6 +5,7 @@
   "scripts": {
     "start": "./bin/start",
     "postinstall": "bower install && gulp build",
+    "build": "gulp build",
     "test": "mocha ./tests"
   },
   "dependencies": {
