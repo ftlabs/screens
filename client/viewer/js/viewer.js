@@ -135,7 +135,7 @@ const __client = (function(moment) {
 		DOM.Iframe = webViewElement;
 
 		DOM.container.appendChild(DOM.Iframe);
-
+ 
 	}
 
 	data = JSON.parse(localStorage.getItem(LSKEY) || '{"items":[]}');
