@@ -82,7 +82,7 @@ function checkForConflictingScreens(data){
 
 function generateID(){
 
-	var newID = parseInt(Math.random() * 99999 | 0, 10);
+	let newID = parseInt(Math.random() * 99999 | 0, 10);
 
 	while(checkForConflictingId(newID) === true){
 		newID = parseInt(Math.random() * 99999 | 0, 10);
@@ -120,7 +120,7 @@ module.exports.add = function(socket) {
 		const thereIsAConflict = checkForConflictingScreens(data);
 
 		if(thereIsAConflict){
-			decideWhichScreenGetsToKeepAnID(data, assignedIDs.filter(s => { return s.id == data.id; } )[0] );
+			decideWhichScreenGetsToKeepAnID(data, assignedIDs.find(s => { return s.id == data.id; } ) );
 			return;
 		} else {
 			assignedIDs.push({id : data.id, idUpdated : data.idUpdated});
