@@ -38,18 +38,21 @@ function generateID(){
 	return parseInt(Math.random() * 99999 | 0, 10);
 }
 
+function decideWhichScreenGetsToKeepAnID(screenA, screenB){
+
+	console.log("A:", screenA, " B:", screenB);
+
+	const screenToChange = screenA.idUpdated > screenB.idUpdated ? screenA : screenB ;
+
+	app.io.of('/screens').emit('reassign', { id : screenToChange.id, idUpdated : screenToChange.idUpdated });
+
+}
+
 function checkForConflictingIDs(screenData){
 
-	for(var x = 0; x < assignedIDs.length; x += 1){
-
-		if(screenData.id == assignedIDs[x].data){
-			screenData.id = generateID();
-			x = 0;
-		}
-
-	}
-
-	return screenData.id;
+	return assignedIDs.some(existingScreen => {
+		return existingScreen.id == screenData.id;
+	});
 
 }
 
@@ -79,9 +82,15 @@ module.exports.add = function(socket) {
 			data.id = generateID();
 		}
 
-		const conflictFreeId = checkForConflictingIDs(data);
+		const thereIsAConflict = checkForConflictingIDs(data);
 
-		data.id = conflictFreeId;
+		console.log("Conflict?", thereIsAConflict);
+
+		if(thereIsAConflict){
+			decideWhichScreenGetsToKeepAnID(data, assignedIDs.filter(s => { return s.id == data.id; } )[0] );
+		} else {
+			assignedIDs.push({id : data.id, idUpdated : data.idUpdated});
+		}
 
 		if (!socket.data.id) {
 			debug('New screen on socket '+socket.id+' now identifies as '+data.id+' ('+data.name+')');
