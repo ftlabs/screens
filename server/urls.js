@@ -6,6 +6,7 @@ const imageType = require('image-type');
 const parseUrl = require('url').parse;
 const request = require('request');
 const debug = require('debug')('screens:server:urls');
+const RESPONSE_TIMEOUT = process.env.RESPONSE_TIMEOUT || 1500;
 
 function isGenerator(url) {
 	const isGeneratorRegex = /^(https?:\/\/[^\/]*(localhost:\d+|herokuapp.com))?\/generators\/.+/;
@@ -20,7 +21,7 @@ function isYoutube(url) {
 function isImage(url){
 
 	return new Promise(function(resolve, reject){
-		request(url, {timeout: 1500})
+		request(url, {timeout: RESPONSE_TIMEOUT})
 			.on('response', function(res){
 				res.destroy();
 			})
