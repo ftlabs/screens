@@ -5,6 +5,7 @@ const https = require('https');
 const imageType = require('image-type');
 const parseUrl = require('url').parse;
 const request = require('request');
+const debug = require('debug')('screens:server:urls');
 
 function isGenerator(url) {
 	const isGeneratorRegex = /^(https?:\/\/[^\/]*(localhost:\d+|herokuapp.com))?\/generators\/.+/;
@@ -29,6 +30,9 @@ function isImage(url){
 				resolve(isImage);
 			})
 			.on('error', function(err){
+				if (err.code === 'ETIMEDOUT') {
+			    	debug(`Timed-out requesting ${url}`);
+			    }
 				reject(err);
 			})
 		;
@@ -109,7 +113,7 @@ module.exports = function transform (url, host) {
 					return url;
 				})
 				.catch(err => {
-					console.log(err);
+					debug(err);
 					return url;
 				})
 				;
