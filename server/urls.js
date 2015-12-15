@@ -19,8 +19,7 @@ function isYoutube(url) {
 function isImage(url){
 
 	return new Promise(function(resolve, reject){
-
-		request(url)
+		request(url, {timeout: 1500})
 			.on('response', function(res){
 				res.destroy();
 			})
