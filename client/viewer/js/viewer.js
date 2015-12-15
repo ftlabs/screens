@@ -17,7 +17,7 @@ const __client = (function(moment) {
 	let currentURL;
 
 	function update(newdata) {
-		debugger;
+
 		const olddata = data;
 		data = newdata;
 		// If ID of this screen has changed, update the UI
