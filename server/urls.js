@@ -110,6 +110,7 @@ module.exports = function transform (url, host) {
 				})
 				.catch(err => {
 					console.log(err);
+					return url;
 				})
 				;
 	}
