@@ -17,12 +17,18 @@ const __client = (function(moment) {
 	let currentURL;
 
 	function update(newdata) {
+
 		const olddata = data;
 		data = newdata;
 		// If ID of this screen has changed, update the UI
 		if (newdata.id && newdata.id !== olddata.id) {
+			newdata.idUpdated = Date.now();
 			populateIDs();
 			updateTitle();
+		}
+
+		if(!olddata.idUpdated && !newdata.idUpdated){
+			newdata.idUpdated = Date.now();
 		}
 
 		if (newdata.name && newdata.name !== olddata.name) {
@@ -130,7 +136,7 @@ const __client = (function(moment) {
 		DOM.Iframe = webViewElement;
 
 		DOM.container.appendChild(DOM.Iframe);
-
+ 
 	}
 
 	data = JSON.parse(localStorage.getItem(LSKEY) || '{"items":[]}');

@@ -36,6 +36,24 @@ socket.on('update', function(data){
 	viewer.update(data);
 });
 
+socket.on('reassign', function(data){
+
+	console.log("Reassign", data);
+
+	const currentData = viewer.getData();
+
+	if(currentData.id === data.id && currentData.idUpdated === data.idUpdated){
+
+		const newData = Object.assign({}, currentData);
+		newData.id = data.newID
+		
+		viewer.update(newData);
+		syncUp();
+	
+	}
+
+});
+
 function syncUp() {
 	const storedData = viewer.getData();
 	console.log('Sending update', storedData.items.length, storedData);
