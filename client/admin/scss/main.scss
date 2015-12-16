@@ -101,8 +101,9 @@ button {
 		display: none;
 	}
 }
-.screen-name-col:after {
-	content: " (#" attr(data-id) ")";
+.screen-name-col:before {
+	content: attr(data-id);
+	padding: 0 1em;
 	.rename-mode & {
 		content: "";
 	}
@@ -142,6 +143,11 @@ button {
 
 	.item-info-url {
 		flex: 4 1;
+		text-align: right;
+	}
+
+	.item-info-remove{
+		margin: 0 8px;
 	}
 
 	.item-info-expires {
