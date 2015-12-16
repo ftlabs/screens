@@ -64,12 +64,12 @@ function checkForConflictingScreens(data){
 
 		if(existingScreen.id === data.id){
 			// Screen has a matching id
-			if(existingScreen.idUpdated === data.idUpdated){
-				// Screen is the same screen as the one it's checking against 
-				return false;
-			} else {
+			if(existingScreen.idUpdated !== data.idUpdated){
 				/// Screen is different, there is a conflict
 				return true;
+			} else {
+				// Screen is the same screen as the one it's checking against 
+				return false;
 			}
 
 		} else {
