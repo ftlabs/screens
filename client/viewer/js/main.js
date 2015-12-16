@@ -1,6 +1,8 @@
 /* eslint-env browser */
 'use strict';
 
+const Viewer = require('ftlabs-screens-viewer');
+const Carousel = require('ftlabs-screens-carousel');
 const port = location.port ? ':'+location.port : '';
 const host = '//'+location.hostname+port;
 
@@ -11,12 +13,12 @@ function viewerIsRunningInElectron() {
 // Called by the script loader once the page has loaded
 window.screensInit = function() {
 
-	const Viewer = require('ftlabs-screens-viewer');
 	const viewer = new Viewer(host);
 	const DOM = {
 		container: document.getElementById('container'),
 		Iframe : document.querySelector('iframe'),
 	};
+	let carousel;
 
 	function switchOutIframeForWebview() {
 
@@ -58,7 +60,23 @@ window.screensInit = function() {
 	}, 1000);
 
 	// The url has changed
-	viewer.on('change', url => DOM.Iframe.src = url);
+	viewer.on('change', function(url) {
+
+		if (carousel) {
+
+			// stop timers
+			carousel.destroy();
+			carousel = null;
+		}
+
+		if (Carousel.isCarousel(url)) {
+			carousel = new Carousel(url, host);
+			carousel.on('change', url => DOM.Iframe.src = url);
+			DOM.Iframe.src = carousel.getCurrentURL();
+		} else {
+			DOM.Iframe.src = url;
+		}
+	});
 
 	// A reload has been forced
 	viewer.on('reload', () => DOM.Iframe.src = DOM.Iframe.src);
