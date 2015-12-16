@@ -78,6 +78,11 @@ window.screensInit = function() {
 		}
 	});
 
+	viewer.on('id-change', function () {
+		updateTitle();
+		updateIDs();
+	});
+
 	// A reload has been forced
 	viewer.on('reload', () => DOM.Iframe.src = DOM.Iframe.src);
 
