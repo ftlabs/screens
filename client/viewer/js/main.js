@@ -3,8 +3,7 @@
 
 const Viewer = require('ftlabs-screens-viewer');
 const Carousel = require('ftlabs-screens-carousel');
-const port = location.port ? ':'+location.port : '';
-const host = '//'+location.hostname+port;
+const host = location.origin;
 
 function viewerIsRunningInElectron() {
 	return (navigator.userAgent.indexOf('Electron') > 0 && navigator.userAgent.indexOf('FTLabs-Screens') > 0);
