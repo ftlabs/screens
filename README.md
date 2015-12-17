@@ -22,7 +22,7 @@
 If you don't have a Docker machine set-up:
 - Create a virtual machine (named default) -- `docker-machine create --driver virtualbox default` (change the driver value if using vmware)
 If/Once you have a Docker machine set-up:
-- Check that your machine is running -- `docker-machine ls`
+- Check that your machine is running -- `docker-machine ls` -- _It is active if it has a `*` in the `ACTIVE` column_
 - If machine is not running, boot it up -- `docker-machine start default`
 - Add environment variables to your computer in order to let Docker communicate with the virtual machine -- `eval "$(docker-machine env default)"` -- It is recommended to add this to your `bash_profile` or similar.
 
