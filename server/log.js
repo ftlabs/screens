@@ -57,8 +57,8 @@ module.exports = {
 	renderView // Function
 };
 
-if (process.env.REDISTOGO_URL) {
-	const rtg   = require("url").parse(process.env.REDISTOGO_URL);
+if (process.env.REDISTOGO_URL || process.env.REDIS_PORT) {
+	const rtg = require('url').parse(process.env.REDISTOGO_URL || process.env.REDIS_PORT);
 	redis = Redis.createClient(rtg.port, rtg.hostname);
 	if (rtg.auth) redis.auth(rtg.auth.split(":")[1]);
 } else {

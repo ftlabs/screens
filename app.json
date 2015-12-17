@@ -1,0 +1,11 @@
+{
+  "name": "Screens",
+  "description": "A way to distribute websites to multiple displays.",
+  "website": "http://ftlabs-screens.herokuapp.com/",
+  "repository": "https://github.com/ftlabs/screens",
+  "success_url": "/admin",
+  "image": "jakechampion/heroku-nodejs",
+  "addons": [
+    "redistogo"
+  ]
+}
