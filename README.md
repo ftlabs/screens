@@ -16,8 +16,8 @@
 - Open the application in your browser of choice -- `open "http://$(docker-machine ip default):8080"`
 
 ##### [Creating a virtual machine for Docker](#creating-a-virtual-machine-for-docker)
- [VirtualBox](https://www.virtualbox.org/wiki/Downloads) or [VMWare](http://www.vmware.com/uk/).
 
+- Download and install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) if you don't already have it installed.
 - Check if you already have a Docker machine set-up -- `docker-machine ls`
 If you don't have a Docker machine set-up:
 - Create a virtual machine (named default) -- `docker-machine create --driver virtualbox default` (change the driver value if using vmware)
