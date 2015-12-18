@@ -1,75 +1,94 @@
 /* eslint-env browser */
-/* global console, io*/
-const viewer = require('./viewer.js');
-const port = location.port ? ':'+location.port : '';
-const socket = io('//'+location.hostname+port+'/screens');
+'use strict';
 
-console.log('Initialising socket.io...');
+const Viewer = require('ftlabs-screens-viewer');
+const Carousel = require('ftlabs-screens-carousel');
+const host = location.origin;
 
-socket.on('connect', function() {
-	viewer.setConnectionState(true);
-});
-
-socket.on('disconnect', function() {
-	socket.io.reconnect();
-	viewer.setConnectionState(false);
-});
-
-socket.on('heartbeat',function() {
-	setTimeout(function() {
-		socket.emit('heartbeat');
-	}, 3000);
-});
-
-socket.on('reload', function(){
-	window.location.reload();
-});
-
-socket.on('requestUpdate', function() {
-	viewer.setConnectionState(true);
-	syncUp();
-});
-
-socket.on('update', function(data){
-	console.log('Received update', data.items.length, data);
-	viewer.setConnectionState(true);
-	viewer.update(data);
-});
-
-socket.on('reassign', function(data){
-
-	console.log("Reassign", data);
-
-	const currentData = viewer.getData();
-
-	if(currentData.id === data.id && currentData.idUpdated === data.idUpdated){
-
-		const newData = Object.assign({}, currentData);
-		newData.id = data.newID
-		
-		viewer.update(newData);
-		syncUp();
-	
-	}
-
-});
-
-function syncUp() {
-	const storedData = viewer.getData();
-	console.log('Sending update', storedData.items.length, storedData);
-	socket.emit('update', storedData);
+function viewerIsRunningInElectron() {
+	return (navigator.userAgent.indexOf('Electron') > 0 && navigator.userAgent.indexOf('FTLabs-Screens') > 0);
 }
 
-// Called by the script loader
+// Called by the script loader once the page has loaded
 window.screensInit = function() {
-	const name = viewer.getData('name') || viewer.getData('id');
-	document.title = name + ' : FT Screens';
 
-	if (viewer.isElectron()) {
-		viewer.useWebview();
+	const viewer = new Viewer(host);
+	const DOM = {
+		container: document.getElementById('container'),
+		Iframe : document.querySelector('iframe'),
+	};
+	let carousel;
+
+	function switchOutIframeForWebview() {
+
+		const webViewElement = document.createElement('webview');
+
+		webViewElement.setAttribute('class', DOM.Iframe.getAttribute('class'));
+
+		DOM.Iframe.parentNode.removeChild(DOM.Iframe);
+		DOM.Iframe = webViewElement;
+
+		DOM.container.appendChild(DOM.Iframe);
+
 	}
 
-	viewer.onChange(syncUp);
+	function updateTitle() {
+		const name = viewer.getData('name') || viewer.getData('id');
+		document.title = name + ' : FT Screens';
+	}
+
+	function updateIDs() {
+		[].slice.call(document.querySelectorAll('.screen-id')).forEach(function(el) {
+			el.innerHTML = viewer.getData('id');
+		});
+	}
+
+	updateTitle();
+
+	if (viewerIsRunningInElectron()) {
+		switchOutIframeForWebview();
+	}
+
+	setInterval(function () {
+		updateTitle();
+		updateIDs();
+		DOM.container.classList.toggle('state-disconnected', !viewer.ready());
+		DOM.container.classList.remove('state-active', 'state-hello', 'state-loading');
+		DOM.container.classList.add(viewer.getUrl() ? 'state-active' : (viewer.ready() ? 'state-hello' : 'state-loading'));
+
+	}, 1000);
+
+	// The url has changed
+	viewer.on('change', function(url) {
+
+		if (carousel) {
+
+			// stop timers
+			carousel.destroy();
+			carousel = null;
+		}
+
+		if (Carousel.isCarousel(url)) {
+			carousel = new Carousel(url, host);
+			carousel.on('change', url => DOM.Iframe.src = url);
+			DOM.Iframe.src = carousel.getCurrentURL();
+		} else {
+			DOM.Iframe.src = url;
+		}
+	});
+
+	viewer.on('id-change', function () {
+		updateTitle();
+		updateIDs();
+	});
+
+	// A reload has been forced
+	viewer.on('reload', () => DOM.Iframe.src = DOM.Iframe.src);
+
+	// E.g. The viewer has started but cannot connected to the server.
+	viewer.on('not-connected', () => {
+		DOM.container.classList.add('state-disconnected');
+	});
 };
 
 // Initialise Origami components when the page has loaded
