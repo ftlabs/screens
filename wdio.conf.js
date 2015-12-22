@@ -1,10 +1,11 @@
 'use strict';
 
+/* global browser*/
+
 const denodeify = require('denodeify');
 const selenium = require('selenium-standalone');
 const installSelenium = denodeify(selenium.install.bind(selenium));
 const startSeleniumServer = denodeify(selenium.start.bind(selenium));
-const fork = require('child_process').fork;
 
 /*
  * Installs Selenium and starts the server, ready to control browsers
@@ -132,6 +133,9 @@ exports.config = {
 	// Gets executed before test execution begins. At this point you will have access to all global
 	// variables like `browser`. It is the perfect place to define custom commands.
 	before: function() {
+
+        // Set cookie to bypass auth
+        return browser.url('/').setCookie({name: 'webdriver', value: '__webdriverTesting__'});
 	},
 
 	// Gets executed after all tests are done. You still have access to all global variables from

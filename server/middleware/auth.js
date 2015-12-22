@@ -1,7 +1,14 @@
+'use strict';
 const authS3O = require('s3o-middleware');
 
+function testSuite(req) {
+	if (process.env.NODE_ENV === 'production') return false;
+	if (req.cookies.webdriver === "__webdriverTesting__") return true;
+	return false;
+}
+
 module.exports = function(req, res, next) {
-	if (req.originalUrl.indexOf('/generators/') === 0 && Object.keys(req.query).length !== 0) {
+	if (testSuite(req) || req.originalUrl.indexOf('/generators/') === 0 && Object.keys(req.query).length !== 0) {
 		next();
 	} else if (req.query.redirect === 'true') {
 		next();
