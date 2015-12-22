@@ -1,3 +1,4 @@
+'use strict';
 /* global browser*/
 
 const denodeify = require('denodeify');
