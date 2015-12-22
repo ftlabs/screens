@@ -6,7 +6,7 @@ const path = require('path');
 const Mocha = require('mocha');
 
 const mocha = new Mocha();
-mocha.addFile(path.join(__dirname, 'test.js'));
+mocha.addFile(path.join(__dirname, 'unit/test.js'));
 
 // Return a promise that resolves to a set of healthchecks
 module.exports = function() {

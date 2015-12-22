@@ -22,7 +22,7 @@ describe('Detecting a Youtube URL and transform it into a generator URL', functi
 		mockery.enable({
 			useCleanCache: true
 		});
-		transform = require('../server/urls');
+		transform = require('../../server/urls');
 	});
 
 	it('Should detect a Youtube video URL and create a URL to the Youtube generator specifying that it\'s a video', function(done){

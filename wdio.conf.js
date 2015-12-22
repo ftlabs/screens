@@ -1,5 +1,3 @@
-'use strict';
-
 /* global browser*/
 
 const denodeify = require('denodeify');
@@ -34,7 +32,7 @@ exports.config = {
 	// directory is where your package.json resides, so `wdio` will be called from there.
 	//
 	specs: [
-		'./tests/specs/**/*.js'
+		'./tests/integration/**/*.js'
 	],
 
 	// Patterns to exclude.
@@ -55,7 +53,7 @@ exports.config = {
 	// https://docs.saucelabs.com/reference/platforms-configurator
 	//
 	capabilities: [{
-		browserName: 'firefox'
+		browserName: 'chrome'
 	}],
 
 	// ===================
