@@ -132,8 +132,8 @@ exports.config = {
 	// variables like `browser`. It is the perfect place to define custom commands.
 	before: function() {
 
-        // Set cookie to bypass auth
-        return browser.url('/').setCookie({name: 'webdriver', value: '__webdriverTesting__'});
+		// Set cookie to bypass auth
+		return browser.url('/').setCookie({name: 'webdriver', value: '__webdriverTesting__'});
 	},
 
 	// Gets executed after all tests are done. You still have access to all global variables from
