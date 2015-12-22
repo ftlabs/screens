@@ -134,7 +134,7 @@
 				}
 			
 			}).catch(function (e) {
-				alert(e.message || e);
+				console.log(e.message || e);
 			});
 		}([
 			{{#if app}}'/build/{{{app}}}/bundle.js',{{/if}} 
