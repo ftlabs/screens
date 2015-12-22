@@ -134,7 +134,7 @@ function getSelectedScreens() {
 	}).get();
 }
 
-window.screensInit = function() {
+function screensInit() {
 
 	const port = location.port ? ':'+location.port : '';
 	socket = io.connect('//'+location.hostname+port+'/admins');
@@ -227,8 +227,12 @@ window.screensInit = function() {
 if (document.readyState === 'interactive' || document.readyState === 'complete') {
 	document.dispatchEvent(new CustomEvent('o.DOMContentLoaded'));
 }
+
 document.addEventListener('DOMContentLoaded', function() {
+
 	// Dispatch a custom event that will tell all required modules to initialise
 	document.dispatchEvent(new CustomEvent('o.DOMContentLoaded'));
 });
 window.addEventListener('resize', resizeTable);
+
+window.screensInit = screensInit;

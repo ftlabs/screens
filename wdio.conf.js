@@ -33,7 +33,7 @@ exports.config = {
 	// directory is where your package.json resides, so `wdio` will be called from there.
 	//
 	specs: [
-		'./tests/integration/**/*.js'
+		'./tests/integration/*.js'
 	],
 
 	// Patterns to exclude.
@@ -134,7 +134,15 @@ exports.config = {
 	before: function() {
 
 		// Set cookie to bypass auth
-		return browser.url('/').setCookie({name: 'webdriver', value: '__webdriverTesting__'});
+		return browser.url('/__about')
+		.localStorage('POST', {key: 'viewerData_v2', value: JSON.stringify(
+			{
+				id:12345,
+				items:[],
+				name:"Test Page"
+			}
+		)})
+		.setCookie({name: 'webdriver', value: '__webdriverTesting__'});
 	},
 
 	// Gets executed after all tests are done. You still have access to all global variables from

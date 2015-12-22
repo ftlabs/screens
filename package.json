@@ -7,7 +7,7 @@
     "postinstall": "bower install && gulp build",
     "build": "gulp build",
     "unittests": "mocha ./tests/unit",
-    "integrationtests": "./bin/start & sleep 1; wdio; kill $!; echo Killed $!",
+    "integrationtests": "./bin/start & wdio; kill $!; echo Killed $!",
     "test": "npm run unittests; npm run integrationtests"
   },
   "dependencies": {
