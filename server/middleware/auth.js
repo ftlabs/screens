@@ -3,7 +3,10 @@ const authS3O = require('s3o-middleware');
 
 function testSuite(req) {
 	if (process.env.NODE_ENV === 'production') return false;
-	if (req.cookies.webdriver === "__webdriverTesting__") return true;
+	if (req.cookies.webdriver === '__webdriverTesting__') {
+		req.cookies.s3o_username = 'selenium.test-user';
+		return true;
+	}
 	return false;
 }
 
