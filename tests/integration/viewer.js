@@ -3,7 +3,7 @@
 
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const logs = require('./lib/logs.js');
+const logs = require('./lib/logs.js')(browser);
 const api = require('./lib/adminapi.js')('http://localhost:3010');
 
 chai.use(chaiAsPromised);
@@ -18,7 +18,12 @@ describe('Viewer responds to API requests', () => {
 			.waitForText('#hello .screen-id')
 			.getText('#hello .screen-id');
 
-		return expect(id).to.eventually.equal('12345').then(undefined, logs(browser));
+		return expect(id).to.eventually.equal('12345').then(undefined, function (e) {
+
+			// show browser console.logs
+			logs();
+			throw e;
+		});
 	});
 
 
@@ -34,9 +39,11 @@ describe('Viewer responds to API requests', () => {
 					return url === 'https://ada.is'
 				});
 			}))
-			.then(undefined, e => {
-				console.log(e);
-				logs(browser);
+			.then(undefined, function (e) {
+
+				// show browser console.logs
+				logs();
+				throw e;
 			});
 	});
 

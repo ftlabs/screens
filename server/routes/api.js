@@ -111,7 +111,6 @@ router.post('*', function (req, res, next) {
 });
 
 router.post('/addUrl', function(req, res) {
-	console.log(req.body);
 	if (!req.body.url) return res.status(400).send('Missing url');
 
 	cachedTransform(req.body.url, req.get('host'))
