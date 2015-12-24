@@ -28,10 +28,10 @@ module.exports = function (apiUrl) {
 				"Content-Type": "application/json"
 			},
 			body: JSON.stringify({
-				screens: screensId.constructor === Array ? screensId.map(id => id.toString()).join(',') : screensId.toString(),
+				screens: Array.isArray(screensId) ? screensId.map(id => id.toString()).join(',') : screensId.toString(),
 				url,
-				duration,
-				dateTimeSchedule
+				duration: duration || 100,
+				dateTimeSchedule: dateTimeSchedule || parseInt(Date.now()/100, 10)
 			})
 		});
 	}

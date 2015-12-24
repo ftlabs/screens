@@ -35,8 +35,8 @@ describe('Viewer responds to API requests', () => {
 	it('can have a url assigned', function () {
 		return api.loadUrl(12345, 'http://ft.com')
 			.then(() => browser.waitUntil(function() {
-				return this.getAttribute('iframe','src').then(function(url) {
-					return url === 'https://ada.is'
+				return browser.getAttribute('iframe','src').then(function(url) {
+					return url === 'http://ft.com';
 				});
 			}))
 			.then(undefined, function (e) {
