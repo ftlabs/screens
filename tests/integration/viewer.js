@@ -15,7 +15,6 @@ describe('Viewer responds to API requests', () => {
 	it('gets an ID', function () {
 
 		const id = tabs.viewer()
-			.waitForExist('#hello .screen-id')
 			.waitForText('#hello .screen-id')
 			.getText('#hello .screen-id');
 
@@ -37,18 +36,24 @@ describe('Viewer responds to API requests', () => {
 	*/
 	it('can have a url assigned', function () {
 		this.timeout(20000);
-		const title = tabs.admin()
-			.waitForText('h1.o-header__title')
-			.getText('h1.o-header__title');
-		
-		return expect(title).to.eventually.equal('FT Screens')
+		const myUrl = 'https://ada.is';
+
+		return tabs.admin()
+		.setValue('#txturl', myUrl)
+		.waitForExist('label[for=chkscreen-12345]')
+		.click('label[for=chkscreen-12345]')
+		.click('#btnsetcontent')
+		.then(tabs.viewer)
+		.then(() => browser.waitUntil(function() {
+			return browser.getAttribute('iframe','src').then(url => url.indexOf(myUrl) === 0);
+		}, 10000))
 		.then(undefined, function (e) {
 
 			// show browser console.logs
 			return logs().then(function () {
 				throw e;
 			});
-		});;
+		});
 
 	});
 

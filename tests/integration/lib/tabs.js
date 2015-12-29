@@ -21,6 +21,9 @@ module.exports = function(client) {
 		return loaded
 		.getCurrentTabId()
 		.then(id => {
+
+			// if you try to switch to the current tab it will switch to the
+			// first tab :/
 			if (id !== handles[name]) {
 				return loaded
 				.switchTab(handles[name]);
