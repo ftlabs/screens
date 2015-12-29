@@ -1,4 +1,4 @@
-/* global process, console */
+/* global process */
 
 'use strict'; //eslint-disable-line strict
 const router = require('express').Router(); // eslint-disable-line new-cap
@@ -21,7 +21,7 @@ function checkIsViewable(url){
 			uri: url
 		}, function(err, res){
 
-			console.log(res.headers);
+			debug(res.headers);
 
 			if(err){
 				reject(err);
@@ -45,10 +45,10 @@ function checkIsViewable(url){
 function cachedTransform( url, host ){
 	let promise;
 	if (url in transformedUrls) {
-		console.log('cachedTransform: cache hit: url=', url);
+		debug('cachedTransform: cache hit: url=', url);
 		promise = Promise.resolve( transformedUrls[url] );
 	} else {
-		console.log('cachedTransform: cache miss: url=', url);
+		debug('cachedTransform: cache miss: url=', url);
 		promise = transform( url, host)
 			.then(function(transformedUrl){
 				transformedUrls[url] = transformedUrl;
@@ -124,11 +124,26 @@ router.post('/addUrl', function(req, res) {
 
 			// if dateTimeSchedule is not set have it expire after a certain amount of time
 			// if the client or server time is incorrect then this will be wrong.
-			screens.pushItem(ids, {
+			let expires;
+			if (dur !== -1) {
+				if (req.body.dateTimeSchedule) {
+					expires = moment(dateTimeSchedule, 'x');
+				} else {
+					expires = (moment()).add(dur, 'seconds').valueOf();
+				}
+			}
+
+			const content = {
 				url,
-				expires: (dur !== -1) ? (req.body.dateTimeSchedule ? moment(dateTimeSchedule, 'x') : moment()).add(dur, 'seconds').valueOf() : undefined,
-				dateTimeSchedule: dateTimeSchedule
-			});
+				expires,
+				dateTimeSchedule
+			};
+
+			debug('url:', url);
+			debug('scheduled:', new Date(moment(dateTimeSchedule, 'x').valueOf()))
+			debug('expires:', new Date(expires));
+
+			screens.pushItem(ids, content);
 
 			const title = pages(url).getTitle();
 
