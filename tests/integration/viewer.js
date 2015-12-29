@@ -16,6 +16,7 @@ describe('Viewer responds to API requests', () => {
 
 		const id = tabs.viewer()
 			.waitForText('#hello .screen-id')
+			.waitForVisible('#hello .screen-id')
 			.getText('#hello .screen-id');
 
 		return expect(id).to.eventually.equal('12345')
@@ -44,9 +45,9 @@ describe('Viewer responds to API requests', () => {
 		.click('label[for=chkscreen-12345]')
 		.click('#btnsetcontent')
 		.then(tabs.viewer)
-		.then(() => browser.waitUntil(function() {
+		.waitUntil(function() {
 			return browser.getAttribute('iframe','src').then(url => url.indexOf(myUrl) === 0);
-		}, 10000))
+		}, 19000)
 		.then(undefined, function (e) {
 
 			// show browser console.logs
