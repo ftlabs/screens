@@ -3,26 +3,29 @@
 
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const logs = require('./lib/logs.js')(browser);
-const api = require('./lib/adminapi.js')('http://localhost:3010');
+const logs = require('./lib/logs')(browser);
+const tabs = require('./lib/tabs')(browser);
 
 chai.use(chaiAsPromised);
 
 const expect = chai.expect;
 
 describe('Viewer responds to API requests', () => {
+
 	it('gets an ID', function () {
 
-		const id = browser
-			.url('/')
+		const id = tabs.viewer()
+			.waitForExist('#hello .screen-id')
 			.waitForText('#hello .screen-id')
 			.getText('#hello .screen-id');
 
-		return expect(id).to.eventually.equal('12345').then(undefined, function (e) {
+		return expect(id).to.eventually.equal('12345')
+		.then(undefined, function (e) {
 
 			// show browser console.logs
-			logs();
-			throw e;
+			return logs().then(function () {
+				throw e;
+			});
 		});
 	});
 
@@ -33,18 +36,20 @@ describe('Viewer responds to API requests', () => {
 	* Add a url to a screen it should now show the new url
 	*/
 	it('can have a url assigned', function () {
-		return api.loadUrl(12345, 'http://ft.com')
-			.then(() => browser.waitUntil(function() {
-				return browser.getAttribute('iframe','src').then(function(url) {
-					return url === 'http://ft.com';
-				});
-			}))
-			.then(undefined, function (e) {
+		this.timeout(20000);
+		const title = tabs.admin()
+			.waitForText('h1.o-header__title')
+			.getText('h1.o-header__title');
+		
+		return expect(title).to.eventually.equal('FT Screens')
+		.then(undefined, function (e) {
 
-				// show browser console.logs
-				logs();
+			// show browser console.logs
+			return logs().then(function () {
 				throw e;
 			});
+		});;
+
 	});
 
 	/**
