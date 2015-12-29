@@ -1,5 +1,5 @@
 'use strict';
-/*global describe, it, browser*/
+/*global describe, it, browser, xit*/
 
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
@@ -12,7 +12,7 @@ const expect = chai.expect;
 
 describe('Viewer responds to API requests', () => {
 
-	it('gets an ID', function () {
+	xit('gets an ID', function () {
 
 		const id = tabs.viewer()
 			.waitForText('#hello .screen-id')
@@ -35,7 +35,7 @@ describe('Viewer responds to API requests', () => {
 	*
 	* Add a url to a screen it should now show the new url
 	*/
-	it('can have a url assigned', function () {
+	xit('can have a url assigned', function () {
 		this.timeout(20000);
 		const myUrl = 'http://example.com';
 
@@ -69,7 +69,7 @@ describe('Viewer responds to API requests', () => {
 	*
 	* Add a url to a screen it should now be the new url, after 60s it should be removed
 	*/
-	it('removes a url after a specified amount of time', function () {
+	xit('removes a url after a specified amount of time', function () {
 		this.timeout(120000);
 		const testWebsite = 'http://httpstat.us/200';
 
