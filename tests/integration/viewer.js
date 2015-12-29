@@ -65,14 +65,49 @@ describe('Viewer responds to API requests', () => {
 	*/
 
 	/**
-	* Load another Url to the screen this should expire after 30s
+	* Load Url to the screen that expires after 60s
 	*
-	* Add a url to a screen it should now be the new url, after 30s it should expire back to the previous url
+	* Add a url to a screen it should now be the new url, after 60s it should be removed
 	*/
+	it('removes a url after a specified amount of time', function () {
+		this.timeout(120000);
+		const testWebsite = 'http://httpstat.us/200';
+
+		return tabs.admin()
+		.setValue('#txturl', testWebsite)
+		.waitForExist('label[for=chkscreen-12345]')
+		.click('label[for=chkscreen-12345]')
+		.click('#btnsetcontent')
+		.then(tabs.viewer)
+		.waitUntil(function () {
+			return browser.getAttribute('iframe','src').then(function (url) {
+				return url === testWebsite;
+			});
+		})
+		.waitUntil(function () {
+			return new Promise(function (resolve) {
+				setTimeout(function () {
+					resolve(true);
+				}, 61000);
+			})
+		}, 62000)
+		.waitUntil(function() {
+			return browser.getAttribute('iframe','src').then(function (url) {
+				return url !== testWebsite;
+			});
+		})
+		.then(undefined, function (e) {
+
+			// show browser console.logs
+			return logs().then(function () {
+				throw e;
+			});
+		});
+	});
 
 	/**
 	* Load another Url to the screen this scheduled for the turn of the next minute
-	* 
+	*
 	* Add a url to a screen it should not change until the minute ticks over
 	*/
 
@@ -84,7 +119,7 @@ describe('Viewer responds to API requests', () => {
 
 	/**
 	* Clear all Urls
-	* 
+	*
 	* It should hide the iframe or display the empty-screen generator
 	 */
 });
