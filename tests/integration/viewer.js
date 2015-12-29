@@ -1,5 +1,5 @@
 'use strict';
-/*global describe, it, browser, xit*/
+/*global describe, it, browser, xit, document*/
 
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
@@ -9,6 +9,19 @@ const tabs = require('./lib/tabs')(browser);
 chai.use(chaiAsPromised);
 
 const expect = chai.expect;
+
+function setDateTimeValue (selector, value) {
+	return browser.elements(selector).then(function(res) {
+		const self = browser;
+		const elementIdValueCommands = res.value.map(function(elem) {
+			return self.elementIdValue(elem.ELEMENT, String(value));
+		});
+
+		return this.unify(elementIdValueCommands, {
+			extractValue: true
+		});
+	});
+}
 
 describe('Viewer responds to API requests', () => {
 
@@ -106,10 +119,49 @@ describe('Viewer responds to API requests', () => {
 	});
 
 	/**
-	* Load another Url to the screen this scheduled for the turn of the next minute
+	* Load another Url to the screen this scheduled for the minute after next
 	*
 	* Add a url to a screen it should not change until the minute ticks over
 	*/
+	it('removes a url after a specified amount of time', function () {
+		const testWebsite = 'http://httpstat.us/200';
+		const now = new Date()
+		const hours = now.getHours();
+		const minutes = now.getMinutes();
+		const scheduledTime = hours + ':' + (minutes + 2);
+
+		this.timeout(190000);
+
+		return tabs.admin()
+		.setValue('#txturl', testWebsite)
+		.waitForExist('label[for=chkscreen-12345]')
+		.click('label[for=chkscreen-12345]')
+		.then(function () {
+			return setDateTimeValue('#time', scheduledTime);
+		})
+		.execute(function() {
+			document.getElementById('selurlduration').value = -1;
+		})
+		.click('#btnsetcontent')
+		.then(tabs.viewer)
+		.waitUntil(function () {
+			return browser.getAttribute('iframe','src').then(function (url) {
+				return url !== testWebsite;
+			});
+		})
+		.waitUntil(function() {
+			return browser.getAttribute('iframe','src').then(function (url) {
+				return url === testWebsite;
+			});
+		}, 180000)
+		.then(undefined, function (e) {
+
+			// show browser console.logs
+			return logs().then(function () {
+				throw e;
+			});
+		});
+	});
 
 	/**
 	* Load another Url to the screen wait a bit then remove it
