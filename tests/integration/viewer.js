@@ -37,7 +37,7 @@ describe('Viewer responds to API requests', () => {
 	*/
 	it('can have a url assigned', function () {
 		this.timeout(20000);
-		const myUrl = 'https://ada.is';
+		const myUrl = 'http://example.com';
 
 		return tabs.admin()
 		.setValue('#txturl', myUrl)
