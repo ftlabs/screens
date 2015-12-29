@@ -22,8 +22,6 @@ function pointOutTroubleMakers(){
 
 		const link = activeLink.getAttribute('href');
 
-		debugger;
-
 		troubleURLS.forEach(function(url){
 			if(url === link){
 				activeLink.setAttribute('data-troublesome-url', 'true');
