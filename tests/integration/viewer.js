@@ -26,6 +26,42 @@ function setDateTimeValue (selector, value) {
 	});
 }
 
+
+// go to the admin page set a url
+function addItem(url, duration) {
+
+	// 0 or undefined are not valid durations
+	duration = duration || 60;
+
+	return tabs.admin()
+		.waitForExist('label[for=chkscreen-12345]')
+		.isSelected('#chkscreen-12345')
+		.then(tick => {
+			if (!tick) return browser.click('label[for=chkscreen-12345]');
+		})
+		.click(`#selurlduration option[value="${duration}"]`)
+		.setValue('#txturl', url)
+		.click('#btnsetcontent');
+}
+
+// go to the admin page pop off the top of the queue
+function popItem() {
+	const xSelector = '.queue li:first-child .action-remove';
+
+	return tabs.admin()
+		.waitForExist(xSelector)
+		.click(xSelector);
+}
+
+function printLogOnError(e) {
+
+	// show browser console.logs
+	return logs()
+	.then(function () {
+		throw e;
+	});
+}
+
 describe('Viewer responds to API requests', () => {
 
 	before('Start a http server with some test pages in it', function() {
@@ -44,13 +80,7 @@ describe('Viewer responds to API requests', () => {
 			.getText('#hello .screen-id');
 
 		return expect(id).to.eventually.equal('12345')
-		.then(undefined, function (e) {
-
-			// show browser console.logs
-			return logs().then(function () {
-				throw e;
-			});
-		});
+		.then(undefined, printLogOnError);
 	});
 
 
@@ -63,15 +93,7 @@ describe('Viewer responds to API requests', () => {
 
 	it('can have a url assigned', function () {
 
-		return tabs.admin()
-			.waitForExist('label[for=chkscreen-12345]')
-			.isSelected('#chkscreen-12345')
-			.then(tick => {
-				if (!tick) return browser.click('label[for=chkscreen-12345]');
-			})
-			.setValue('#txturl', initialUrl)
-			.click('#selurlduration option[value="-1"]')
-			.click('#btnsetcontent')
+		return addItem(initialUrl, -1)
 			.then(tabs.viewer)
 			.waitUntil(function() {
 
@@ -79,14 +101,7 @@ describe('Viewer responds to API requests', () => {
 				return browser.getAttribute('iframe','src')
 				.then(url => url.indexOf(initialUrl) === 0);
 			}, 9000) // default timeout is 500ms
-			.then(undefined, function (e) {
-
-				// show browser console.logs
-				return logs().then(function () {
-					throw e;
-				});
-			})
-		;
+			.then(undefined, printLogOnError);
 	});
 
 
@@ -95,16 +110,9 @@ describe('Viewer responds to API requests', () => {
 	 */
 
 	it('Can add a url which has an empty response', function () {
-		const emptyResponseUrl = 'http://localhost:3011/emptyresponse'
-		const xSelector = '.queue li:first-child .action-remove'; // For removing itself
-		return tabs.admin()
-			.waitForExist('label[for=chkscreen-12345]')
-			.isSelected('#chkscreen-12345')
-			.then(tick => {
-				if (!tick) return browser.click('label[for=chkscreen-12345]');
-			})
-			.setValue('#txturl', emptyResponseUrl)
-			.click('#btnsetcontent')
+
+		const emptyResponseUrl = 'http://localhost:3011/emptyresponse';
+		return addItem(emptyResponseUrl)
 			.then(tabs.viewer)
 			.waitUntil(function() {
 
@@ -112,18 +120,28 @@ describe('Viewer responds to API requests', () => {
 				return browser.getAttribute('iframe','src')
 				.then(url => url.indexOf(emptyResponseUrl) === 0);
 			}, 30000) // default timeout is 500ms
-			.then(tabs.admin)
-			.waitForExist(xSelector)
-			.click(xSelector)
-			.then(tabs.viewer)
-			.then(undefined, function (e) {
+			.then(popItem)
+			.then(undefined, printLogOnError);
+	});
 
-				// show browser console.logs
-				return logs().then(function () {
-					throw e;
-				});
-			})
-		;
+
+	/**
+	 * Can correctly idenitify an image
+	 */
+
+	it('Can add an image url assigned and correctly changes it', function () {
+		const imageGeneratorUrl = 'http://localhost:3010/generators/image/?https%3A%2F%2Fimage.webservices.ft.com%2Fv1%2Fimages%2Fraw%2F';
+		const imageResponseUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Small_bird_perching_on_a_branch.jpg/512px-Small_bird_perching_on_a_branch.jpg';
+		return addItem(imageResponseUrl)
+			.then(tabs.viewer)
+			.waitUntil(function() {
+
+				// wait for the iframe's url to change
+				return browser.getAttribute('iframe','src')
+				.then(url => url.indexOf(imageGeneratorUrl) === 0);
+			}, 30000) // default timeout is 500ms
+			.then(popItem)
+			.then(undefined, printLogOnError);
 	});
 
 
@@ -141,14 +159,7 @@ describe('Viewer responds to API requests', () => {
 		let startTime;
 		const testWebsite = 'http://httpstat.us/200';
 
-		return tabs.admin()
-		.waitForExist('label[for=chkscreen-12345]')
-		.isSelected('#chkscreen-12345').then(tick => {
-			if (!tick) return browser.click('label[for=chkscreen-12345]');
-		})
-		.setValue('#txturl', testWebsite)
-		.click('#selurlduration option[value="60"]')
-		.click('#btnsetcontent')
+		return addItem(testWebsite)
 		.then(tabs.viewer)
 		.waitUntil(function () {
 
@@ -167,7 +178,7 @@ describe('Viewer responds to API requests', () => {
 
 		}, 69000) // default timeout is 500ms
 		.then(function () {
-			if (Date.now() - startTime < 50000) {
+			if (Date.now() - startTime < 59000) {
 				throw Error('The website expired too quickly!');
 			}
 		})
