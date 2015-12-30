@@ -10,7 +10,7 @@
 			{{#if items}}
 			<ol class='queue'>
 				{{#items}}
-				<li>
+				<li data-url="{{{url}}}">
 					<span class="item-info-url">
 						<a class='screen-page {{#if active}}active{{/if}}' href='{{{url}}}' data-date-time-schedule='{{dateTimeSchedule}}' {{#if expires}}data-expires='{{expires}}'{{/if}} ><p>{{htmltitle url}}</p></a>
 					</span>
