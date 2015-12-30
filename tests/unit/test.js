@@ -1,5 +1,6 @@
 'use strict'; //eslint-disable-line strict
 /* global describe, it, before */
+
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const mockery = require('mockery');
@@ -22,7 +23,7 @@ describe('Detecting a Youtube URL and transform it into a generator URL', functi
 		mockery.enable({
 			useCleanCache: true
 		});
-		transform = require('../server/urls');
+		transform = require('../../server/urls');
 	});
 
 	it('Should detect a Youtube video URL and create a URL to the Youtube generator specifying that it\'s a video', function(done){

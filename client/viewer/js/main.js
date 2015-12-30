@@ -10,9 +10,10 @@ function viewerIsRunningInElectron() {
 }
 
 // Called by the script loader once the page has loaded
-window.screensInit = function() {
+window.screensInit = function screensInit() {
 
 	const viewer = new Viewer(host);
+
 	const DOM = {
 		container: document.getElementById('container'),
 		Iframe : document.querySelector('iframe'),
@@ -97,6 +98,7 @@ if (document.readyState === 'interactive' || document.readyState === 'complete')
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+
 	// Dispatch a custom event that will tell all required modules to initialise
 	document.dispatchEvent(new CustomEvent('o.DOMContentLoaded'));
 });

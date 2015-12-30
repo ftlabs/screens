@@ -1,4 +1,4 @@
-/* global process, console */
+/* global process */
 
 'use strict'; //eslint-disable-line strict
 const router = require('express').Router(); // eslint-disable-line new-cap
@@ -10,30 +10,18 @@ const transform = require('../urls');
 const transformedUrls = {};
 const log = require('../log');
 const pages = require('../pages');
-const curry = require('lodash').curry;
-
-// createJsonResponse :: Response-object -> Int -> Boolean -> Object -> IO
-function createJsonResponse (res, statusCode, success, data){
-  res.status(statusCode)
-  .json({
-    success,
-    data,
-    statusCode: code
-  });
-}
-
-const response = curry(createJsonResponse);
+const auth = require('../middleware/auth');
 
 function checkIsViewable(url){
 
 	return new Promise(function(resolve, reject){
 
 		request({
-		    method: 'head',
-		    uri: url
-		}, function(err, res, body){
+			method: 'head',
+			uri: url
+		}, function(err, res){
 
-			console.log(res.headers);
+			debug(res.headers);
 
 			if(err){
 				reject(err);
@@ -57,10 +45,10 @@ function checkIsViewable(url){
 function cachedTransform( url, host ){
 	let promise;
 	if (url in transformedUrls) {
-		console.log('cachedTransform: cache hit: url=', url);
+		debug('cachedTransform: cache hit: url=', url);
 		promise = Promise.resolve( transformedUrls[url] );
 	} else {
-		console.log('cachedTransform: cache miss: url=', url);
+		debug('cachedTransform: cache miss: url=', url);
 		promise = transform( url, host)
 			.then(function(transformedUrl){
 				transformedUrls[url] = transformedUrl;
@@ -116,13 +104,14 @@ router.get('/transformUrl/:url', function(req, res){
 	;
 });
 
+router.post('*', auth);
 router.post('*', function (req, res, next) {
-	if (!req.cookies.s3o_username) return res.status(403).send("Not logged in.");
+	if (!req.cookies.s3o_username) return res.status(403).send('Not logged in.');
 	next();
 });
 
-router.post('/addUrl', function(req, res, next) {
-	if (!req.body.url) return res.status(400).send("Missing url");
+router.post('/addUrl', function(req, res) {
+	if (!req.body.url) return res.status(400).send('Missing url');
 
 	cachedTransform(req.body.url, req.get('host'))
 		.then(function(url){
@@ -135,11 +124,26 @@ router.post('/addUrl', function(req, res, next) {
 
 			// if dateTimeSchedule is not set have it expire after a certain amount of time
 			// if the client or server time is incorrect then this will be wrong.
-			screens.pushItem(ids, {
+			let expires;
+			if (dur !== -1) {
+				if (req.body.dateTimeSchedule) {
+					expires = moment(dateTimeSchedule, 'x');
+				} else {
+					expires = (moment()).add(dur, 'seconds').valueOf();
+				}
+			}
+
+			const content = {
 				url,
-				expires: (dur !== -1) ? (req.body.dateTimeSchedule ? moment(dateTimeSchedule, 'x') : moment()).add(dur, 'seconds').valueOf() : undefined,
-				dateTimeSchedule: dateTimeSchedule
-			});
+				expires,
+				dateTimeSchedule
+			};
+
+			debug('url:', url);
+			debug('scheduled:', new Date(moment(dateTimeSchedule, 'x').valueOf()))
+			debug('expires:', new Date(expires));
+
+			screens.pushItem(ids, content);
 
 			const title = pages(url).getTitle();
 
@@ -163,12 +167,12 @@ router.post('/addUrl', function(req, res, next) {
 						viewable : isViewable
 					});
 				})
-				.catch(err => {
+				.catch(() => {
 					res.json(true);
 				})
 			;
 
-		})
+		}).catch(e => debug(e.message || e));
 	;
 
 });
@@ -187,7 +191,7 @@ router.post('/clear', function(req, res) {
 	res.json(true);
 });
 
-router.post('/rename', function(req, res, next) {
+router.post('/rename', function(req, res) {
 	const name = req.body.name;
 	const id = getScreenIDsForRequest(req);
 	const screen = screens.get(id)[0];
@@ -206,7 +210,7 @@ router.post('/rename', function(req, res, next) {
 	res.json(true);
 });
 
-router.post('/remove', function(req, res, next) {
+router.post('/remove', function(req, res) {
 
 	const oldUrl = screens.get(req.body.screen)[0].items[req.body.idx].url;
 	log.logApi({
