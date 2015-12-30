@@ -1,10 +1,11 @@
 'use strict';
-/*global describe, it, browser, xit, document*/
+/*global describe, it, browser, before*/
 
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const logs = require('./lib/logs')(browser);
 const tabs = require('./lib/tabs')(browser);
+const express = require('express');
 
 chai.use(chaiAsPromised);
 
@@ -26,6 +27,12 @@ function setDateTimeValue (selector, value) {
 }
 
 describe('Viewer responds to API requests', () => {
+
+	before('Start a http server with some test pages in it', function() {
+		const testWebsiteServer = express();
+		testWebsiteServer.get('/emptyresponse', (req,res) => res.status(200).end());
+		testWebsiteServer.listen(3011);
+	});
 
 	const initialUrl = 'http://example.com/';
 
@@ -56,7 +63,7 @@ describe('Viewer responds to API requests', () => {
 
 	it('can have a url assigned', function () {
 
-		const url = tabs.admin()
+		return tabs.admin()
 			.waitForExist('label[for=chkscreen-12345]')
 			.isSelected('#chkscreen-12345')
 			.then(tick => {
@@ -72,18 +79,53 @@ describe('Viewer responds to API requests', () => {
 				return browser.getAttribute('iframe','src')
 				.then(url => url.indexOf(initialUrl) === 0);
 			}, 9000) // default timeout is 500ms
-			.getAttribute('iframe', 'src');
+			.then(undefined, function (e) {
 
-		return expect(url).to.eventually.equal(initialUrl)
-		.then(undefined, function (e) {
-
-			// show browser console.logs
-			return logs().then(function () {
-				throw e;
-			});
-		});
-
+				// show browser console.logs
+				return logs().then(function () {
+					throw e;
+				});
+			})
+		;
 	});
+
+
+	/**
+	 * Can add a url which has an empty response
+	 */
+
+	it('Can add a url which has an empty response', function () {
+		const emptyResponseUrl = 'http://localhost:3011/emptyresponse'
+		const xSelector = '.queue li:first-child .action-remove'; // For removing itself
+		return tabs.admin()
+			.waitForExist('label[for=chkscreen-12345]')
+			.isSelected('#chkscreen-12345')
+			.then(tick => {
+				if (!tick) return browser.click('label[for=chkscreen-12345]');
+			})
+			.setValue('#txturl', emptyResponseUrl)
+			.click('#btnsetcontent')
+			.then(tabs.viewer)
+			.waitUntil(function() {
+
+				// wait for the iframe's url to change
+				return browser.getAttribute('iframe','src')
+				.then(url => url.indexOf(emptyResponseUrl) === 0);
+			}, 30000) // default timeout is 500ms
+			.then(tabs.admin)
+			.waitForExist(xSelector)
+			.click(xSelector)
+			.then(tabs.viewer)
+			.then(undefined, function (e) {
+
+				// show browser console.logs
+				return logs().then(function () {
+					throw e;
+				});
+			})
+		;
+	});
+
 
 	/**
 	* Load another Url to the screen that expires after 60s

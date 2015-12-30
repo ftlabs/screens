@@ -20,8 +20,8 @@ function isImage(url){
 	return new Promise(function(resolve, reject){
 		request(url, {timeout: RESPONSE_TIMEOUT})
 			.on('response', function(res){
+				res.on('end', () => reject('No data in response'));
 				res.destroy();
-				res.on('close', () => reject('No data in response'));
 			})
 			.on('data', function(chunk) {
 				const imageMimeType = imageType(chunk) ? imageType(chunk).mime : '';
