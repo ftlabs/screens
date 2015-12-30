@@ -59,7 +59,9 @@ describe('Viewer responds to API requests', () => {
 		const url = tabs.admin()
 			.waitForExist('label[for=chkscreen-12345]')
 			.isSelected('#chkscreen-12345')
-			.then(tick => tick || browser.click('label[for=chkscreen-12345]'))
+			.then(tick => {
+				if (!tick) return browser.click('label[for=chkscreen-12345]');
+			})
 			.setValue('#txturl', initialUrl)
 			.click('#selurlduration option[value="-1"]')
 			.click('#btnsetcontent')
@@ -99,7 +101,9 @@ describe('Viewer responds to API requests', () => {
 
 		return tabs.admin()
 		.waitForExist('label[for=chkscreen-12345]')
-		.isSelected('#chkscreen-12345').then(tick => tick || browser.click('label[for=chkscreen-12345]'))
+		.isSelected('#chkscreen-12345').then(tick => {
+			if (!tick) return browser.click('label[for=chkscreen-12345]');
+		})
 		.setValue('#txturl', testWebsite)
 		.click('#selurlduration option[value="60"]')
 		.click('#btnsetcontent')
@@ -152,7 +156,9 @@ describe('Viewer responds to API requests', () => {
 		const url = tabs.admin()
 		.setValue('#txturl', testWebsite)
 		.waitForExist('label[for=chkscreen-12345]')
-		.isSelected('#chkscreen-12345').then(tick => tick || browser.click('label[for=chkscreen-12345]'))
+		.isSelected('#chkscreen-12345').then(tick => {
+			if (!tick) return browser.click('label[for=chkscreen-12345]');
+		})
 		.then(function () {
 			return setDateTimeValue('#time', scheduledTime);
 		})
@@ -185,7 +191,7 @@ describe('Viewer responds to API requests', () => {
 
 		this.timeout(60000);
 
-		const content = tabs.admin()
+		return tabs.admin()
 		.waitForExist(xSelector)
 		.click(xSelector)
 		.then(tabs.viewer)
