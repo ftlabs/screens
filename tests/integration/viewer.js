@@ -171,6 +171,10 @@ describe('Viewer responds to API requests', () => {
 		}, 180000)
 		.getAttribute('iframe', 'src');
 
+		url.then((url) => {
+			console.log(scheduledTime, url, testWebsite)
+		})
+
 		return expect(url).to.eventually.equal(testWebsite)
 		.then(undefined, function (e) {
 
