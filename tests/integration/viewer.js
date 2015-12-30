@@ -25,7 +25,7 @@ function setDateTimeValue (selector, value) {
 
 describe('Viewer responds to API requests', () => {
 
-	xit('gets an ID', function () {
+	it('gets an ID', function () {
 
 		const id = tabs.viewer()
 			.waitForText('#hello .screen-id')
@@ -48,9 +48,9 @@ describe('Viewer responds to API requests', () => {
 	*
 	* Add a url to a screen it should now show the new url
 	*/
-	xit('can have a url assigned', function () {
+	it('can have a url assigned', function () {
 		this.timeout(20000);
-		const myUrl = 'http://example.com';
+		const myUrl = 'http://example.com/';
 
 		const url = tabs.admin()
 			.setValue('#txturl', myUrl)
@@ -85,7 +85,7 @@ describe('Viewer responds to API requests', () => {
 	*
 	* Add a url to a screen it should now be the new url, after 60s it should be removed
 	*/
-	xit('removes a url after a specified amount of time', function () {
+	it('removes a url after a specified amount of time', function () {
 		this.timeout(120000);
 		const testWebsite = 'http://httpstat.us/200';
 
@@ -118,7 +118,7 @@ describe('Viewer responds to API requests', () => {
 		}, 62000)
 		.waitUntil(function() {
 			return browser.getAttribute('iframe','src');
-		})
+		}, 19000)
 		.getAttribute('iframe', 'src');
 
 		return expect(noUrl).to.eventually.not.equal(testWebsite)
@@ -136,7 +136,7 @@ describe('Viewer responds to API requests', () => {
 	*
 	* Add a url to a screen it should not change until the minute ticks over
 	*/
-	xit('removes a url after a specified amount of time', function () {
+	it('removes a url after a specified amount of time', function () {
 		const testWebsite = 'http://httpstat.us/200';
 		const now = new Date()
 		const hours = now.getHours();
@@ -180,7 +180,7 @@ describe('Viewer responds to API requests', () => {
 	*
 	*/
 	it('removes a url via the admin panel', function () {
-		const testWebsite = 'http://example.com/';
+		const testWebsite = 'http://example.com/?1';
 
 		this.timeout(60000);
 
