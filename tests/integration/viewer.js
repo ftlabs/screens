@@ -52,15 +52,18 @@ describe('Viewer responds to API requests', () => {
 		this.timeout(20000);
 		const myUrl = 'http://example.com';
 
-		return tabs.admin()
-		.setValue('#txturl', myUrl)
-		.waitForExist('label[for=chkscreen-12345]')
-		.click('label[for=chkscreen-12345]')
-		.click('#btnsetcontent')
-		.then(tabs.viewer)
-		.waitUntil(function() {
-			return browser.getAttribute('iframe','src').then(url => url.indexOf(myUrl) === 0);
-		}, 19000)
+		const url = tabs.admin()
+			.setValue('#txturl', myUrl)
+			.waitForExist('label[for=chkscreen-12345]')
+			.click('label[for=chkscreen-12345]')
+			.click('#btnsetcontent')
+			.then(tabs.viewer)
+			.waitUntil(function() {
+				return browser.getAttribute('iframe','src').then(url => url.indexOf(myUrl) === 0);
+			}, 19000)
+			.getAttribute('iframe', 'src');
+
+		return expect(url).to.eventually.equal(myUrl)
 		.then(undefined, function (e) {
 
 			// show browser console.logs
@@ -86,18 +89,27 @@ describe('Viewer responds to API requests', () => {
 		this.timeout(120000);
 		const testWebsite = 'http://httpstat.us/200';
 
-		return tabs.admin()
+		const url = tabs.admin()
 		.setValue('#txturl', testWebsite)
 		.waitForExist('label[for=chkscreen-12345]')
 		.click('label[for=chkscreen-12345]')
 		.click('#btnsetcontent')
 		.then(tabs.viewer)
 		.waitUntil(function () {
-			return browser.getAttribute('iframe','src').then(function (url) {
-				return url === testWebsite;
-			});
+			return browser.getAttribute('iframe','src');
 		})
-		.waitUntil(function () {
+		.getAttribute('iframe', 'src');
+
+		expect(url).to.eventually.equal(testWebsite)
+		.then(undefined, function (e) {
+
+			// show browser console.logs
+			return logs().then(function () {
+				throw e;
+			});
+		});
+
+		const noUrl = url.waitUntil(function () {
 			return new Promise(function (resolve) {
 				setTimeout(function () {
 					resolve(true);
@@ -105,10 +117,11 @@ describe('Viewer responds to API requests', () => {
 			})
 		}, 62000)
 		.waitUntil(function() {
-			return browser.getAttribute('iframe','src').then(function (url) {
-				return url !== testWebsite;
-			});
+			return browser.getAttribute('iframe','src');
 		})
+		.getAttribute('iframe', 'src');
+
+		return expect(noUrl).to.eventually.not.equal(testWebsite)
 		.then(undefined, function (e) {
 
 			// show browser console.logs
@@ -123,7 +136,7 @@ describe('Viewer responds to API requests', () => {
 	*
 	* Add a url to a screen it should not change until the minute ticks over
 	*/
-	it('removes a url after a specified amount of time', function () {
+	xit('removes a url after a specified amount of time', function () {
 		const testWebsite = 'http://httpstat.us/200';
 		const now = new Date()
 		const hours = now.getHours();
@@ -132,7 +145,7 @@ describe('Viewer responds to API requests', () => {
 
 		this.timeout(190000);
 
-		return tabs.admin()
+		const url = tabs.admin()
 		.setValue('#txturl', testWebsite)
 		.waitForExist('label[for=chkscreen-12345]')
 		.click('label[for=chkscreen-12345]')
@@ -145,15 +158,14 @@ describe('Viewer responds to API requests', () => {
 		.click('#btnsetcontent')
 		.then(tabs.viewer)
 		.waitUntil(function () {
-			return browser.getAttribute('iframe','src').then(function (url) {
-				return url !== testWebsite;
-			});
+			return browser.getAttribute('iframe','src');
 		})
 		.waitUntil(function() {
-			return browser.getAttribute('iframe','src').then(function (url) {
-				return url === testWebsite;
-			});
+			return browser.getAttribute('iframe','src');
 		}, 180000)
+		.getAttribute('iframe', 'src');
+
+		return expect(url).to.eventually.not.equal(testWebsite)
 		.then(undefined, function (e) {
 
 			// show browser console.logs
