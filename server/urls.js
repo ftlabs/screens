@@ -21,7 +21,7 @@ function isImage(url){
 		request(url, {timeout: RESPONSE_TIMEOUT})
 			.on('response', function(res){
 				res.destroy();
-				reject('No data in response');
+				res.on('close', () => reject('No data in response'));
 			})
 			.on('data', function(chunk) {
 				const imageMimeType = imageType(chunk) ? imageType(chunk).mime : '';
