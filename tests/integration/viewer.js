@@ -177,38 +177,25 @@ describe('Viewer responds to API requests', () => {
 	});
 
 	/**
-	* Load Url to the screen then remove it via admin panel
-	*
+	* Remove the previusly added url
 	*/
 
-	xit('removes a url via the admin panel', function () {
-		const testWebsite = 'http://example.com/?1';
+	it('removes a url via the admin panel', function () {
+		const xSelector = '.queue li:first-child .action-remove';
 
 		this.timeout(60000);
 
 		const content = tabs.admin()
-		.setValue('#txturl', testWebsite)
-		.waitForExist('label[for=chkscreen-12345]', 10000)
-		.isSelected('#chkscreen-12345').then(tick => tick || browser.click('label[for=chkscreen-12345]'))
-		.click('#btnsetcontent')
+		.waitForExist(xSelector)
+		.click(xSelector)
 		.then(tabs.viewer)
 		.waitUntil(function() {
-			return browser.getAttribute('iframe','src').then(function (url) {
-				return url === testWebsite;
-			});
-		}, 10000)
-		.then(tabs.admin)
-		.waitForExist('.action-remove', 10000)
-		.execute(function() {
-			return document.querySelector('.action-remove').click();
-		})
-		.then(tabs.viewer)
-		.waitUntil(function() {
-			return browser.getAttribute('iframe','src');
-		}, 10000)
-		.getAttribute('iframe', 'src');
 
-		return expect(content).to.eventually.not.equal(testWebsite)
+			// Wait for the iframe's src url to change
+			return browser.getAttribute('iframe','src')
+			.then(url => url.indexOf(initialUrl) === 0);
+
+		}, 5000)
 		.then(undefined, function (e) {
 
 			// show browser console.logs
