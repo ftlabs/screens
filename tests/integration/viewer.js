@@ -27,8 +27,6 @@ function setDateTimeValue (selector, value) {
 
 describe('Viewer responds to API requests', () => {
 
-	const initialUrl = 'http://example.com/';
-
 	it('gets an ID', function () {
 
 		const id = tabs.viewer()
@@ -55,6 +53,7 @@ describe('Viewer responds to API requests', () => {
 	*/
 
 	it('can have a url assigned', function () {
+		const initialUrl = 'http://example.com/';
 
 		const url = tabs.admin()
 			.waitForExist('label[for=chkscreen-12345]')
@@ -114,14 +113,14 @@ describe('Viewer responds to API requests', () => {
 
 			// Wait for the iframe's src url to change
 			return browser.getAttribute('iframe','src')
-			.then(url => url.indexOf(testWebsite) === 0);
+			.then(url => url === testWebsite);
 
 		}, 9000) // default timeout is 500ms
 		.waitUntil(function () {
 
 			// Wait for the iframe's src url to change
 			return browser.getAttribute('iframe','src')
-			.then(url => url.indexOf(initialUrl) === 0);
+			.then(url => url !== testWebsite);
 
 		}, 69000) // default timeout is 500ms
 		.then(function () {
@@ -167,7 +166,6 @@ describe('Viewer responds to API requests', () => {
 		.then(tabs.viewer)
 		.waitUntil(function () {
 			return browser.getAttribute('iframe','src').then(url => {
-				console.log(url, testWebsite);
 				return url === testWebsite;
 			});
 		}, 180000)
@@ -200,7 +198,7 @@ describe('Viewer responds to API requests', () => {
 
 			// Wait for the iframe's src url to change
 			return browser.getAttribute('iframe','src')
-			.then(url => url.indexOf(initialUrl) === 0);
+			.then(url => url !== 'http://httpstat.us/200');
 
 		}, 5000)
 		.then(undefined, function (e) {
@@ -253,9 +251,6 @@ describe('Viewer responds to API requests', () => {
 				return url === emptyScreenWebsite;
 			});
 		}, 20000)
-		.getAttribute('iframe', 'src');
-
-		return expect(content).to.eventually.not.equal(testWebsite)
 		.then(undefined, function (e) {
 
 			// show browser console.logs
