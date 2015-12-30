@@ -166,7 +166,6 @@ describe('Viewer responds to API requests', () => {
 		.then(tabs.viewer)
 		.waitUntil(function () {
 			return browser.getAttribute('iframe','src').then(url => {
-				console.log(scheduledTime, url, testWebsite)
 				return url === testWebsite;
 			});
 		}, 180000)
