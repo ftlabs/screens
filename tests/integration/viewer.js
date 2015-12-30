@@ -25,6 +25,8 @@ function setDateTimeValue (selector, value) {
 
 describe('Viewer responds to API requests', () => {
 
+	const initialUrl = 'http://example.com/';
+
 	it('gets an ID', function () {
 
 		const id = tabs.viewer()
@@ -51,22 +53,23 @@ describe('Viewer responds to API requests', () => {
 	*/
 
 	it('can have a url assigned', function () {
-		this.timeout(20000);
-		const myUrl = 'http://example.com/';
 
 		const url = tabs.admin()
-			.setValue('#txturl', myUrl)
-			.click('#selurlduration option[value="-1"]')
 			.waitForExist('label[for=chkscreen-12345]')
-			.click('label[for=chkscreen-12345]')
+			.isSelected('#chkscreen-12345')
+			.then(tick => tick || browser.click('label[for=chkscreen-12345]'))
+			.setValue('#txturl', initialUrl)
 			.click('#btnsetcontent')
 			.then(tabs.viewer)
 			.waitUntil(function() {
-				return browser.getAttribute('iframe','src').then(url => url.indexOf(myUrl) === 0);
-			}, 19000)
+
+				// wait for the iframe's url to change
+				return browser.getAttribute('iframe','src')
+				.then(url => url.indexOf(initialUrl) === 0);
+			}, 9000) // default timeout is 500ms
 			.getAttribute('iframe', 'src');
 
-		return expect(url).to.eventually.equal(myUrl)
+		return expect(url).to.eventually.equal(initialUrl)
 		.then(undefined, function (e) {
 
 			// show browser console.logs
@@ -87,42 +90,38 @@ describe('Viewer responds to API requests', () => {
 
 	it('removes a url after a specified amount of time', function () {
 		this.timeout(120000);
+
+		let startTime;
 		const testWebsite = 'http://httpstat.us/200';
 
 		const url = tabs.admin()
+		.waitForExist('label[for=chkscreen-12345]')
+		.isSelected('#chkscreen-12345').then(tick => tick || browser.click('label[for=chkscreen-12345]'))
 		.setValue('#txturl', testWebsite)
 		.click('#selurlduration option[value="60"]')
-		.waitForExist('label[for=chkscreen-12345]')
-		.click('label[for=chkscreen-12345]')
 		.click('#btnsetcontent')
 		.then(tabs.viewer)
 		.waitUntil(function () {
-			return browser.getAttribute('iframe','src');
+
+			// Wait for the iframe's src url to change
+			return browser.getAttribute('iframe','src')
+			.then(url => url.indexOf(testWebsite) === 0);
+
+			startTime = Date.now();
+
+		}, 9000) // default timeout is 500ms
+		.waitUntil(function () {
+
+			// Wait for the iframe's src url to change
+			return browser.getAttribute('iframe','src')
+			.then(url => url.indexOf(initialUrl) === 0);
+
+		}, 62000) // default timeout is 500ms
+		.then(function () {
+			if (Date.now() - startTime < 50000) {
+				throw Error('The website expired too quickly!');
+			}
 		})
-		.getAttribute('iframe', 'src');
-
-		expect(url).to.eventually.equal(testWebsite)
-		.then(undefined, function (e) {
-
-			// show browser console.logs
-			return logs().then(function () {
-				throw e;
-			});
-		});
-
-		const noUrl = url.waitUntil(function () {
-			return new Promise(function (resolve) {
-				setTimeout(function () {
-					resolve(true);
-				}, 61000);
-			})
-		}, 62000)
-		.waitUntil(function() {
-			return browser.getAttribute('iframe','src');
-		}, 19000)
-		.getAttribute('iframe', 'src');
-
-		return expect(noUrl).to.eventually.not.equal(testWebsite)
 		.then(undefined, function (e) {
 
 			// show browser console.logs
@@ -140,7 +139,7 @@ describe('Viewer responds to API requests', () => {
 
 	it('removes a url after a specified amount of time', function () {
 		const testWebsite = 'http://httpstat.us/200';
-		const now = new Date()
+		const now = new Date();
 		const hours = now.getHours();
 		const minutes = now.getMinutes();
 		const scheduledTime = hours + ':' + (minutes + 2);
@@ -150,7 +149,7 @@ describe('Viewer responds to API requests', () => {
 		const url = tabs.admin()
 		.setValue('#txturl', testWebsite)
 		.waitForExist('label[for=chkscreen-12345]')
-		.click('label[for=chkscreen-12345]')
+		.isSelected('#chkscreen-12345').then(tick => tick || browser.click('label[for=chkscreen-12345]'))
 		.then(function () {
 			return setDateTimeValue('#time', scheduledTime);
 		})
@@ -190,7 +189,7 @@ describe('Viewer responds to API requests', () => {
 		const content = tabs.admin()
 		.setValue('#txturl', testWebsite)
 		.waitForExist('label[for=chkscreen-12345]')
-		.click('label[for=chkscreen-12345]')
+		.isSelected('#chkscreen-12345').then(tick => tick || browser.click('label[for=chkscreen-12345]'))
 		.click('#btnsetcontent')
 		.then(tabs.viewer)
 		.waitUntil(function() {
