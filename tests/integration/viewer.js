@@ -49,12 +49,14 @@ describe('Viewer responds to API requests', () => {
 	* Add a url to a screen it should now show the new url,
 	* this should be set to not expire.
 	*/
+
 	it('can have a url assigned', function () {
 		this.timeout(20000);
 		const myUrl = 'http://example.com/';
 
 		const url = tabs.admin()
 			.setValue('#txturl', myUrl)
+			.click('#selurlduration option[value="-1"]')
 			.waitForExist('label[for=chkscreen-12345]')
 			.click('label[for=chkscreen-12345]')
 			.click('#btnsetcontent')
@@ -76,22 +78,20 @@ describe('Viewer responds to API requests', () => {
 	});
 
 	/**
-	* Load another Url to the screen
+	* Load another Url to the screen that expires after 60s
 	*
 	* Add a url to a screen it should now be the new url
+	*
+	* After 60s it should be removed
 	*/
 
-	/**
-	* Load Url to the screen that expires after 60s
-	*
-	* Add a url to a screen it should now be the new url, after 60s it should be removed
-	*/
 	it('removes a url after a specified amount of time', function () {
 		this.timeout(120000);
 		const testWebsite = 'http://httpstat.us/200';
 
 		const url = tabs.admin()
 		.setValue('#txturl', testWebsite)
+		.click('#selurlduration option[value="60"]')
 		.waitForExist('label[for=chkscreen-12345]')
 		.click('label[for=chkscreen-12345]')
 		.click('#btnsetcontent')
@@ -137,6 +137,7 @@ describe('Viewer responds to API requests', () => {
 	*
 	* Add a url to a screen it should not change until the minute ticks over
 	*/
+
 	it('removes a url after a specified amount of time', function () {
 		const testWebsite = 'http://httpstat.us/200';
 		const now = new Date()
@@ -180,6 +181,7 @@ describe('Viewer responds to API requests', () => {
 	* Load Url to the screen then remove it via admin panel
 	*
 	*/
+
 	it('removes a url via the admin panel', function () {
 		const testWebsite = 'http://example.com/?1';
 
@@ -222,7 +224,8 @@ describe('Viewer responds to API requests', () => {
 	*
 	* It should hide the iframe or display the empty-screen generator
 	*/
-	it('can clear the stack of content via admin panel', function () {
+
+	xit('can clear the stack of content via admin panel', function () {
 
 	});
 });
