@@ -144,7 +144,7 @@ describe('Viewer responds to API requests', () => {
 	*/
 
 	it('loads a url on a specified time', function () {
-		const testWebsite = 'http://httpstat.us/200';
+		const testWebsite = 'http://httpstat.us/200#3';
 		const now = new Date();
 		const hours = now.getHours();
 		const minutes = now.getMinutes();
@@ -198,7 +198,7 @@ describe('Viewer responds to API requests', () => {
 
 			// Wait for the iframe's src url to change
 			return browser.getAttribute('iframe','src')
-			.then(url => url !== 'http://httpstat.us/200');
+			.then(url => url !== 'http://httpstat.us/200#3');
 
 		}, 5000)
 		.then(undefined, function (e) {
@@ -217,7 +217,7 @@ describe('Viewer responds to API requests', () => {
 	*/
 
 	it('can clear the stack of content via admin panel', function () {
-		const testWebsite = 'http://example.com/?2';
+		const testWebsite = 'http://example.com/';
 
 		this.timeout(60000);
 
