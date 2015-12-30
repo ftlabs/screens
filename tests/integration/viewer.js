@@ -10,6 +10,8 @@ chai.use(chaiAsPromised);
 
 const expect = chai.expect;
 
+const emptyScreenWebsite = 'http://localhost:3010/generators/empty-screen?id=12345';
+
 function setDateTimeValue (selector, value) {
 	return browser.elements(selector).then(function(res) {
 		const self = browser;
@@ -222,7 +224,50 @@ describe('Viewer responds to API requests', () => {
 	* It should hide the iframe or display the empty-screen generator
 	*/
 
-	xit('can clear the stack of content via admin panel', function () {
+	it('can clear the stack of content via admin panel', function () {
+		const testWebsite = 'http://example.com/?2';
 
+		this.timeout(60000);
+
+		const content = tabs.admin()
+		.setValue('#txturl', testWebsite)
+		.waitForExist('label[for=chkscreen-12345]', 10000)
+		.isSelected('#chkscreen-12345').then(tick => {
+			if (!tick) {
+				return browser.click('label[for=chkscreen-12345]');
+			}
+		})
+		.click('#btnsetcontent')
+		.then(tabs.viewer)
+		.waitUntil(function() {
+			return browser.getAttribute('iframe','src').then(function (url) {
+				return url === testWebsite;
+			});
+		}, 10000)
+		.then(tabs.admin)
+		.isSelected('#chkscreen-12345').then(tick => {
+			if (!tick) {
+				return browser.click('label[for=chkscreen-12345]');
+			}
+		})
+		.selectByVisibleText('#selection', 'Clear')
+		.click('#btnclear')
+		.then(tabs.viewer)
+		.waitUntil(function() {
+			return browser.getAttribute('iframe','src')
+			.then(function (url) {
+				return url === emptyScreenWebsite;
+			});
+		}, 10000)
+		.getAttribute('iframe', 'src');
+
+		return expect(content).to.eventually.not.equal(testWebsite)
+		.then(undefined, function (e) {
+
+			// show browser console.logs
+			return logs().then(function () {
+				throw e;
+			});
+		});
 	});
 });
