@@ -61,8 +61,7 @@ function addItem(url, duration, scheduledTime) {
 		.then(() => console.log(`
 Setting Url: ${url}
 Duration: ${duration}
-Scheduled: ${scheduledTime}
-`))
+Scheduled: ${scheduledTime}`))
 		.click('#btnsetcontent');
 }
 
@@ -155,7 +154,7 @@ describe('Viewer responds to API requests', () => {
 	*/
 
 	it('removes a url via the admin panel', function () {
-		const testWebsite = 'http://example.com/?3';
+		const testWebsite = 'http://example.com/?1';
 
 		this.timeout(60000);
 
@@ -177,6 +176,7 @@ describe('Viewer responds to API requests', () => {
 			.then(tabs.viewer)
 			.then(() => waitForIFrameUrl(emptyResponseUrl))
 			.then(() => removeItem(emptyResponseUrl))
+			.then(() => waitForIFrameUrl(initialUrl))
 			.then(undefined, printLogOnError);
 	});
 
@@ -189,9 +189,9 @@ describe('Viewer responds to API requests', () => {
 		const imageGeneratorUrl = 'http://localhost:3010/generators/image/?https%3A%2F%2Fimage.webservices.ft.com%2Fv1%2Fimages%2Fraw%2Fhttps%253A%252F%252Fupload.wikimedia.org%252Fwikipedia%252Fcommons%252Fthumb%252F3%252F30%252FSmall_bird_perching_on_a_branch.jpg%252F512px-Small_bird_perching_on_a_branch.jpg%3Fsource%3Dscreens&title=512px-Small_bird_perching_on_a_branch.jpg';
 		const imageResponseUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Small_bird_perching_on_a_branch.jpg/512px-Small_bird_perching_on_a_branch.jpg';
 		return addItem(imageResponseUrl)
-			.then(tabs.viewer)
 			.then(() => waitForIFrameUrl(imageGeneratorUrl))
 			.then(() => removeItem(imageGeneratorUrl))
+			.then(() => waitForIFrameUrl(initialUrl))
 			.then(undefined, printLogOnError);
 	});
 
