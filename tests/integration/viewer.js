@@ -123,7 +123,7 @@ describe('Viewer responds to API requests', () => {
 			return browser.getAttribute('iframe','src')
 			.then(url => url.indexOf(initialUrl) === 0);
 
-		}, 63000) // default timeout is 500ms
+		}, 69000) // default timeout is 500ms
 		.then(function () {
 			if (Date.now() - startTime < 50000) {
 				throw Error('The website expired too quickly!');
