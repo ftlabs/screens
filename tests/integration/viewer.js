@@ -164,14 +164,52 @@ describe('Viewer responds to API requests', () => {
 	});
 
 	/**
-	* Load another Url to the screen wait a bit then remove it
+	* Load Url to the screen then remove it via admin panel
 	*
-	* It should change then go back to the previous url
 	*/
+	it('removes a url via the admin panel', function () {
+		const testWebsite = 'http://example.com/';
+
+		this.timeout(60000);
+
+		const content = tabs.admin()
+		.setValue('#txturl', testWebsite)
+		.waitForExist('label[for=chkscreen-12345]')
+		.click('label[for=chkscreen-12345]')
+		.click('#btnsetcontent')
+		.then(tabs.viewer)
+		.waitUntil(function() {
+			return browser.getAttribute('iframe','src').then(function (url) {
+				return url === testWebsite;
+			});
+		})
+		.then(tabs.admin)
+		.waitForExist('.action-remove')
+		.execute(function() {
+    	return document.querySelector('.action-remove').click();
+		})
+		.then(tabs.viewer)
+		.waitUntil(function() {
+			return browser.getAttribute('iframe','src');
+		})
+		.getAttribute('iframe', 'src');
+
+		return expect(content).to.eventually.not.equal(testWebsite)
+		.then(undefined, function (e) {
+
+			// show browser console.logs
+			return logs().then(function () {
+				throw e;
+			});
+		});
+	});
 
 	/**
 	* Clear all Urls
 	*
 	* It should hide the iframe or display the empty-screen generator
-	 */
+	*/
+	xit('can clear the stach of content via admin panel', function () {
+
+	});
 });
