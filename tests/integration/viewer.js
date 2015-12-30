@@ -137,7 +137,7 @@ describe('Viewer responds to API requests', () => {
 	* Add a url to a screen it should not change until the minute ticks over
 	*/
 
-	it('removes a url after a specified amount of time', function () {
+	it('removes a scheduled url after a specified amount of time', function () {
 		const testWebsite = 'http://httpstat.us/200';
 		const now = new Date();
 		const hours = now.getHours();
