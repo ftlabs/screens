@@ -5,7 +5,8 @@ const denodeify = require('denodeify');
 const selenium = require('selenium-standalone');
 const installSelenium = denodeify(selenium.install.bind(selenium));
 const startSeleniumServer = denodeify(selenium.start.bind(selenium));
-
+const spawn = require('child_process').spawn;
+let server;
 /*
  * Installs Selenium and starts the server, ready to control browsers
 */
@@ -111,7 +112,7 @@ exports.config = {
 	// The following are supported: dot (default), spec and xunit
 	// see also: http://webdriver.io/guide/testrunner/reporters.html
 	reporter: 'dot',
-	
+
 	// Options to be passed to Mocha.
 	// See the full list at http://mochajs.org/
 	mochaOpts: {
@@ -126,6 +127,12 @@ exports.config = {
 	//
 	// Gets executed before all workers get launched.
 	onPrepare: function() {
+		server = spawn('npm', ['start'], {
+			detached: true
+		})
+		.on('error', function (err) {
+			console.log('Failed to start child process.', err);
+		});
 		return installAndStartSelenium();
 	},
 
@@ -155,5 +162,6 @@ exports.config = {
 	// possible to defer the end of the process using a promise.
 	onComplete: function() {
 		selenium.child.kill();
+		server.kill();
 	}
 };
