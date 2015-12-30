@@ -137,7 +137,7 @@ describe('Viewer responds to API requests', () => {
 	* Add a url to a screen it should not change until the minute ticks over
 	*/
 
-	it('removes a url after a specified amount of time', function () {
+	it('loads a url on a specified time', function () {
 		const testWebsite = 'http://httpstat.us/200';
 		const now = new Date();
 		const hours = now.getHours();
@@ -153,20 +153,17 @@ describe('Viewer responds to API requests', () => {
 		.then(function () {
 			return setDateTimeValue('#time', scheduledTime);
 		})
-		.execute(function() {
-			document.getElementById('selurlduration').value = -1;
-		})
+		.selectByVisibleText('#selurlduration', 'until cancelled')
 		.click('#btnsetcontent')
 		.then(tabs.viewer)
 		.waitUntil(function () {
-			return browser.getAttribute('iframe','src');
-		})
-		.waitUntil(function() {
-			return browser.getAttribute('iframe','src');
+			return browser.getAttribute('iframe','src').then(url => {
+				return url === testWebsite;
+			});
 		}, 180000)
 		.getAttribute('iframe', 'src');
 
-		return expect(url).to.eventually.not.equal(testWebsite)
+		return expect(url).to.eventually.equal(testWebsite)
 		.then(undefined, function (e) {
 
 			// show browser console.logs
@@ -188,7 +185,7 @@ describe('Viewer responds to API requests', () => {
 
 		const content = tabs.admin()
 		.setValue('#txturl', testWebsite)
-		.waitForExist('label[for=chkscreen-12345]')
+		.waitForExist('label[for=chkscreen-12345]', 10000)
 		.isSelected('#chkscreen-12345').then(tick => tick || browser.click('label[for=chkscreen-12345]'))
 		.click('#btnsetcontent')
 		.then(tabs.viewer)
@@ -196,16 +193,16 @@ describe('Viewer responds to API requests', () => {
 			return browser.getAttribute('iframe','src').then(function (url) {
 				return url === testWebsite;
 			});
-		})
+		}, 10000)
 		.then(tabs.admin)
-		.waitForExist('.action-remove')
+		.waitForExist('.action-remove', 10000)
 		.execute(function() {
 			return document.querySelector('.action-remove').click();
 		})
 		.then(tabs.viewer)
 		.waitUntil(function() {
 			return browser.getAttribute('iframe','src');
-		})
+		}, 10000)
 		.getAttribute('iframe', 'src');
 
 		return expect(content).to.eventually.not.equal(testWebsite)
