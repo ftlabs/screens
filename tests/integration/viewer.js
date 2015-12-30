@@ -46,7 +46,8 @@ describe('Viewer responds to API requests', () => {
 	/**
 	* Load Url
 	*
-	* Add a url to a screen it should now show the new url
+	* Add a url to a screen it should now show the new url,
+	* this should be set to not expire.
 	*/
 	it('can have a url assigned', function () {
 		this.timeout(20000);
@@ -198,7 +199,7 @@ describe('Viewer responds to API requests', () => {
 		.then(tabs.admin)
 		.waitForExist('.action-remove')
 		.execute(function() {
-    	return document.querySelector('.action-remove').click();
+			return document.querySelector('.action-remove').click();
 		})
 		.then(tabs.viewer)
 		.waitUntil(function() {
@@ -221,7 +222,7 @@ describe('Viewer responds to API requests', () => {
 	*
 	* It should hide the iframe or display the empty-screen generator
 	*/
-	xit('can clear the stach of content via admin panel', function () {
+	it('can clear the stack of content via admin panel', function () {
 
 	});
 });
