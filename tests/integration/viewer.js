@@ -236,7 +236,7 @@ describe('Viewer responds to API requests', () => {
 			return browser.getAttribute('iframe','src').then(function (url) {
 				return url === testWebsite;
 			});
-		}, 10000)
+		}, 20000)
 		.then(tabs.admin)
 		.isSelected('#chkscreen-12345').then(tick => {
 			if (!tick) {
@@ -251,7 +251,7 @@ describe('Viewer responds to API requests', () => {
 			.then(function (url) {
 				return url === emptyScreenWebsite;
 			});
-		}, 10000)
+		}, 20000)
 		.getAttribute('iframe', 'src');
 
 		return expect(content).to.eventually.not.equal(testWebsite)
