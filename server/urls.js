@@ -1,9 +1,6 @@
 'use strict'; //eslint-disable-line strict
 const parseQueryString = require('query-string').parse;
-const http = require('http');
-const https = require('https');
 const imageType = require('image-type');
-const parseUrl = require('url').parse;
 const request = require('request');
 const debug = require('debug')('screens:server:urls');
 const RESPONSE_TIMEOUT = process.env.RESPONSE_TIMEOUT || 1500;
@@ -23,6 +20,7 @@ function isImage(url){
 	return new Promise(function(resolve, reject){
 		request(url, {timeout: RESPONSE_TIMEOUT})
 			.on('response', function(res){
+				res.on('end', () => reject('No data in response'));
 				res.destroy();
 			})
 			.on('data', function(chunk) {

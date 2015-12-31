@@ -1,10 +1,11 @@
 'use strict';
-/*global describe, it, browser, xit, document*/
+/*global describe, it, browser, before*/
 
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const logs = require('./lib/logs')(browser);
 const tabs = require('./lib/tabs')(browser);
+const express = require('express');
 
 chai.use(chaiAsPromised);
 
@@ -25,9 +26,103 @@ function setDateTimeValue (selector, value) {
 	});
 }
 
+function resetDateTimeValue (selector) {
+	return browser.elements(selector).then(function(res) {
+		const self = browser;
+		const elementIdValueCommands = res.value.map(function(elem) {
+			return self.elementIdValue(elem.ELEMENT, '');
+		});
+
+		return this.unify(elementIdValueCommands, {
+			extractValue: true
+		});
+	});
+}
+
+// go to the admin page set a url
+function addItem(url, duration, scheduledTime) {
+
+	// 0 or undefined are not valid durations
+	duration = duration || 60;
+
+	return tabs.admin()
+		.waitForExist('#chkscreen-12345')
+		.waitForExist('label[for=chkscreen-12345]')
+		.isSelected('#chkscreen-12345')
+		.then(tick => {
+			if (!tick) return browser.click('label[for=chkscreen-12345]');
+		})
+		.click(`#selurlduration option[value="${duration}"]`)
+		.then(function () {
+			if (scheduledTime) return setDateTimeValue('#time', scheduledTime);
+			return resetDateTimeValue('#time');
+		})
+		.setValue('#txturl', url)
+		.then(() => console.log(`
+Setting Url: ${url}
+Duration: ${duration}
+Scheduled: ${scheduledTime}`))
+		.click('#btnsetcontent');
+}
+
+// go to the admin page pop off the top of the queue
+function removeItem(url) {
+	const xSelector = `.queue li[data-url="${url}"] .action-remove`;
+
+	return tabs.admin()
+		.waitForExist(xSelector)
+		.click(xSelector);
+}
+
+function printLogOnError(e) {
+
+	// show browser console.logs
+	return logs()
+	.then(function () {
+		console.log(e.message);
+		throw e;
+	});
+}
+
+function waitForIFrameUrl(urlIn, timeout) {
+
+	let oldUrl;
+	timeout = timeout || 10000;
+
+	console.log('Waiting for iframe to become url: ' + urlIn + ', ' + timeout + ' timeout');
+
+	return tabs.
+		viewer()
+		.waitUntil(function() {
+
+			// wait for the iframe's url to change
+			return browser.getAttribute('iframe','src')
+			.then(url => {
+				oldUrl = url;
+				return url.indexOf(urlIn) === 0;
+			});
+		}, timeout) // default timeout is 
+
+		.then(undefined, e => {
+			const newMessage = `Errored waiting for url to load in iframe: ${urlIn} url was ${oldUrl}`;
+			console.log(e.message);
+			console.log(newMessage);
+			throw Error(newMessage);
+		});
+	; 
+}
+
 describe('Viewer responds to API requests', () => {
 
-	it('gets an ID', function () {
+	before('Start a http server with some test pages in it', function() {
+		const testWebsiteServer = express();
+		testWebsiteServer.get('/emptyresponse', (req,res) => res.status(200).end());
+		testWebsiteServer.listen(3011);
+	});
+
+	const initialUrl = 'http://example.com/?initial-url';
+
+	before('gets an ID', function () {
 
 		const id = tabs.viewer()
 			.waitForText('#hello .screen-id')
@@ -35,13 +130,7 @@ describe('Viewer responds to API requests', () => {
 			.getText('#hello .screen-id');
 
 		return expect(id).to.eventually.equal('12345')
-		.then(undefined, function (e) {
-
-			// show browser console.logs
-			return logs().then(function () {
-				throw e;
-			});
-		});
+		.then(undefined, printLogOnError);
 	});
 
 
@@ -49,40 +138,64 @@ describe('Viewer responds to API requests', () => {
 	* Load Url
 	*
 	* Add a url to a screen it should now show the new url,
-	* this should be set to not expire.
+	* this should be set to not expire. it'll be present through out all
+	* the test except at the end of the final test which clears all urls.
 	*/
 
 	it('can have a url assigned', function () {
 		const initialUrl = 'http://example.com/';
 
-		const url = tabs.admin()
-			.waitForExist('label[for=chkscreen-12345]')
-			.isSelected('#chkscreen-12345')
-			.then(tick => {
-				if (!tick) return browser.click('label[for=chkscreen-12345]');
-			})
-			.setValue('#txturl', initialUrl)
-			.click('#selurlduration option[value="-1"]')
-			.click('#btnsetcontent')
-			.then(tabs.viewer)
-			.waitUntil(function() {
-
-				// wait for the iframe's url to change
-				return browser.getAttribute('iframe','src')
-				.then(url => url.indexOf(initialUrl) === 0);
-			}, 9000) // default timeout is 500ms
-			.getAttribute('iframe', 'src');
-
-		return expect(url).to.eventually.equal(initialUrl)
-		.then(undefined, function (e) {
-
-			// show browser console.logs
-			return logs().then(function () {
-				throw e;
-			});
-		});
-
+		return addItem(initialUrl, -1)
+			.then(() => waitForIFrameUrl(initialUrl))
+			.then(undefined, printLogOnError);
 	});
+
+	/**
+	* Can have url removed
+	*/
+
+	it('removes a url via the admin panel', function () {
+		const testWebsite = 'http://example.com/?1';
+
+		this.timeout(60000);
+
+		return addItem(testWebsite)
+			.then(() => waitForIFrameUrl(testWebsite))
+			.then(() => removeItem(testWebsite))
+			.then(() => waitForIFrameUrl(initialUrl))
+			.then(undefined, printLogOnError);
+	});
+
+	/**
+	 * Can add a url which has an empty response
+	 */
+
+	it('Can add a url which has an empty response', function () {
+
+		const emptyResponseUrl = 'http://localhost:3011/emptyresponse';
+		return addItem(emptyResponseUrl)
+			.then(tabs.viewer)
+			.then(() => waitForIFrameUrl(emptyResponseUrl))
+			.then(() => removeItem(emptyResponseUrl))
+			.then(() => waitForIFrameUrl(initialUrl))
+			.then(undefined, printLogOnError);
+	});
+
+
+	/**
+	 * Can correctly idenitify an image
+	 */
+
+	it('Can add an image url assigned and correctly changes it', function () {
+		const imageGeneratorUrl = 'http://localhost:3010/generators/image/?https%3A%2F%2Fimage.webservices.ft.com%2Fv1%2Fimages%2Fraw%2Fhttps%253A%252F%252Fupload.wikimedia.org%252Fwikipedia%252Fcommons%252Fthumb%252F3%252F30%252FSmall_bird_perching_on_a_branch.jpg%252F512px-Small_bird_perching_on_a_branch.jpg%3Fsource%3Dscreens&title=512px-Small_bird_perching_on_a_branch.jpg';
+		const imageResponseUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Small_bird_perching_on_a_branch.jpg/512px-Small_bird_perching_on_a_branch.jpg';
+		return addItem(imageResponseUrl)
+			.then(() => waitForIFrameUrl(imageGeneratorUrl))
+			.then(() => removeItem(imageGeneratorUrl))
+			.then(() => waitForIFrameUrl(initialUrl))
+			.then(undefined, printLogOnError);
+	});
+
 
 	/**
 	* Load another Url to the screen that expires after 60s
@@ -96,45 +209,19 @@ describe('Viewer responds to API requests', () => {
 		this.timeout(120000);
 
 		let startTime;
-		const testWebsite = 'http://httpstat.us/200';
+		const testWebsite = 'http://example.com/?1';
 
-		return tabs.admin()
-		.waitForExist('label[for=chkscreen-12345]')
-		.isSelected('#chkscreen-12345').then(tick => {
-			if (!tick) return browser.click('label[for=chkscreen-12345]');
-		})
-		.setValue('#txturl', testWebsite)
-		.click('#selurlduration option[value="60"]')
-		.click('#btnsetcontent')
-		.then(tabs.viewer)
-		.waitUntil(function () {
-
-			startTime = Date.now();
-
-			// Wait for the iframe's src url to change
-			return browser.getAttribute('iframe','src')
-			.then(url => url === testWebsite);
-
-		}, 9000) // default timeout is 500ms
-		.waitUntil(function () {
-
-			// Wait for the iframe's src url to change
-			return browser.getAttribute('iframe','src')
-			.then(url => url !== testWebsite);
-
-		}, 69000) // default timeout is 500ms
-		.then(function () {
-			if (Date.now() - startTime < 50000) {
-				throw Error('The website expired too quickly!');
-			}
-		})
-		.then(undefined, function (e) {
-
-			// show browser console.logs
-			return logs().then(function () {
-				throw e;
-			});
-		});
+		return addItem(testWebsite)
+			.then(tabs.viewer)
+			.then(() => waitForIFrameUrl(testWebsite))
+			.then(() => (startTime = Date.now()))
+			.then(() => waitForIFrameUrl(initialUrl, 69000))
+			.then(function () {
+				if (Date.now() - startTime < 59000) {
+					throw Error('The website expired too quickly! ' + (Date.now() - startTime));
+				}
+			})
+			.then(undefined, printLogOnError);
 	});
 
 	/**
@@ -144,7 +231,7 @@ describe('Viewer responds to API requests', () => {
 	*/
 
 	it('loads a url on a specified time', function () {
-		const testWebsite = 'http://httpstat.us/200#3';
+		const testWebsite = 'http://example.com/?2';
 		const now = new Date();
 		const hours = now.getHours();
 		const minutes = now.getMinutes();
@@ -152,62 +239,13 @@ describe('Viewer responds to API requests', () => {
 
 		this.timeout(190000);
 
-		const url = tabs.admin()
-		.setValue('#txturl', testWebsite)
-		.waitForExist('label[for=chkscreen-12345]')
-		.isSelected('#chkscreen-12345').then(tick => {
-			if (!tick) return browser.click('label[for=chkscreen-12345]');
-		})
-		.then(function () {
-			return setDateTimeValue('#time', scheduledTime);
-		})
-		.selectByVisibleText('#selurlduration', 'until cancelled')
-		.click('#btnsetcontent')
-		.then(tabs.viewer)
-		.waitUntil(function () {
-			return browser.getAttribute('iframe','src').then(url => {
-				return url === testWebsite;
-			});
-		}, 180000)
+		const url = addItem(testWebsite, -1, scheduledTime)
+		.then(() => waitForIFrameUrl(testWebsite, 185000))
 		.getAttribute('iframe', 'src');
 
 		return expect(url).to.eventually.equal(testWebsite)
-		.then(undefined, function (e) {
-
-			// show browser console.logs
-			return logs().then(function () {
-				throw e;
-			});
-		});
-	});
-
-	/**
-	* Remove the previusly added url
-	*/
-
-	it('removes a url via the admin panel', function () {
-		const xSelector = '.queue li:first-child .action-remove';
-
-		this.timeout(60000);
-
-		return tabs.admin()
-		.waitForExist(xSelector)
-		.click(xSelector)
-		.then(tabs.viewer)
-		.waitUntil(function() {
-
-			// Wait for the iframe's src url to change
-			return browser.getAttribute('iframe','src')
-			.then(url => url !== 'http://httpstat.us/200#3');
-
-		}, 5000)
-		.then(undefined, function (e) {
-
-			// show browser console.logs
-			return logs().then(function () {
-				throw e;
-			});
-		});
+		.then(() => removeItem(testWebsite), printLogOnError)
+		.then(() => waitForIFrameUrl(initialUrl, 185000));
 	});
 
 	/**
@@ -217,7 +255,7 @@ describe('Viewer responds to API requests', () => {
 	*/
 
 	it('can clear the stack of content via admin panel', function () {
-		const testWebsite = 'http://example.com/';
+		const testWebsite = 'http://example.com/?4';
 
 		this.timeout(60000);
 
@@ -250,13 +288,10 @@ describe('Viewer responds to API requests', () => {
 			.then(function (url) {
 				return url === emptyScreenWebsite;
 			});
-		}, 20000)
-		.then(undefined, function (e) {
+		}, 10000)
+		.getAttribute('iframe', 'src');
 
-			// show browser console.logs
-			return logs().then(function () {
-				throw e;
-			});
-		});
+		return expect(content).to.eventually.not.equal(testWebsite)
+		.then(undefined, printLogOnError);
 	});
 });
