@@ -3,9 +3,12 @@
 
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const logs = require('./lib/logs')(browser);
+const logs = function(){};
+const getLogs = require('./lib/logs')(browser);
 const tabs = require('./lib/tabs')(browser);
 chai.use(chaiAsPromised);
+
+setInterval(getLogs, 1000);
 
 const expect = chai.expect;
 

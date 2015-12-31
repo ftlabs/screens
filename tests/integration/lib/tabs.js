@@ -31,8 +31,7 @@ module.exports = function(client) {
 		});
 	}
 	
-	// open a new tab set it to the viewer
-	return {
+	const fnInterface = {
 		admin() {
 			return loadTab('admin');
 		},
@@ -42,5 +41,11 @@ module.exports = function(client) {
 		about() {
 			return loadTab('about');
 		}
+	};
+
+	module.exports = function () {
+		return fnInterface;
 	}
+
+	return fnInterface;
 };
