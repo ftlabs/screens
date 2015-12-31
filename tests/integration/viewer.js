@@ -80,6 +80,7 @@ function printLogOnError(e) {
 	return logs()
 	.then(function () {
 		console.log(e.message);
+		process.exit(1);
 		throw e;
 	});
 }
@@ -143,7 +144,6 @@ describe('Viewer responds to API requests', () => {
 	*/
 
 	it('can have a url assigned', function () {
-		const initialUrl = 'http://example.com/';
 
 		return addItem(initialUrl, -1)
 			.then(() => waitForIFrameUrl(initialUrl))
