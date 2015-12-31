@@ -1,12 +1,10 @@
 'use strict';
-/*global describe, it, browser, before*/
+/*global describe, it, browser*/
 
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const logs = require('./lib/logs')(browser);
 const tabs = require('./lib/tabs')(browser);
-const express = require('express');
-
 chai.use(chaiAsPromised);
 
 const expect = chai.expect;
@@ -80,7 +78,6 @@ function printLogOnError(e) {
 	return logs()
 	.then(function () {
 		console.log(e.message);
-		process.exit(1);
 		throw e;
 	});
 }
@@ -115,15 +112,9 @@ function waitForIFrameUrl(urlIn, timeout) {
 
 describe('Viewer responds to API requests', () => {
 
-	before('Start a http server with some test pages in it', function() {
-		const testWebsiteServer = express();
-		testWebsiteServer.get('/emptyresponse', (req,res) => res.status(200).end());
-		testWebsiteServer.listen(3011);
-	});
-
 	const initialUrl = 'http://example.com/?initial-url';
 
-	before('gets an ID', function () {
+	it('gets an ID', function () {
 
 		const id = tabs.viewer()
 			.waitForText('#hello .screen-id')
@@ -154,7 +145,7 @@ describe('Viewer responds to API requests', () => {
 	* Can have url removed
 	*/
 
-	it('removes a url via the admin panel', function () {
+	xit('removes a url via the admin panel', function () {
 		const testWebsite = 'http://example.com/?1';
 
 		this.timeout(60000);
@@ -170,7 +161,7 @@ describe('Viewer responds to API requests', () => {
 	 * Can add a url which has an empty response
 	 */
 
-	it('Can add a url which has an empty response', function () {
+	xit('Can add a url which has an empty response', function () {
 
 		const emptyResponseUrl = 'http://localhost:3011/emptyresponse';
 		return addItem(emptyResponseUrl)
@@ -186,7 +177,7 @@ describe('Viewer responds to API requests', () => {
 	 * Can correctly idenitify an image
 	 */
 
-	it('Can add an image url assigned and correctly changes it', function () {
+	xit('Can add an image url assigned and correctly changes it', function () {
 		const imageGeneratorUrl = 'http://localhost:3010/generators/image/?https%3A%2F%2Fimage.webservices.ft.com%2Fv1%2Fimages%2Fraw%2Fhttps%253A%252F%252Fupload.wikimedia.org%252Fwikipedia%252Fcommons%252Fthumb%252F3%252F30%252FSmall_bird_perching_on_a_branch.jpg%252F512px-Small_bird_perching_on_a_branch.jpg%3Fsource%3Dscreens&title=512px-Small_bird_perching_on_a_branch.jpg';
 		const imageResponseUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Small_bird_perching_on_a_branch.jpg/512px-Small_bird_perching_on_a_branch.jpg';
 		return addItem(imageResponseUrl)
@@ -205,7 +196,7 @@ describe('Viewer responds to API requests', () => {
 	* After 60s it should be removed
 	*/
 
-	it('removes a url after a specified amount of time', function () {
+	xit('removes a url after a specified amount of time', function () {
 		this.timeout(120000);
 
 		let startTime;
@@ -230,7 +221,7 @@ describe('Viewer responds to API requests', () => {
 	* Add a url to a screen it should not change until the minute ticks over
 	*/
 
-	it('loads a url on a specified time', function () {
+	xit('loads a url on a specified time', function () {
 		const testWebsite = 'http://example.com/?2';
 		const now = new Date();
 		const hours = now.getHours();
@@ -254,7 +245,7 @@ describe('Viewer responds to API requests', () => {
 	* It should hide the iframe or display the empty-screen generator
 	*/
 
-	it('can clear the stack of content via admin panel', function () {
+	xit('can clear the stack of content via admin panel', function () {
 		const testWebsite = 'http://example.com/?4';
 
 		this.timeout(60000);

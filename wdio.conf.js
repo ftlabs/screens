@@ -6,7 +6,9 @@ const selenium = require('selenium-standalone');
 const installSelenium = denodeify(selenium.install.bind(selenium));
 const startSeleniumServer = denodeify(selenium.start.bind(selenium));
 const spawn = require('child_process').spawn;
+const express = require('express');
 let server;
+
 /*
  * Installs Selenium and starts the server, ready to control browsers
 */
@@ -22,6 +24,8 @@ function installAndStartSelenium () {
 			throw e;
 		});
 }
+
+let failures;
 
 exports.config = {
 
@@ -140,6 +144,10 @@ exports.config = {
 	// variables like `browser`. It is the perfect place to define custom commands.
 	before: function() {
 
+		const testWebsiteServer = express();
+		testWebsiteServer.get('/emptyresponse', (req,res) => res.status(200).end());
+		testWebsiteServer.listen(3011);
+
 		// Set cookie to bypass auth
 		return browser.url('/__about')
 		.localStorage('POST', {key: 'viewerData_v2', value: JSON.stringify(
@@ -154,8 +162,10 @@ exports.config = {
 
 	// Gets executed after all tests are done. You still have access to all global variables from
 	// the test.
-	after: function(failures, pid) {
+	after: function(failedTests, pid) {
 		process.kill(pid);
+		failures = failedTests;
+		console.log('FAILURES' + failures);
 	},
 
 	// Gets executed after all workers got shut down and the process is about to exit. It is not
