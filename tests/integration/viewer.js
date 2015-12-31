@@ -249,7 +249,7 @@ describe('Viewer responds to API requests', () => {
 	* Add a url to a screen it should not change until the minute ticks over
 	*/
 
-	it('loads a url on a specified time', function () {
+	xit('loads a url on a specified time', function () {
 		const testWebsite = 'http://example.com/?3';
 		const now = new Date();
 		const hours = now.getHours();
