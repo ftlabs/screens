@@ -99,8 +99,6 @@ module.exports.add = function(socket) {
 
 	socket.on('update', function(data) {
 
-		console.log(JSON.stringify(data, null, '  '));
-
 		// If screen has not cited a specific ID, assign one
 		if (!data.id || !parseInt(data.id, 10)) {
 			data.id = generateID();
