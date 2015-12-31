@@ -44,12 +44,6 @@ function addItem(url, duration, scheduledTime) {
 	duration = duration || 60;
 
 	return tabs.admin()
-		.waitForExist('#chkscreen-12345')
-		.waitForExist('label[for=chkscreen-12345]')
-		.isSelected('#chkscreen-12345')
-		.then(tick => {
-			if (!tick) return browser.click('label[for=chkscreen-12345]');
-		})
 		.click(`#selection option[value="set-content"]`)
 		.click(`#selurlduration option[value="${duration}"]`)
 		.then(function () {
@@ -61,6 +55,12 @@ function addItem(url, duration, scheduledTime) {
 Setting Url: ${url}
 Duration: ${duration}
 Scheduled: ${scheduledTime}`))
+		.waitForExist('#chkscreen-12345')
+		.waitForExist('label[for=chkscreen-12345]')
+		.isSelected('#chkscreen-12345')
+		.then(tick => {
+			if (!tick) return browser.click('label[for=chkscreen-12345]');
+		})
 		.click('#btnsetcontent');
 }
 
@@ -202,12 +202,12 @@ describe('Viewer responds to API requests', () => {
 		return addItem(testWebsite)
 		.then(() => waitForIFrameUrl(testWebsite))
 		.then(tabs.admin)
+		.click(`#selection option[value="clear"]`)
 		.isSelected('#chkscreen-12345').then(tick => {
 			if (!tick) {
 				return browser.click('label[for=chkscreen-12345]');
 			}
 		})
-		.click(`#selection option[value="clear"]`)
 		.click('#btnclear')
 		.then(() => waitForIFrameUrl(emptyScreenWebsite))
 		.then(() => addItem(initialUrl, -1))
