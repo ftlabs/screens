@@ -226,18 +226,15 @@ describe('Viewer responds to API requests', () => {
 		const now = new Date();
 		const hours = now.getHours();
 		const minutes = now.getMinutes();
-		const scheduledTime = hours + ':' + (minutes + 2);
+		const scheduledTime = hours + ':' + (minutes + 1);
 
-		this.timeout(190000);
+		this.timeout(130000);
 
-		const url = addItem(testWebsite, -1, scheduledTime)
-		.then(() => waitForIFrameUrl(testWebsite, 185000))
-		.getAttribute('iframe', 'src');
-
-		return expect(url).to.eventually.equal(testWebsite)
+		return addItem(testWebsite, -1, scheduledTime)
+		.then(() => waitForIFrameUrl(testWebsite, 125000))
 		.then(() => removeItem(testWebsite))
-		.then(logs, printLogOnError)
-		.then(() => waitForIFrameUrl(initialUrl, 185000));
+		.then(() => waitForIFrameUrl(initialUrl))
+		.then(logs, printLogOnError);
 	});
 
 	/**
@@ -251,21 +248,9 @@ describe('Viewer responds to API requests', () => {
 
 		this.timeout(60000);
 
-		const content = tabs.admin()
-		.setValue('#txturl', testWebsite)
-		.waitForExist('label[for=chkscreen-12345]', 10000)
-		.isSelected('#chkscreen-12345').then(tick => {
-			if (!tick) {
-				return browser.click('label[for=chkscreen-12345]');
-			}
-		})
-		.click('#btnsetcontent')
+		return addItem(testWebsite)
 		.then(tabs.viewer)
-		.waitUntil(function() {
-			return browser.getAttribute('iframe','src').then(function (url) {
-				return url === testWebsite;
-			});
-		}, 20000)
+		.then(() => waitForIFrameUrl(testWebsite))
 		.then(tabs.admin)
 		.isSelected('#chkscreen-12345').then(tick => {
 			if (!tick) {
@@ -274,16 +259,8 @@ describe('Viewer responds to API requests', () => {
 		})
 		.selectByVisibleText('#selection', 'Clear')
 		.click('#btnclear')
-		.then(tabs.viewer)
-		.waitUntil(function() {
-			return browser.getAttribute('iframe','src')
-			.then(function (url) {
-				return url === emptyScreenWebsite;
-			});
-		}, 10000)
-		.getAttribute('iframe', 'src');
-
-		return expect(content).to.eventually.not.equal(testWebsite)
+		.then(() => waitForIFrameUrl(emptyScreenWebsite))
+		.getAttribute('iframe', 'src')
 		.then(logs, printLogOnError);
 	});
 });
