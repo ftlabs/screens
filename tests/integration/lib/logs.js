@@ -6,7 +6,7 @@ module.exports = function(client) {
 		.then(function (logs) {
 			return logs.
 				value
-				.filter(i => !!i.trim())
+				.filter(i => !!i.message.trim())
 				.map(v => `${(new Date(Number(v.timestamp))).toTimeString()}: ${v.message}`)
 				.join('\n');
 		});
