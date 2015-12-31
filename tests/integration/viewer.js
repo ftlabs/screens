@@ -145,7 +145,7 @@ describe('Viewer responds to API requests', () => {
 	* Can have url removed
 	*/
 
-	xit('removes a url via the admin panel', function () {
+	it('removes a url via the admin panel', function () {
 		const testWebsite = 'http://example.com/?1';
 
 		this.timeout(60000);
@@ -161,7 +161,7 @@ describe('Viewer responds to API requests', () => {
 	 * Can add a url which has an empty response
 	 */
 
-	xit('Can add a url which has an empty response', function () {
+	it('Can add a url which has an empty response', function () {
 
 		const emptyResponseUrl = 'http://localhost:3011/emptyresponse';
 		return addItem(emptyResponseUrl)
@@ -177,7 +177,7 @@ describe('Viewer responds to API requests', () => {
 	 * Can correctly idenitify an image
 	 */
 
-	xit('Can add an image url assigned and correctly changes it', function () {
+	it('Can add an image url assigned and correctly changes it', function () {
 		const imageGeneratorUrl = 'http://localhost:3010/generators/image/?https%3A%2F%2Fimage.webservices.ft.com%2Fv1%2Fimages%2Fraw%2Fhttps%253A%252F%252Fupload.wikimedia.org%252Fwikipedia%252Fcommons%252Fthumb%252F3%252F30%252FSmall_bird_perching_on_a_branch.jpg%252F512px-Small_bird_perching_on_a_branch.jpg%3Fsource%3Dscreens&title=512px-Small_bird_perching_on_a_branch.jpg';
 		const imageResponseUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Small_bird_perching_on_a_branch.jpg/512px-Small_bird_perching_on_a_branch.jpg';
 		return addItem(imageResponseUrl)
@@ -196,7 +196,7 @@ describe('Viewer responds to API requests', () => {
 	* After 60s it should be removed
 	*/
 
-	xit('removes a url after a specified amount of time', function () {
+	it('removes a url after a specified amount of time', function () {
 		this.timeout(120000);
 
 		let startTime;
@@ -221,7 +221,7 @@ describe('Viewer responds to API requests', () => {
 	* Add a url to a screen it should not change until the minute ticks over
 	*/
 
-	xit('loads a url on a specified time', function () {
+	it('loads a url on a specified time', function () {
 		const testWebsite = 'http://example.com/?2';
 		const now = new Date();
 		const hours = now.getHours();
@@ -245,7 +245,7 @@ describe('Viewer responds to API requests', () => {
 	* It should hide the iframe or display the empty-screen generator
 	*/
 
-	xit('can clear the stack of content via admin panel', function () {
+	it('can clear the stack of content via admin panel', function () {
 		const testWebsite = 'http://example.com/?4';
 
 		this.timeout(60000);
