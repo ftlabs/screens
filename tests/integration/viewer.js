@@ -69,7 +69,11 @@ function removeItem(url) {
 
 	return tabs.admin()
 		.waitForExist(xSelector)
-		.click(xSelector);
+		.click(xSelector)
+		.then(undefined, function (e) {
+			console.warn('Remove item failed');
+			console.warn(e);
+		});
 }
 
 function printLogOnError(e) {
