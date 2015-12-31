@@ -3,12 +3,9 @@
 
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const logs = function(){};
-const getLogs = require('./lib/logs')(browser);
+const logs = require('./lib/logs')(browser);
 const tabs = require('./lib/tabs')(browser);
 chai.use(chaiAsPromised);
-
-setInterval(getLogs, 1000);
 
 const expect = chai.expect;
 
@@ -125,7 +122,7 @@ describe('Viewer responds to API requests', () => {
 			.getText('#hello .screen-id');
 
 		return expect(id).to.eventually.equal('12345')
-		.then(undefined, printLogOnError);
+		.then(logs, printLogOnError);
 	});
 
 
@@ -141,7 +138,7 @@ describe('Viewer responds to API requests', () => {
 
 		return addItem(initialUrl, -1)
 			.then(() => waitForIFrameUrl(initialUrl))
-			.then(undefined, printLogOnError);
+			.then(logs, printLogOnError);
 	});
 
 	/**
@@ -157,8 +154,7 @@ describe('Viewer responds to API requests', () => {
 			.then(() => waitForIFrameUrl(testWebsite))
 			.then(() => removeItem(testWebsite))
 			.then(() => waitForIFrameUrl(initialUrl))
-			.then(undefined, printLogOnError);
-	});
+			.then(logs, printLogOnError); });
 
 	/**
 	 * Can add a url which has an empty response
@@ -172,7 +168,7 @@ describe('Viewer responds to API requests', () => {
 			.then(() => waitForIFrameUrl(emptyResponseUrl))
 			.then(() => removeItem(emptyResponseUrl))
 			.then(() => waitForIFrameUrl(initialUrl))
-			.then(undefined, printLogOnError);
+			.then(logs, printLogOnError);
 	});
 
 
@@ -187,7 +183,7 @@ describe('Viewer responds to API requests', () => {
 			.then(() => waitForIFrameUrl(imageGeneratorUrl))
 			.then(() => removeItem(imageGeneratorUrl))
 			.then(() => waitForIFrameUrl(initialUrl))
-			.then(undefined, printLogOnError);
+			.then(logs, printLogOnError);
 	});
 
 
@@ -215,7 +211,7 @@ describe('Viewer responds to API requests', () => {
 					throw Error('The website expired too quickly! ' + (Date.now() - startTime));
 				}
 			})
-			.then(undefined, printLogOnError);
+			.then(logs, printLogOnError);
 	});
 
 	/**
@@ -238,7 +234,8 @@ describe('Viewer responds to API requests', () => {
 		.getAttribute('iframe', 'src');
 
 		return expect(url).to.eventually.equal(testWebsite)
-		.then(() => removeItem(testWebsite), printLogOnError)
+		.then(() => removeItem(testWebsite))
+		.then(logs, printLogOnError)
 		.then(() => waitForIFrameUrl(initialUrl, 185000));
 	});
 
@@ -286,6 +283,6 @@ describe('Viewer responds to API requests', () => {
 		.getAttribute('iframe', 'src');
 
 		return expect(content).to.eventually.not.equal(testWebsite)
-		.then(undefined, printLogOnError);
+		.then(logs, printLogOnError);
 	});
 });
