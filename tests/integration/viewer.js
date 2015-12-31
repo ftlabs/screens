@@ -44,6 +44,7 @@ function addItem(url, duration, scheduledTime) {
 	duration = duration || 60;
 
 	return tabs.admin()
+		.waitForExist('#chkscreen-12345')
 		.click(`#selection option[value="set-content"]`)
 		.click(`#selurlduration option[value="${duration}"]`)
 		.then(function () {
@@ -55,8 +56,6 @@ function addItem(url, duration, scheduledTime) {
 Setting Url: ${url}
 Duration: ${duration}
 Scheduled: ${scheduledTime}`))
-		.waitForExist('#chkscreen-12345')
-		.waitForExist('label[for=chkscreen-12345]')
 		.isSelected('#chkscreen-12345')
 		.then(tick => {
 			if (!tick) return browser.click('label[for=chkscreen-12345]');
