@@ -50,6 +50,7 @@ function addItem(url, duration, scheduledTime) {
 		.then(tick => {
 			if (!tick) return browser.click('label[for=chkscreen-12345]');
 		})
+		.click(`#selection option[value="set-content"]`)
 		.click(`#selurlduration option[value="${duration}"]`)
 		.then(function () {
 			if (scheduledTime) return setDateTimeValue('#time', scheduledTime);
@@ -189,6 +190,33 @@ describe('Viewer responds to API requests', () => {
 
 
 	/**
+	* Clear all Urls
+	*
+	* It should hide the iframe or display the empty-screen generator
+	*
+	* Restore the initial url at the end
+	*/
+
+	it('can clear the stack of content via admin panel', function () {
+		const testWebsite = 'http://example.com/?4';
+		return addItem(testWebsite)
+		.then(() => waitForIFrameUrl(testWebsite))
+		.then(tabs.admin)
+		.isSelected('#chkscreen-12345').then(tick => {
+			if (!tick) {
+				return browser.click('label[for=chkscreen-12345]');
+			}
+		})
+		.click(`#selection option[value="clear"]`)
+		.click('#btnclear')
+		.then(() => waitForIFrameUrl(emptyScreenWebsite))
+		.then(() => addItem(initialUrl, -1))
+		.then(() => waitForIFrameUrl(initialUrl))
+		.then(logs, printLogOnError);
+	});
+
+
+	/**
 	* Load another Url to the screen that expires after 60s
 	*
 	* Add a url to a screen it should now be the new url
@@ -200,7 +228,7 @@ describe('Viewer responds to API requests', () => {
 		this.timeout(120000);
 
 		let startTime;
-		const testWebsite = 'http://example.com/?1';
+		const testWebsite = 'http://example.com/?2';
 
 		return addItem(testWebsite)
 			.then(tabs.viewer)
@@ -222,45 +250,19 @@ describe('Viewer responds to API requests', () => {
 	*/
 
 	it('loads a url on a specified time', function () {
-		const testWebsite = 'http://example.com/?2';
+		const testWebsite = 'http://example.com/?3';
 		const now = new Date();
 		const hours = now.getHours();
-		const minutes = now.getMinutes();
-		const scheduledTime = hours + ':' + (minutes + 1);
+		const minutes = now.getMinutes() + 2;
+		const minutesStr = String(minutes).length === 1 ? '0' + minutes : minutes;
+		const scheduledTime = hours + ':' + minutesStr;
 
-		this.timeout(130000);
+		this.timeout(190000);
 
 		return addItem(testWebsite, -1, scheduledTime)
-		.then(() => waitForIFrameUrl(testWebsite, 125000))
+		.then(() => waitForIFrameUrl(testWebsite, 185000))
 		.then(() => removeItem(testWebsite))
 		.then(() => waitForIFrameUrl(initialUrl))
-		.then(logs, printLogOnError);
-	});
-
-	/**
-	* Clear all Urls
-	*
-	* It should hide the iframe or display the empty-screen generator
-	*/
-
-	it('can clear the stack of content via admin panel', function () {
-		const testWebsite = 'http://example.com/?4';
-
-		this.timeout(60000);
-
-		return addItem(testWebsite)
-		.then(tabs.viewer)
-		.then(() => waitForIFrameUrl(testWebsite))
-		.then(tabs.admin)
-		.isSelected('#chkscreen-12345').then(tick => {
-			if (!tick) {
-				return browser.click('label[for=chkscreen-12345]');
-			}
-		})
-		.selectByVisibleText('#selection', 'Clear')
-		.click('#btnclear')
-		.then(() => waitForIFrameUrl(emptyScreenWebsite))
-		.getAttribute('iframe', 'src')
 		.then(logs, printLogOnError);
 	});
 });
