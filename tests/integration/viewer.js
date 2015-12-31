@@ -76,8 +76,9 @@ function printLogOnError(e) {
 
 	// show browser console.logs
 	return logs()
-	.then(function () {
-		console.log(e.message);
+	.then(function (logs) {
+		console.error(e.message);
+		console.log('BROWSER LOGS: \n' + logs);
 		throw e;
 	});
 }
