@@ -4,7 +4,9 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const browserLogs = require('./lib/logs')(browser);
-const tabs = require('./lib/tabs')(browser).tabs;
+const tabController = require('./lib/tabs')(browser);
+const tabs = tabController.tabs;
+const Tab = tabController.Tab;
 chai.use(chaiAsPromised);
 
 const expect = chai.expect;
@@ -236,14 +238,13 @@ describe('Viewer responds to API requests', () => {
 	* After 60s it should be removed
 	*/
 
-	it('removes a url after a specified amount of time', function () {
+	xit('removes a url after a specified amount of time', function () {
 		this.timeout(120000);
 
 		let startTime;
 		const testWebsite = 'http://example.com/?2';
 
 		return addItem(testWebsite)
-			.then(() => tabs['viewer'].switchTo())
 			.then(() => waitForIFrameUrl(testWebsite))
 			.then(() => (startTime = Date.now()))
 			.then(() => waitForIFrameUrl(initialUrl, 69000))
@@ -276,5 +277,47 @@ describe('Viewer responds to API requests', () => {
 		.then(() => removeItem(testWebsite))
 		.then(() => waitForIFrameUrl(initialUrl))
 		.then(logs, printLogOnError);
+	});
+
+
+	/**
+	* Close the viewer tab
+	* Change the localStorage to have no idUpdated and name but the same id.
+	* Expect the id to be changed
+	*/
+
+	it('will have it\'s id reassigned', function () {
+		this.timeout(120000);
+
+		const tempUrl = 'http://example.com/?5';
+
+		return tabs['viewer'].close()
+		.then(() => tabs['about'].switchTo())
+		.localStorage('POST', {key: 'viewerData_v2', value: JSON.stringify(
+			{
+				id:12345,
+				items:[],
+				name:"Test Page 2"
+			}
+		)})
+		.then(function () {
+			const newViewerTab = new Tab('viewer', {
+				url: '/'
+			});
+			return newViewerTab.ready();
+		})
+		.then(() => {
+			return new Promise(resolve => setTimeout(resolve, 3000));
+		})
+		.then(() => {
+			const id = browser
+			.getText('#hello .screen-id')
+			.then(undefined, function (e) {
+				console.log(e);
+			});
+
+			return expect(id).to.eventually.not.equal('12345')
+			.then(logs, printLogOnError);
+		});
 	});
 });

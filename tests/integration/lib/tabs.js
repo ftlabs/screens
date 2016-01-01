@@ -29,15 +29,13 @@ module.exports = function(client) {
 		}
 
 		ready() {
-			return loaded;
+			return loaded
+			.then(() => this);
 		}
 
 		switchTo() {
 
 			loaded = loaded
-			.then(() => {
-				console.log('Switching to ' + this.name + ': ' + this.handle);
-			})
 			.getCurrentTabId()
 			.then(id => {
 				if (id !== this.handle) {
@@ -45,12 +43,17 @@ module.exports = function(client) {
 				}
 			});
 
-			return loaded;
+			return loaded
+			.then(() => this);
 		}
 
 		close () {
-			loaded = loaded.close(this.handle);
-			delete(tabs[this.name]);
+			loaded = this.switchTo()
+			.window()
+			.then(() => {
+				delete tabs[this.name];
+			})
+			.switchTab(); // go to next tab
 			return loaded;
 		}
 	}

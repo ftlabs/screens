@@ -36,10 +36,11 @@ function generateAdminUpdate(sock) {
 
 function decideWhichScreenGetsToKeepAnID(screenA, screenB){
 
+
 	// Emit an event to the screens to reassign using the ID and the timestamp 
 	// of when that id was assigned as the identifier for the screen that needs
 	// to reassign. The original screen (and the rest) can ignore this message.
-	const screenToChange = screenA.idUpdated > screenB.idUpdated ? screenA : screenB ;
+	const screenToChange = (screenA.idUpdated || Infinity) > (screenB.idUpdated || Infinity) ? screenA : screenB ;
 
 	app.io.of('/screens').emit('reassign', { 
 		id : screenToChange.id,
