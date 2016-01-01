@@ -306,7 +306,8 @@ describe('Viewer responds to API requests', () => {
 			{
 				id:12345,
 				items:[],
-				name:"Test Page 2"
+				name:"Test Page 2",
+				idUpdated: Date.now()
 			}
 		)})
 		.then(function () {
