@@ -238,7 +238,7 @@ describe('Viewer responds to API requests', () => {
 	* After 60s it should be removed
 	*/
 
-	xit('removes a url after a specified amount of time', function () {
+	it('removes a url after a specified amount of time', function () {
 		this.timeout(120000);
 
 		let startTime;
@@ -259,10 +259,12 @@ describe('Viewer responds to API requests', () => {
 	/**
 	* Load another Url to the screen this scheduled for the minute after next
 	*
+	* Run this in a fresh tab it'll be fine continuing where it left off
+	*
 	* Add a url to a screen it should not change until the minute ticks over
 	*/
 
-	xit('loads a url on a specified time', function () {
+	it('loads a url on a specified time', function () {
 		const testWebsite = 'http://example.com/?3';
 		const now = new Date();
 		const hours = now.getHours();
@@ -272,7 +274,14 @@ describe('Viewer responds to API requests', () => {
 
 		this.timeout(190000);
 
-		return addItem(testWebsite, -1, scheduledTime)
+		return tabs['viewer'].close()
+		.then(function () {
+			const newViewerTab = new Tab('viewer', {
+				url: '/'
+			});
+			return newViewerTab.ready();
+		})
+		.then(() => addItem(testWebsite, -1, scheduledTime))
 		.then(() => waitForIFrameUrl(testWebsite, 185000))
 		.then(() => removeItem(testWebsite))
 		.then(() => waitForIFrameUrl(initialUrl))
@@ -307,6 +316,8 @@ describe('Viewer responds to API requests', () => {
 			return newViewerTab.ready();
 		})
 		.then(() => {
+
+			// wait a few seconds for a bit of back and forth to get the id reassigned
 			return new Promise(resolve => setTimeout(resolve, 3000));
 		})
 		.then(() => {
@@ -317,7 +328,7 @@ describe('Viewer responds to API requests', () => {
 			});
 
 			return expect(id).to.eventually.not.equal('12345')
-			.then(logs, printLogOnError);
-		});
+		})
+		.then(logs, printLogOnError);
 	});
 });
