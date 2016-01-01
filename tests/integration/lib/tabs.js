@@ -7,49 +7,52 @@ module.exports = function(client) {
 	let loaded = client;
 
 	class Tab {
-		constructor(name, {
-			url,
-			handle
-		}) {
+		constructor(name, options) {
+
+			const url = options.url;
+			const handle = options.handle;
+
 			if (url) loaded = loaded
 			.newWindow(url)
 			.getCurrentTabId()
-			.then(handle => this.handle = handle);
+			.then(handle => {
+				this.handle = handle;
+			});
 
 			if (handle) {
 				this.handle = handle;
 			}
 
+			this.name = name;
+
 			tabs[name] = this;
 		}
 
 		ready() {
-			return loaded();
+			return loaded;
 		}
 
 		switchTo() {
-			loaded = switchTab(this.handle);
+
+			loaded = loaded
+			.then(() => {
+				console.log('Switching to ' + this.name + ': ' + this.handle);
+			})
+			.getCurrentTabId()
+			.then(id => {
+				if (id !== this.handle) {
+					return client.switchTab(this.handle);
+				}
+			});
+
 			return loaded;
 		}
 
 		close () {
 			loaded = loaded.close(this.handle);
+			delete(tabs[this.name]);
 			return loaded;
 		}
-	}
-
-	function switchTab(handle) {
-		return loaded
-		.getCurrentTabId()
-		.then(id => {
-
-			// if you try to switch to the current tab it will switch to the
-			// first tab :/
-			if (id !== handle) {
-				return loaded
-				.switchTab(handle);
-			}
-		});
 	}
 
 	const single = {

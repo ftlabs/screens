@@ -3,7 +3,7 @@
 
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const logs = require('./lib/logs')(browser);
+const browserLogs = require('./lib/logs')(browser);
 const tabs = require('./lib/tabs')(browser).tabs;
 chai.use(chaiAsPromised);
 
@@ -43,7 +43,7 @@ function addItem(url, duration, scheduledTime) {
 	// 0 or undefined are not valid durations
 	duration = duration || 60;
 
-	return tabs.admin()
+	return tabs['admin'].switchTo()
 		.waitForExist('#chkscreen-12345')
 		.click(`#selection option[value="set-content"]`)
 		.click(`#selurlduration option[value="${duration}"]`)
@@ -67,7 +67,7 @@ Scheduled: ${scheduledTime}`))
 function removeItem(url) {
 	const xSelector = `.queue li[data-url="${url}"] .action-remove`;
 
-	return tabs.admin()
+	return tabs['admin'].switchTo()
 		.waitForExist(xSelector)
 		.click(xSelector)
 		.then(undefined, function (e) {
@@ -79,11 +79,18 @@ function removeItem(url) {
 function printLogOnError(e) {
 
 	// show browser console.logs
-	return logs()
+	return browserLogs()
 	.then(function (logs) {
-		console.error(e.message);
 		console.log('BROWSER LOGS: \n' + logs);
 		throw e;
+	});
+}
+
+function logs() {
+	browserLogs()
+	.then(function () {
+
+		// Do nothing so that they get flushed 
 	});
 }
 
@@ -94,8 +101,7 @@ function waitForIFrameUrl(urlIn, timeout) {
 
 	console.log('Waiting for iframe to become url: ' + urlIn + ', ' + timeout + ' timeout');
 
-	return tabs.
-		viewer()
+	return tabs['viewer'].switchTo()
 		.waitUntil(function() {
 
 			// wait for the iframe's url to change
@@ -119,12 +125,15 @@ describe('Viewer responds to API requests', () => {
 
 	const initialUrl = 'http://example.com/?initial-url';
 
-	it('gets an ID', function () {
+	before('gets an ID', function () {
 
-		const id = tabs.viewer()
+		const id = tabs['viewer'].switchTo()
 			.waitForText('#hello .screen-id')
 			.waitForVisible('#hello .screen-id')
-			.getText('#hello .screen-id');
+			.getText('#hello .screen-id')
+			.then(undefined, function (e) {
+				console.log(e);
+			});
 
 		return expect(id).to.eventually.equal('12345')
 		.then(logs, printLogOnError);
@@ -169,7 +178,7 @@ describe('Viewer responds to API requests', () => {
 
 		const emptyResponseUrl = 'http://localhost:3011/emptyresponse';
 		return addItem(emptyResponseUrl)
-			.then(tabs.viewer)
+			.then(() => tabs['viewer'].switchTo())
 			.then(() => waitForIFrameUrl(emptyResponseUrl))
 			.then(() => removeItem(emptyResponseUrl))
 			.then(() => waitForIFrameUrl(initialUrl))
@@ -204,8 +213,8 @@ describe('Viewer responds to API requests', () => {
 		const testWebsite = 'http://example.com/?4';
 		return addItem(testWebsite)
 		.then(() => waitForIFrameUrl(testWebsite))
-		.then(tabs.admin)
-		.click(`#selection option[value="clear"]`)
+		.then(() => tabs['admin'].switchTo())
+		.click('#selection option[value="clear"]')
 		.isSelected('#chkscreen-12345').then(tick => {
 			if (!tick) {
 				return browser.click('label[for=chkscreen-12345]');
@@ -234,7 +243,7 @@ describe('Viewer responds to API requests', () => {
 		const testWebsite = 'http://example.com/?2';
 
 		return addItem(testWebsite)
-			.then(tabs.viewer)
+			.then(() => tabs['viewer'].switchTo())
 			.then(() => waitForIFrameUrl(testWebsite))
 			.then(() => (startTime = Date.now()))
 			.then(() => waitForIFrameUrl(initialUrl, 69000))
