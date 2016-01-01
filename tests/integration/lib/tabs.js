@@ -2,48 +2,64 @@
 
 module.exports = function(client) {
 
-	const handles = {};
-
 	// set the current tab to the admin page.
-	const loaded = client
-	.getCurrentTabId()
-	.then(handle => handles.about = handle)
-	.newWindow('/viewer')
-	.getCurrentTabId()
-	.then(handle => handles.viewer = handle)
-	.newWindow('/admin')
-	.getCurrentTabId()
-	.then(handle => handles.admin = handle);
+	const tabs = {};
+	let loaded = client;
 
-	function loadTab(name) {
+	class Tab {
+		constructor(name, {
+			url,
+			handle
+		}) {
+			if (url) loaded = loaded
+			.newWindow(url)
+			.getCurrentTabId()
+			.then(handle => this.handle = handle);
+
+			if (handle) {
+				this.handle = handle;
+			}
+
+			tabs[name] = this;
+		}
+
+		ready() {
+			return loaded();
+		}
+
+		switchTo() {
+			loaded = switchTab(this.handle);
+			return loaded;
+		}
+
+		close () {
+			loaded = loaded.close(this.handle);
+			return loaded;
+		}
+	}
+
+	function switchTab(handle) {
 		return loaded
 		.getCurrentTabId()
 		.then(id => {
 
 			// if you try to switch to the current tab it will switch to the
 			// first tab :/
-			if (id !== handles[name]) {
+			if (id !== handle) {
 				return loaded
-				.switchTab(handles[name]);
+				.switchTab(handle);
 			}
 		});
 	}
-	
-	const fnInterface = {
-		admin() {
-			return loadTab('admin');
-		},
-		viewer() {
-			return loadTab('viewer');
-		},
-		about() {
-			return loadTab('about');
-		}
+
+	const single = {
+		Tab,
+		tabs
 	};
 
 	module.exports = function () {
-		return fnInterface;
+		return single;
 	}
 
-	return fnInterface;
+	return single;
 };

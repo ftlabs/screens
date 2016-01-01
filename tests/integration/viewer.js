@@ -4,7 +4,7 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const logs = require('./lib/logs')(browser);
-const tabs = require('./lib/tabs')(browser);
+const tabs = require('./lib/tabs')(browser).tabs;
 chai.use(chaiAsPromised);
 
 const expect = chai.expect;

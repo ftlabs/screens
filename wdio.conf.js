@@ -7,7 +7,7 @@ const installSelenium = denodeify(selenium.install.bind(selenium));
 const startSeleniumServer = denodeify(selenium.start.bind(selenium));
 const spawn = require('child_process').spawn;
 const express = require('express');
-const tabs = require('./tests/integration/lib/tabs');
+const Tab = require('./tests/integration/lib/tabs').Tab;
 let server;
 
 /*
@@ -159,7 +159,10 @@ exports.config = {
 		.setCookie({name: 'webdriver', value: '__webdriverTesting__'})
 
 		// open tabs before the tests start.
-		.then(() => tabs(browser).admin());
+		.getCurrentTabId()
+		.then(handle => new Tab({handle}).ready())
+		.then(() => new Tab({url: '/admin'}).ready())
+		.then(() => new Tab({url: '/'}).ready());
 	},
 
 	// Gets executed after all tests are done. You still have access to all global variables from
