@@ -278,15 +278,7 @@ describe('Viewer responds to API requests', () => {
 
 		this.timeout(190000);
 
-		return tabs['viewer'].close()
-		.then(function () {
-			const newViewerTab = new Tab('viewer', {
-				url: '/'
-			});
-			return newViewerTab.ready();
-		})
-		.then(() => waitForIFrameUrl(initialUrl))
-		.then(waitABit) // Wait for all syncing to be done
+		return waitForIFrameUrl(initialUrl)
 		.then(() => addItem(testWebsite, -1, scheduledTime))
 		.then(() => waitForIFrameUrl(testWebsite, 185000))
 		.then(() => removeItem(testWebsite))
