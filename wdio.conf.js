@@ -143,6 +143,8 @@ exports.config = {
 	// variables like `browser`. It is the perfect place to define custom commands.
 	before: function() {
 
+		const Tab = tabs(browser).Tab;
+
 		const testWebsiteServer = express();
 		testWebsiteServer.get('/emptyresponse', (req,res) => res.status(200).end());
 		testWebsiteServer.listen(3011);
@@ -159,7 +161,10 @@ exports.config = {
 		.setCookie({name: 'webdriver', value: '__webdriverTesting__'})
 
 		// open tabs before the tests start.
-		.then(() => tabs(browser).admin());
+		.getCurrentTabId()
+		.then(handle => new Tab('about', {handle}).ready())
+		.then(() => new Tab('admin', {url: '/admin'}).ready())
+		.then(() => new Tab('viewer', {url: '/'}).ready());
 	},
 
 	// Gets executed after all tests are done. You still have access to all global variables from

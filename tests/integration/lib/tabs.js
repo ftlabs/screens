@@ -2,48 +2,70 @@
 
 module.exports = function(client) {
 
-	const handles = {};
-
 	// set the current tab to the admin page.
-	const loaded = client
-	.getCurrentTabId()
-	.then(handle => handles.about = handle)
-	.newWindow('/viewer')
-	.getCurrentTabId()
-	.then(handle => handles.viewer = handle)
-	.newWindow('/admin')
-	.getCurrentTabId()
-	.then(handle => handles.admin = handle);
+	const tabs = {};
+	let loaded = client;
 
-	function loadTab(name) {
-		return loaded
-		.getCurrentTabId()
-		.then(id => {
+	class Tab {
+		constructor(name, options) {
 
-			// if you try to switch to the current tab it will switch to the
-			// first tab :/
-			if (id !== handles[name]) {
-				return loaded
-				.switchTab(handles[name]);
+			const url = options.url;
+			const handle = options.handle;
+
+			if (url) loaded = loaded
+			.newWindow(url)
+			.getCurrentTabId()
+			.then(handle => {
+				this.handle = handle;
+			});
+
+			if (handle) {
+				this.handle = handle;
 			}
-		});
-	}
-	
-	const fnInterface = {
-		admin() {
-			return loadTab('admin');
-		},
-		viewer() {
-			return loadTab('viewer');
-		},
-		about() {
-			return loadTab('about');
+
+			this.name = name;
+
+			tabs[name] = this;
 		}
+
+		ready() {
+			return loaded
+			.then(() => this);
+		}
+
+		switchTo() {
+
+			loaded = loaded
+			.getCurrentTabId()
+			.then(id => {
+				if (id !== this.handle) {
+					return client.switchTab(this.handle);
+				}
+			});
+
+			return loaded
+			.then(() => this);
+		}
+
+		close () {
+			loaded = this.switchTo()
+			.window()
+			.then(() => {
+				delete tabs[this.name];
+			})
+			.switchTab(); // go to next tab
+			return loaded;
+		}
+	}
+
+	const single = {
+		Tab,
+		tabs
 	};
 
 	module.exports = function () {
-		return fnInterface;
+		return single;
 	}
 
-	return fnInterface;
+	return single;
 };
