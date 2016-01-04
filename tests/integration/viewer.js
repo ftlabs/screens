@@ -1,5 +1,5 @@
 'use strict';
-/*global describe, it, browser*/
+/*global describe, it, browser, before, afterEach, beforeEach*/
 
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
@@ -49,6 +49,11 @@ function addItem(url, duration, scheduledTime) {
 	// 0 or undefined are not valid durations
 	duration = duration || 60;
 
+	// Log to the console what is about to be done
+	console.log(`Setting Url: ${url}
+Duration: ${duration}
+Scheduled: ${scheduledTime}`);
+
 	return tabs['admin'].switchTo()
 		.waitForExist('#chkscreen-12345')
 		.click(`#selection option[value="set-content"]`)
@@ -58,13 +63,10 @@ function addItem(url, duration, scheduledTime) {
 			return resetDateTimeValue('#time');
 		})
 		.setValue('#txturl', url)
-		.then(() => console.log(`
-Setting Url: ${url}
-Duration: ${duration}
-Scheduled: ${scheduledTime}`))
 		.isSelected('#chkscreen-12345')
 		.then(tick => {
 			if (!tick) return browser.click('label[for=chkscreen-12345]');
+			console.log('Submitting request');
 		})
 		.click('#btnsetcontent');
 }
@@ -108,6 +110,8 @@ function waitForIFrameUrl(urlIn, timeout) {
 	console.log('Waiting for iframe to become url: ' + urlIn + ', ' + timeout + ' timeout');
 
 	return tabs['viewer'].switchTo()
+		.getAttribute('iframe','src')
+		.then(url => console.log(`Url currently is ${url}`))
 		.waitUntil(function() {
 
 			// wait for the iframe's url to change
@@ -145,6 +149,13 @@ describe('Viewer responds to API requests', () => {
 		.then(logs, printLogOnError);
 	});
 
+	beforeEach(function(){
+		console.log('\n' + `Starting: "${this.currentTest.title}"`)
+	});
+
+	afterEach(function(){
+		console.log('\n' + `Completed: "${this.currentTest.title}"`);
+	});
 
 	/**
 	* Load Url
@@ -278,7 +289,19 @@ describe('Viewer responds to API requests', () => {
 
 		this.timeout(190000);
 
-		return waitForIFrameUrl(initialUrl)
+		/*
+			Close the browser tab and reopen it, this allows it to regain a connection it seems to lose
+			it during the previous test.
+		 */
+		return tabs['viewer'].close()
+		.then(function () {
+			const newViewerTab = new Tab('viewer', {
+				url: '/'
+			});
+			return newViewerTab.ready();
+		})
+		.then(() => waitForIFrameUrl(initialUrl))
+		.then(waitABit) // Wait for all syncing to be done
 		.then(() => addItem(testWebsite, -1, scheduledTime))
 		.then(() => waitForIFrameUrl(testWebsite, 185000))
 		.then(() => removeItem(testWebsite))
@@ -302,7 +325,7 @@ describe('Viewer responds to API requests', () => {
 			{
 				id:12345,
 				items:[],
-				name:"Test Page 2",
+				name:'Test Page 2',
 				idUpdated: Date.now()
 			}
 		)})
