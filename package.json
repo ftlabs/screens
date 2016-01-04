@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "./bin/start",
+    "start": "./bin/www",
     "postinstall": "bower install && gulp build",
     "build": "gulp build",
     "unittests": "mocha ./tests/unit",

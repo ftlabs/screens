@@ -7,7 +7,7 @@ let node;
 
 gulp.task('serve', function() {
 	if (node) node.kill();
-	node = spawn('bin/start', [], {stdio: 'inherit'});
+	node = spawn('bin/www', [], {stdio: 'inherit'});
 	console.log('Spawned server as PID '+node.pid);
 	node.on('exit', function (code, signal) {
 		console.log('Service exit. '+code+' '+signal);

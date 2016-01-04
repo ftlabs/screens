@@ -155,7 +155,7 @@ describe('Viewer responds to API requests', () => {
 	});
 
 	afterEach(function(){
-		console.log('\n↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑');
+		console.log('\n↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑');
 		console.log(`Completed: "${this.currentTest.title}"`);
 	});
 

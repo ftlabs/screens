@@ -132,7 +132,7 @@ exports.config = {
 	//
 	// Gets executed before all workers get launched.
 	onPrepare: function() {
-		server = spawn('bin/start')
+		server = spawn('bin/www')
 		.on('error', function (err) {
 			console.log('Failed to start child process.', err);
 		});
