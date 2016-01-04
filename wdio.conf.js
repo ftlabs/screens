@@ -5,6 +5,10 @@ const denodeify = require('denodeify');
 const selenium = require('selenium-standalone');
 const installSelenium = denodeify(selenium.install.bind(selenium));
 const startSeleniumServer = denodeify(selenium.start.bind(selenium));
+const spawn = require('child_process').spawn;
+const express = require('express');
+const tabs = require('./tests/integration/lib/tabs');
+let server;
 
 /*
  * Installs Selenium and starts the server, ready to control browsers
@@ -21,6 +25,8 @@ function installAndStartSelenium () {
 			throw e;
 		});
 }
+
+let failures;
 
 exports.config = {
 
@@ -111,7 +117,7 @@ exports.config = {
 	// The following are supported: dot (default), spec and xunit
 	// see also: http://webdriver.io/guide/testrunner/reporters.html
 	reporter: 'dot',
-	
+
 	// Options to be passed to Mocha.
 	// See the full list at http://mochajs.org/
 	mochaOpts: {
@@ -126,12 +132,22 @@ exports.config = {
 	//
 	// Gets executed before all workers get launched.
 	onPrepare: function() {
+		server = spawn('bin/www')
+		.on('error', function (err) {
+			console.log('Failed to start child process.', err);
+		});
 		return installAndStartSelenium();
 	},
 
 	// Gets executed before test execution begins. At this point you will have access to all global
 	// variables like `browser`. It is the perfect place to define custom commands.
 	before: function() {
+
+		const Tab = tabs.getTabController(browser).Tab;
+
+		const testWebsiteServer = express();
+		testWebsiteServer.get('/emptyresponse', (req,res) => res.status(200).end());
+		testWebsiteServer.listen(3011);
 
 		// Set cookie to bypass auth
 		return browser.url('/__about')
@@ -142,18 +158,27 @@ exports.config = {
 				name:"Test Page"
 			}
 		)})
-		.setCookie({name: 'webdriver', value: '__webdriverTesting__'});
+		.setCookie({name: 'webdriver', value: '__webdriverTesting__'})
+
+		// open tabs before the tests start.
+		.getCurrentTabId()
+		.then(handle => new Tab('about', {handle}).ready())
+		.then(() => new Tab('admin', {url: '/admin'}).ready())
+		.then(() => new Tab('viewer', {url: '/'}).ready());
 	},
 
 	// Gets executed after all tests are done. You still have access to all global variables from
 	// the test.
-	after: function(failures, pid) {
+	after: function(failedTests, pid) {
 		process.kill(pid);
+		failures = failedTests;
+		console.log('FAILURES' + failures);
 	},
 
 	// Gets executed after all workers got shut down and the process is about to exit. It is not
 	// possible to defer the end of the process using a promise.
 	onComplete: function() {
 		selenium.child.kill();
+		server.kill();
 	}
 };

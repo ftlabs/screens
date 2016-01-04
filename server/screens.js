@@ -3,7 +3,7 @@
 const extend = require('lodash').extend;
 const debug = require('debug')('screens:screens');
 const logs = require('./log');
-const assignedIDs = [];
+const assignedIDs = new Map();
 
 let app;
 
@@ -36,10 +36,14 @@ function generateAdminUpdate(sock) {
 
 function decideWhichScreenGetsToKeepAnID(screenA, screenB){
 
+
 	// Emit an event to the screens to reassign using the ID and the timestamp 
 	// of when that id was assigned as the identifier for the screen that needs
 	// to reassign. The original screen (and the rest) can ignore this message.
-	const screenToChange = screenA.idUpdated > screenB.idUpdated ? screenA : screenB ;
+	// screens without idUpdated assigned count as being older than the ones
+	// with, this is so that old clients which don't support reassign won't 
+	// be expected to change.
+	const screenToChange = (screenA.idUpdated || 0) > (screenB.idUpdated || 0) ? screenA : screenB ;
 
 	app.io.of('/screens').emit('reassign', { 
 		id : screenToChange.id,
@@ -52,32 +56,19 @@ function decideWhichScreenGetsToKeepAnID(screenA, screenB){
 
 function checkForConflictingId(id){
 
-	return assignedIDs.some(existingScreen => {
-		return existingScreen.id === id;
-	});
+	return assignedIDs.has(id);
 
 }
 
 function checkForConflictingScreens(data){
 
-	return assignedIDs.some(existingScreen => {
-
-		if(existingScreen.id === data.id){
-			// Screen has a matching id
-			if(existingScreen.idUpdated !== data.idUpdated){
-				/// Screen is different, there is a conflict
-				return true;
-			} else {
-				// Screen is the same screen as the one it's checking against 
-				return false;
-			}
-
-		} else {
-			return false;
+	if (assignedIDs.has(data.id)) {
+		const existingScreen = assignedIDs.get(data.id);
+		if (existingScreen.idUpdated !== data.idUpdated) {
+			return true;
 		}
-
-	});
-
+	}
+	return false;
 }
 
 function generateID(){
@@ -120,10 +111,14 @@ module.exports.add = function(socket) {
 		const thereIsAConflict = checkForConflictingScreens(data);
 
 		if(thereIsAConflict){
-			decideWhichScreenGetsToKeepAnID(data, assignedIDs.find(s => { return s.id == data.id; } ) );
+			decideWhichScreenGetsToKeepAnID(data, assignedIDs.get(data.id) );
 			return;
 		} else {
-			assignedIDs.push({id : data.id, idUpdated : data.idUpdated});
+
+			// Only save the screen as existing if it is using the new api
+			if (data.id && data.idUpdated) {
+				assignedIDs.set(data.id, {id : data.id, idUpdated : data.idUpdated});
+			}
 		}
 
 		if (!socket.data.id) {

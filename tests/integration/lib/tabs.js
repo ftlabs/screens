@@ -1,46 +1,80 @@
 'use strict';
 
-module.exports = function(client) {
-
-	const handles = {};
+function TabsController(client) {
 
 	// set the current tab to the admin page.
-	const loaded = client
-	.getCurrentTabId()
-	.then(handle => handles.about = handle)
-	.newWindow('/admin')
-	.waitForExist('h1.o-header__title')
-	.getCurrentTabId()
-	.then(handle => handles.admin = handle)
-	.newWindow('/viewer')
-	.waitForExist('#hello .screen-id')
-	.getCurrentTabId()
-	.then(handle => handles.viewer = handle);
+	const tabs = {};
+	let loaded = client;
 
-	function loadTab(name) {
-		return loaded
-		.getCurrentTabId()
-		.then(id => {
+	class Tab {
+		constructor(name, options) {
 
-			// if you try to switch to the current tab it will switch to the
-			// first tab :/
-			if (id !== handles[name]) {
-				return loaded
-				.switchTab(handles[name]);
+			const url = options.url;
+			const handle = options.handle;
+
+			if (url) loaded = loaded
+			.newWindow(url)
+			.getCurrentTabId()
+			.then(handle => {
+				this.handle = handle;
+			});
+
+			if (handle) {
+				this.handle = handle;
 			}
-		});
-	}
-	
-	// open a new tab set it to the viewer
-	return {
-		admin() {
-			return loadTab('admin');
-		},
-		viewer() {
-			return loadTab('viewer');
-		},
-		about() {
-			return loadTab('about');
+
+			this.name = name;
+
+			tabs[name] = this;
+		}
+
+		ready() {
+			return loaded
+			.then(() => this);
+		}
+
+		switchTo() {
+
+			loaded = loaded
+			.getCurrentTabId()
+			.then(id => {
+				if (id !== this.handle) {
+					return client.switchTab(this.handle);
+				}
+			});
+
+			return loaded
+			.then(() => this);
+		}
+
+		close () {
+			loaded = this.switchTo()
+			.window()
+			.then(() => {
+				delete tabs[this.name];
+			})
+			.switchTab(); // go to next tab
+			return loaded;
 		}
 	}
+
+	const single = {
+		Tab,
+		tabs
+	};
+
+	return single;
+};
+
+
+let tabController;
+function getTabController(client) {
+	if (!tabController) {
+		tabController = new TabsController(client);
+	}
+	return tabController;
+}
+
+module.exports = {
+	getTabController
 };
