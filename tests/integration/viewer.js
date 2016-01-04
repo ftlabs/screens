@@ -13,6 +13,10 @@ const expect = chai.expect;
 
 const emptyScreenWebsite = 'http://localhost:3010/generators/empty-screen?id=12345';
 
+function waitABit() {
+	return new Promise(resolve => setTimeout(resolve, 3000));
+}
+
 function setDateTimeValue (selector, value) {
 	return browser.elements(selector).then(function(res) {
 		const self = browser;
@@ -282,6 +286,7 @@ describe('Viewer responds to API requests', () => {
 			return newViewerTab.ready();
 		})
 		.then(() => waitForIFrameUrl(initialUrl))
+		.then(waitABit) // Wait for all syncing to be done
 		.then(() => addItem(testWebsite, -1, scheduledTime))
 		.then(() => waitForIFrameUrl(testWebsite, 185000))
 		.then(() => removeItem(testWebsite))
@@ -315,11 +320,7 @@ describe('Viewer responds to API requests', () => {
 			});
 			return newViewerTab.ready();
 		})
-		.then(() => {
-
-			// wait a few seconds for a bit of back and forth to get the id reassigned
-			return new Promise(resolve => setTimeout(resolve, 3000));
-		})
+		.then(waitABit) // wait a few seconds for a bit of back and forth to get the id reassigned
 		.then(() => {
 			const id = browser
 			.getText('#hello .screen-id')
