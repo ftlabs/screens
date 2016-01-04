@@ -4,7 +4,7 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const browserLogs = require('./lib/logs')(browser);
-const tabController = require('./lib/tabs')(browser);
+const tabController = require('./lib/tabs').getTabController(browser);
 const tabs = tabController.tabs;
 const Tab = tabController.Tab;
 chai.use(chaiAsPromised);

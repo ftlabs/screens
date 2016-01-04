@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function(client) {
+function TabsController(client) {
 
 	// set the current tab to the admin page.
 	const tabs = {};
@@ -63,9 +63,18 @@ module.exports = function(client) {
 		tabs
 	};
 
-	module.exports = function () {
-		return single;
-	}
-
 	return single;
+};
+
+
+let tabController;
+function getTabController(client) {
+	if (!tabController) {
+		tabController = new TabsController(client);
+	}
+	return tabController;
+}
+
+module.exports = {
+	getTabController
 };

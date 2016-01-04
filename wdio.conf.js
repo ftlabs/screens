@@ -143,7 +143,7 @@ exports.config = {
 	// variables like `browser`. It is the perfect place to define custom commands.
 	before: function() {
 
-		const Tab = tabs(browser).Tab;
+		const Tab = tabs.getTabController(browser).Tab;
 
 		const testWebsiteServer = express();
 		testWebsiteServer.get('/emptyresponse', (req,res) => res.status(200).end());
