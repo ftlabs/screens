@@ -65,8 +65,8 @@ Scheduled: ${scheduledTime}`);
 		.setValue('#txturl', url)
 		.isSelected('#chkscreen-12345')
 		.then(tick => {
-			if (!tick) return browser.click('label[for=chkscreen-12345]');
 			console.log('Submitting request');
+			if (!tick) return browser.click('label[for=chkscreen-12345]');
 		})
 		.click('#btnsetcontent');
 }
@@ -150,11 +150,15 @@ describe('Viewer responds to API requests', () => {
 	});
 
 	beforeEach(function(){
-		console.log('\n' + `Starting: "${this.currentTest.title}"`)
+		console.log('\n#################################################\n');
+		console.log(`Starting: "${this.currentTest.title}"`)
+		console.log('↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓\n');
 	});
 
 	afterEach(function(){
-		console.log('\n' + `Completed: "${this.currentTest.title}"`);
+		console.log('\n↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑\n');
+		console.log(`Completed: "${this.currentTest.title}"`);
+		console.log('#################################################\n');
 	});
 
 	/**
@@ -207,7 +211,7 @@ describe('Viewer responds to API requests', () => {
 	 * Can correctly idenitify an image
 	 */
 
-	it('Can add an image url assigned and correctly changes it', function () {
+	it('correctly processes an image url', function () {
 		const imageGeneratorUrl = 'http://localhost:3010/generators/image/?https%3A%2F%2Fimage.webservices.ft.com%2Fv1%2Fimages%2Fraw%2Fhttps%253A%252F%252Fupload.wikimedia.org%252Fwikipedia%252Fcommons%252Fthumb%252F3%252F30%252FSmall_bird_perching_on_a_branch.jpg%252F512px-Small_bird_perching_on_a_branch.jpg%3Fsource%3Dscreens&title=512px-Small_bird_perching_on_a_branch.jpg';
 		const imageResponseUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Small_bird_perching_on_a_branch.jpg/512px-Small_bird_perching_on_a_branch.jpg';
 		return addItem(imageResponseUrl)
