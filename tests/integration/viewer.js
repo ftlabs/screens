@@ -281,6 +281,7 @@ describe('Viewer responds to API requests', () => {
 			});
 			return newViewerTab.ready();
 		})
+		.then(() => waitForIFrameUrl(initialUrl))
 		.then(() => addItem(testWebsite, -1, scheduledTime))
 		.then(() => waitForIFrameUrl(testWebsite, 185000))
 		.then(() => removeItem(testWebsite))
@@ -297,8 +298,6 @@ describe('Viewer responds to API requests', () => {
 
 	it('will have it\'s id reassigned', function () {
 		this.timeout(120000);
-
-		const tempUrl = 'http://example.com/?5';
 
 		return tabs['viewer'].close()
 		.then(() => tabs['about'].switchTo())
