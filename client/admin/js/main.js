@@ -35,9 +35,10 @@ function pointOutTroubleMakers(){
 
 function updateScreen(data) {
 	const $el = $('#screen-'+data.id);
-	console.log('Screen update', data.id, $el);
+	console.log('Screen update: ' + data.id, $el);
 	if (data.content && $el.length) {
 		const checkstate = $el.find('input.screen-select').prop('checked');
+
 		// causes a flash of unchecked boxes!
 		$el.replaceWith(data.content).find('input.screen-select').prop('checked', checkstate);
 		filters.apply();
