@@ -18,8 +18,8 @@ describe('Detecting a Youtube URL and transform it into a generator URL', functi
 
 	before(function () {
 		requestMock = sinon.stub();
-		mockery.registerMock('../request', requestMock);
-		mockery.registerAllowable('../server/urls');
+		mockery.registerMock('request', requestMock);
+		mockery.registerAllowable('../../server/urls');
 		mockery.enable({
 			useCleanCache: true
 		});
