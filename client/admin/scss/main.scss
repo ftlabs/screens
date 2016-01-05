@@ -101,8 +101,12 @@ button {
 		display: none;
 	}
 }
+
+.screen-id-col {
+	width: 3em;
+}
+
 .screen-name-col:before {
-	content: attr(data-id);
 	padding: 0 1em;
 	.rename-mode & {
 		content: "";
