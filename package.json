@@ -4,12 +4,12 @@
   "private": true,
   "scripts": {
     "start": "./bin/www",
-    "build": "gulp build",
+    "build": "bower install && gulp build",
     "unittests": "mocha ./tests/unit",
     "integrationtests": "wdio",
     "test": "npm run unittests &&  npm run integrationtests",
-    "deploy:prod": "bower install && npm run build && haikro build && haikro deploy --app ftlabs-screens --commit `git rev-parse HEAD`",
-    "deploy:test": "bower install && npm run build && haikro build && haikro deploy --app ftlabs-screens-test --commit `git rev-parse HEAD`"
+    "deploy:prod": "npm run build && haikro build && haikro deploy --app ftlabs-screens --commit `git rev-parse HEAD`",
+    "deploy:test": "npm run build && haikro build && haikro deploy --app ftlabs-screens-test --commit `git rev-parse HEAD`"
   },
   "dependencies": {
     "body-parser": "~1.12.0",
