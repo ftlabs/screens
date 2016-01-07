@@ -4,15 +4,15 @@
   "private": true,
   "scripts": {
     "start": "./bin/www",
-    "postinstall": "bower install && gulp build",
-    "build": "gulp build",
+    "build": "bower install && gulp build",
     "unittests": "mocha ./tests/unit",
     "integrationtests": "wdio",
-    "test": "npm run unittests &&  npm run integrationtests"
+    "test": "npm run unittests &&  npm run integrationtests",
+    "deploy:prod": "npm run build && haikro build && haikro deploy --app ftlabs-screens --commit `git rev-parse HEAD`",
+    "deploy:test": "npm run build && haikro build && haikro deploy --app ftlabs-screens-test --commit `git rev-parse HEAD`"
   },
   "dependencies": {
     "body-parser": "~1.12.0",
-    "bower": "1.4.1",
     "chai": "^3.4.1",
     "cheerio": "^0.19.0",
     "cookie": "^0.2.0",
@@ -23,15 +23,10 @@
     "express": "~4.12.2",
     "express-ftwebservice": "^2.0.2",
     "express-handlebars": "^2.0.1",
-    "fetch-er": "0.0.10",
     "ftlabs-screens-carousel": "github:ftlabs/screens-carousel#v1.0.6",
     "ftlabs-screens-viewer": "github:ftlabs/screens-viewer#v1.0.16",
-    "gulp": "latest",
-    "htmlparser": "^1.7.7",
     "image-type": "^2.1.0",
-    "is-url-superb": "^2.0.0",
     "lodash": "^3.10.1",
-    "lodash.curry": "^3.0.2",
     "lru-cache": "^2.6.5",
     "mocha": "^2.3.3",
     "mockery": "^1.4.0",
@@ -39,7 +34,6 @@
     "morgan": "~1.5.1",
     "node-fetch": "^1.3.2",
     "node-uuid": "^1.4.3",
-    "origami-build-tools": "^4.4.0",
     "query-string": "^2.4.0",
     "raven": "^0.9.0",
     "redis": "^2.4.2",
@@ -56,7 +50,11 @@
     "node": "5.1.0"
   },
   "devDependencies": {
+    "bower": "1.4.1",
     "chai-as-promised": "^5.2.0",
+    "gulp": "^3.9.0",
+    "haikro": "^2.3.1",
+    "origami-build-tools": "^4.4.0",
     "selenium-standalone": "^4.8.0",
     "webdriverio": "^3.3.0"
   }
