@@ -57,6 +57,7 @@
   },
   "devDependencies": {
     "chai-as-promised": "^5.2.0",
+    "haikro": "^2.3.1",
     "selenium-standalone": "^4.8.0",
     "webdriverio": "^3.3.0"
   }
