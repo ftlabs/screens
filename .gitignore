@@ -6,3 +6,8 @@
 /public/build/
 .env
 npm-debug.log
+node-linux-x64
+
+node-v5.1.0-linux-x64/bin/node
+
+.haikro-cache/slug.tgz
