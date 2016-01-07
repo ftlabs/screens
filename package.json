@@ -23,7 +23,6 @@
     "express-handlebars": "^2.0.1",
     "ftlabs-screens-carousel": "github:ftlabs/screens-carousel#v1.0.6",
     "ftlabs-screens-viewer": "github:ftlabs/screens-viewer#v1.0.16",
-    "htmlparser": "^1.7.7",
     "image-type": "^2.1.0",
     "lodash": "^3.10.1",
     "lru-cache": "^2.6.5",
