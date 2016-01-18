@@ -155,7 +155,7 @@ function logApi(options) {
 	});
 	message.details = details;
 	const messageStr = JSON.stringify(message);
-	if (redis) redis.rpush(LOG_KEY, messageStr);
+	if (redis) redis.lpush(LOG_KEY, messageStr);
 	console.log(message.eventDesc);
 }
 
@@ -168,7 +168,7 @@ function logConnect(options) {
 	message.details = details;
 
 	const messageStr = JSON.stringify(message);
-	if (redis) redis.rpush(LOG_KEY, messageStr);
+	if (redis) redis.lpush(LOG_KEY, messageStr);
 	console.log(message.eventDesc);
 }
 
