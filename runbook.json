@@ -1,28 +1,28 @@
 {
-    "name": "screens",
-    "purpose": "A way to distribute websites to multiple displays.",
-    "audience": "internal",
-    "primaryUrl": "http://ftlabs-screens.herokuapp.com/",
-    "serviceTier": "bronze",
-    "appVersion": "0.0.0",
-    "schemaVersion": 1,
-    "apiVersion": 1,
-    "apiVersions": [
-    	{ "path": "/api", "supportStatus": "active" },
-    	{ "path": "/screens", "supportStatus": "active" }
-    ],
-    "hostname": "16ac42bb9513da",
+	"schemaVersion": 1,
+	"name": "screens",
+	"purpose": "Digital signage solution for displaying webpages and controling them from a central server.",
+	"audience": "internal",
+	"primaryUrl": "http://ftlabs-screens.herokuapp.com/",
+	"serviceTier": "bronze",
+	"appVersion": "0.0.0",
+	"apiVersion": 1,
+	"apiVersions": [
+		{ "path": "/api", "supportStatus": "active" },
+		{ "path": "/screens", "supportStatus": "active" }
+	],
+	"hostname": "16ac42bb9513da",
 	"dateCreated": "2015-11-02",
 	"contacts": [
 		{ "name":"FT Labs team", "email":"ftlabs@ft.com", "rel":"owner", "domain":"All support enquiries" }
 	],
-    "links": [
-        {"url": "https://github.com/ftlabs/screens/issues", "category": "issues"},
-        {"url": "https://github.com/ftlabs/screens", "category": "repo"},
-        {"url": "https://github.com/ftlabs/screens-viewer", "category": "repo"},
-        {"url": "https://github.com/ftlabs/screens-carousel", "category": "repo"},
-        {"url": "http://git.svc.ft.com/projects/LABSPROT/repos/electron-for-ftlabs-screens/browse", "category": "repo"},
-        {"url": "https://github.com/ftlabs/screens/blob/master/README.md", "category": "documentation", "description": "README"},
-        {"url": "http://labs.ft.com/2015/09/screens/", "category": "documentation", "description": "write up"}
-    ]
+	"links": [
+		{"url": "https://github.com/ftlabs/screens", "category": "repo"},
+		{"url": "https://github.com/ftlabs/screens/issues", "category": "issues"},
+		{"url": "https://github.com/ftlabs/screens-viewer", "category": "repo"},
+		{"url": "https://github.com/ftlabs/screens-carousel", "category": "repo"},
+		{"url": "http://git.svc.ft.com/projects/LABSPROT/repos/electron-for-ftlabs-screens/browse", "category": "repo"},
+		{"url": "https://github.com/ftlabs/screens/blob/master/README.md", "category": "documentation", "description": "README"},
+		{"url": "http://labs.ft.com/2015/09/screens/", "category": "documentation", "description": "write up"}
+	]
 }
