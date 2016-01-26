@@ -11,7 +11,6 @@
 		{ "path": "/api", "supportStatus": "active" },
 		{ "path": "/screens", "supportStatus": "active" }
 	],
-	"hostname": "16ac42bb9513da",
 	"dateCreated": "2015-11-02",
 	"contacts": [
 		{ "name":"FT Labs team", "email":"ftlabs@ft.com", "rel":"owner", "domain":"All support enquiries" }
