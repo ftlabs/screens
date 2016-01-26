@@ -5,6 +5,7 @@
     "primaryUrl": "http://ftlabs-screens.herokuapp.com/",
     "serviceTier": "bronze",
     "appVersion": "0.0.0",
+    "schemaVersion": 1,
     "apiVersion": 1,
     "apiVersions": [
     	{ "path": "/api", "supportStatus": "active" },
@@ -22,6 +23,6 @@
         {"url": "https://github.com/ftlabs/screens-carousel", "category": "repo"},
         {"url": "http://git.svc.ft.com/projects/LABSPROT/repos/electron-for-ftlabs-screens/browse", "category": "repo"},
         {"url": "https://github.com/ftlabs/screens/blob/master/README.md", "category": "documentation", "description": "README"},
-        {"url": "http://labs.ft.com/2015/09/screens/", "category": "documentation", "description": "write up"},
+        {"url": "http://labs.ft.com/2015/09/screens/", "category": "documentation", "description": "write up"}
     ]
 }
