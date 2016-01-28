@@ -5,56 +5,30 @@
  * Used to store Audit logs.
  */
 
-const Redis = require("redis");
+const Redis   = require("redis");
 const screens = require('./screens');
 
-const logLength = process.env.REDIS_LOG_LENGTH || 5000;
-const logTrimInterval = 1000 * (process.env.REDIS_LOG_TRIM_INTERVAL || 3600); //Trim the logs hourly
-const LOG_KEY = process.env.REDIS_LOG_KEY || 'FTLABS_SCREENS_LOG';
+const MAX_LOG_LENGTH   = process.env.REDIS_LOG_LENGTH || 5000;
+const LOG_KEY          = process.env.REDIS_LOG_KEY    || 'FTLABS_SCREENS_LOG';
+const VIEW_LIST_LENGTH = 500;
 
 const eventTypes = {
-	screenDisconnected: {
-		id: 0,
-		longDesc: 'Viewer Disconnected'
-	},
-	screenConnected: {
-		id: 1,
-		longDesc: 'Viewer Connected'
-	},
-	screenReloaded: {
-		id: 2,
-		longDesc: 'Viewer Reloaded'
-	},
-	screenRenamed: {
-		id: 4,
-		longDesc: 'Viewer Renamed'
-	},
-	screenContentAssignment: {
-		id: 8,
-		longDesc: 'New content has been added to the screen'
-	},
-	screenContentRemoval: {
-		id: 16,
-		longDesc: 'Content has been removed from the screen'
-	},
-	screenContentCleared: {
-		id: 32,
-		longDesc: 'All content has been cleared from the screen'
-	},
-	allScreensReloaded: {
-		id: 64,
-		longDesc: 'All viewers were reloaded'
-	}
+	screenDisconnected:      { id:  0, longDesc: 'Viewer Disconnected' },
+	screenConnected:         { id:  1, longDesc: 'Viewer Connected' },
+	screenReloaded:          { id:  2, longDesc: 'Viewer Reloaded' },
+ 	screenRenamed:           { id:  4, longDesc: 'Viewer Renamed' },
+	screenContentAssignment: { id:  8, longDesc: 'New content has been added to the screen' },
+	screenContentRemoval:    { id: 16, longDesc: 'Content has been removed from the screen' },
+	screenContentCleared:    { id: 32, longDesc: 'All content has been cleared from the screen' },
+	allScreensReloaded:      { id: 64, longDesc: 'All viewers were reloaded' }
 };
 let redis;
 
 module.exports = {
 	eventTypes, // Object
-	emptyLogs, // Function
-	trimLogs, // Function
-	logApi, // Function
+	logApi,     // Function
 	logConnect, // Function
-	renderView // Function
+	renderView  // Function
 };
 
 if (process.env.REDISTOGO_URL || process.env.REDIS_PORT) {
@@ -67,8 +41,8 @@ if (process.env.REDISTOGO_URL || process.env.REDIS_PORT) {
 
 function getTypeDescription(options) {
 	const eventType = options.eventType;
-	const screenId = options.screenId;
-	const username = options.username;
+	const screenId  = options.screenId;
+	const username  = options.username;
 
 	const event = Object.keys(eventTypes)
 		.map(k => eventTypes[k])
@@ -101,8 +75,8 @@ function getTypeDescription(options) {
 
 function getMessageWrapper(options) {
 	const eventType = options.eventType;
-	const screenId = options.screenId;
-	const username = options.username;
+	const screenId  = options.screenId;
+	const username  = options.username;
 
 	return {
 		timestamp: Date.now(),
@@ -129,51 +103,41 @@ function handleConnectErr(err) {
 
 redis.addListener("error", handleConnectErr);
 
-function emptyLogs(cb) {
-	if (redis) redis.del(LOG_KEY, cb || function () {});
+function pushMessageAndTrimList(messageStr) {
+	if (redis) {
+		// as recommended in http://redis.io/commands/LTRIM
+		redis.lpush(LOG_KEY, messageStr);
+		redis.ltrim(LOG_KEY, 0, MAX_LOG_LENGTH - 1);
+	}
 }
-
-function trimLogs(cb) {
-	if (redis) redis.ltrim(LOG_KEY, 0, logLength - 1, cb || function () {});
-}
-
-setInterval(trimLogs, logTrimInterval);
-trimLogs();
-
 
 function logApi(options) {
 	const eventType = options.eventType;
-	const screenId = options.screenId;
-	const username = options.username;
-	const details = options.details;
-
-
-	const message = getMessageWrapper({
+	const screenId  = options.screenId;
+	const username  = options.username;
+	const details   = options.details;
+	const message   = getMessageWrapper({
 		eventType,
 		screenId,
 		username
 	});
 	message.details = details;
-	const messageStr = JSON.stringify(message);
-	if (redis) redis.lpush(LOG_KEY, messageStr);
+	pushMessageAndTrimList( JSON.stringify(message) );
 	console.log(message.eventDesc);
 }
 
 function logConnect(options) {
 	const eventType = options.eventType;
-	const screenId = options.screenId;
-	const details = options.details;
-
-	const message = getMessageWrapper({eventType, screenId});
+	const screenId  = options.screenId;
+	const details   = options.details;
+	const message   = getMessageWrapper({eventType, screenId});
 	message.details = details;
-
-	const messageStr = JSON.stringify(message);
-	if (redis) redis.lpush(LOG_KEY, messageStr);
+	pushMessageAndTrimList( JSON.stringify(message) );
 	console.log(message.eventDesc);
 }
 
 function renderView(req, res) {
-	redis.lrange(LOG_KEY, -500, -1, function (error, logEntries) {
+	redis.lrange(LOG_KEY, 0, VIEW_LIST_LENGTH -1, function (error, logEntries) {
 
 		if (error) {
 			console.log(error);
