@@ -59,6 +59,15 @@ window.screensInit = function screensInit() {
 
 	}, 1000);
 
+	function updateUrl(url) {
+		DOM.Iframe.style.pointerEvents = 'none';
+		DOM.Iframe.src = url;
+	}
+
+	DOM.container.addEventListener('click', function () {
+		DOM.Iframe.style.pointerEvents = 'auto';
+	});
+
 	// The url has changed
 	viewer.on('change', function(url) {
 
@@ -71,10 +80,10 @@ window.screensInit = function screensInit() {
 
 		if (Carousel.isCarousel(url)) {
 			carousel = new Carousel(url, host);
-			carousel.on('change', url => DOM.Iframe.src = url);
+			carousel.on('change', updateUrl);
 			DOM.Iframe.src = carousel.getCurrentURL();
 		} else {
-			DOM.Iframe.src = url;
+			updateUrl(url);
 		}
 	});
 
