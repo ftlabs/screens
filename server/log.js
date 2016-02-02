@@ -152,8 +152,6 @@ function renderView(req, res) {
 			log.eventDesc = getTypeDescription(log);
 		});
 
-		logs.reverse();
-
 		res.render('logs', {
 			logs,
 			app: 'logs'
