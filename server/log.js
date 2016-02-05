@@ -89,16 +89,10 @@ function getMessageWrapper(options) {
 }
 
 function handleConnectErr(err) {
-	if (/ECONNREFUSED/.test(err.message)) {
-		console.error("Error connecting to redis, logs will be unavailable.");
 
-		// stop reporting further errors.
-		redis.removeListener("error", handleConnectErr);
-		redis.end();
-		redis = null;
-	} else {
-		console.log(err.message);
-	}
+	// prevents redis fron dying if an error happens
+	// will try to reconnect.
+	console.log(err.message);
 }
 
 redis.addListener("error", handleConnectErr);
