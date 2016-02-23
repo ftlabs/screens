@@ -49,6 +49,16 @@ button {
 	flex: 0.4 1 auto;
 }
 
+@media all and (max-width: 400px){
+	.filterbar{
+		display: block;
+	}
+
+	.filterbar__text{
+		width: 100%;
+	}
+}
+
 .highlight {
 	font-weight: bold;
 	background-color: rgba(159, 36, 255, 0.3);
@@ -66,10 +76,25 @@ button {
 		position: relative;
 	}
 
+	@media all and(max-width: 400px){
+		td{
+			vertical-align: top;
+		}
+
+		.screen-name{
+			font-size: 0.8em;
+		}
+
+		.action-rename{
+			display: none;
+		}
+	}
+
 	.screen-name-col {
 		max-width: 14em;
 		min-width: 8em;
 	}
+
 
 	@include oGridRespondTo(M) {
 
