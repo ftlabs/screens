@@ -4,6 +4,7 @@ const extend = require('lodash').extend;
 const debug = require('debug')('screens:screens');
 const logs = require('./log');
 const assignedIDs = new Map();
+const _ = require('lodash');
 
 let app;
 
@@ -19,6 +20,10 @@ function socketsForIDs(ids) {
 function syncDown(sock) {
 	sock.emit('update', sock.data);
 
+	updateAdmins(sock);
+}
+
+function updateAdmins(sock) {
 	// Tell all admin users about the update
 	generateAdminUpdate(sock).then(function(data) {
 		app.io.of('/admins').emit('screenData', data);
@@ -102,41 +107,46 @@ module.exports.add = function(socket) {
 	socket.emit('requestUpdate');
 
 	socket.on('update', function(data) {
-
+		const newData = _.cloneDeep(data);
 		// If screen has not cited a specific ID, assign one
-		if (!data.id || !parseInt(data.id, 10)) {
-			data.id = generateID();
+		if (!newData.id || !parseInt(newData.id, 10)) {
+			newData.id = generateID();
 		}
 
-		const thereIsAConflict = checkForConflictingScreens(data);
+		const thereIsAConflict = checkForConflictingScreens(newData);
 
-		if(thereIsAConflict){
-			decideWhichScreenGetsToKeepAnID(data, assignedIDs.get(data.id) );
+		if (thereIsAConflict) {
+			decideWhichScreenGetsToKeepAnID(newData, assignedIDs.get(newData.id) );
 			return;
 		} else {
-
 			// Only save the screen as existing if it is using the new api
-			if (data.id && data.idUpdated) {
-				assignedIDs.set(data.id, {id : data.id, idUpdated : data.idUpdated});
+			if (newData.id && newData.idUpdated) {
+				assignedIDs.set(newData.id, {id : newData.id, idUpdated : newData.idUpdated});
 			}
 		}
 
 		if (!socket.data.id) {
-			debug('New screen on socket '+socket.id+' now identifies as '+data.id+' ('+data.name+')');
+			debug('New screen on socket '+socket.id+' now identifies as '+newData.id+' ('+newData.name+')');
 		}
 
 		logs.logConnect({
 			eventType: logs.eventTypes.screenConnected.id,
-			screenId: data.id,
+			screenId: newData.id,
 			details: {
-				name: data.name,
+				name: newData.name,
 			}
 		});
 
-		// Record the updated data against the socket
-		extend(socket.data, data);
-
-		syncDown(socket);
+		// Record the updated newData against the socket
+		extend(socket.data, newData);
+		
+		if (!_.isEqual(data, newData)) {
+			debug('syncing down')
+			syncDown(socket);
+		} else {
+			debug('updating admins')
+			updateAdmins(socket);
+		}
 
 	});
 
