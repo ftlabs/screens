@@ -141,10 +141,8 @@ module.exports.add = function(socket) {
 		extend(socket.data, newData);
 		
 		if (!_.isEqual(data, newData)) {
-			debug('syncing down')
 			syncDown(socket);
 		} else {
-			debug('updating admins')
 			updateAdmins(socket);
 		}
 
