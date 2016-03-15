@@ -39,8 +39,9 @@ function updateScreen(data) {
 	if (data.content && $el.length) {
 		const checkstate = $el.find('input.screen-select').prop('checked');
 
-		// causes a flash of unchecked boxes!
-		$el.replaceWith(data.content).find('input.screen-select').prop('checked', checkstate);
+		const panelDom = $(data.content)
+		panelDom.find('input.screen-select').prop('checked', checkstate);
+		$el.replaceWith(panelDom);
 		filters.apply();
 	} else if (data.content) {
 		$('#screens tbody').append(data.content);
