@@ -6,6 +6,7 @@
 - [NodeJS](nodejs.org)
 - [Bower](https://www.npmjs.com/package/bower)
 - [Heroku Toolbelt](https://toolbelt.heroku.com/)
+- [Java Development Kit](http://www.oracle.com/technetwork/java/javase/downloads/index.html) -- Used for testing.
 
 #### Setting up development environment
 - Clone the repository -- `git clone git@github.com:ftlabs/screens.git`
