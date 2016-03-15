@@ -6,6 +6,8 @@
  */
 
 const Redis   = require("redis");
+const debug = require('debug')('screens:log');
+
 const screens = require('./screens');
 
 const MAX_LOG_LENGTH   = process.env.REDIS_LOG_LENGTH || 5000;
@@ -92,7 +94,7 @@ function handleConnectErr(err) {
 
 	// prevents redis fron dying if an error happens
 	// will try to reconnect.
-	console.log(err.message);
+	debug(err.message);
 }
 
 redis.addListener("error", handleConnectErr);
@@ -117,7 +119,7 @@ function logApi(options) {
 	});
 	message.details = details;
 	pushMessageAndTrimList( JSON.stringify(message) );
-	console.log(message.eventDesc);
+	debug(message.eventDesc);
 }
 
 function logConnect(options) {
@@ -127,14 +129,14 @@ function logConnect(options) {
 	const message   = getMessageWrapper({eventType, screenId});
 	message.details = details;
 	pushMessageAndTrimList( JSON.stringify(message) );
-	console.log(message.eventDesc);
+	debug(message.eventDesc);
 }
 
 function renderView(req, res) {
 	redis.lrange(LOG_KEY, 0, VIEW_LIST_LENGTH -1, function (error, logEntries) {
 
 		if (error) {
-			console.log(error);
+			debug(error);
 			return res.render('error', {error, app: 'admin'});
 		}
 
