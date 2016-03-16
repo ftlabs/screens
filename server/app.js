@@ -95,11 +95,11 @@ app.io.on('connection', function(socket) {
 		if (cookies.electrondata !== null && cookies.electrondata !== undefined) {
 			const id = JSON.parse(cookies.electrondata).id;
 
-			console.log(id);
+			debug(id);
 			if (id in previouslySeenScreens) {
-				console.log('seen', id);
+				debug('seen', id);
 			} else {
-				console.log('not seen', id, 'reloading screen');
+				debug('not seen', id, 'reloading screen');
 				socket.emit('reload');
 				previouslySeenScreens[id] = true;
 			}
