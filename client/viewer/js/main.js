@@ -33,7 +33,7 @@ const storage = {
 window.screensInit = function screensInit() {
 
 	const viewer = new Viewer(host, storage);
-	
+
 	const DOM = {
 		container: document.getElementById('container'),
 		Iframe : document.querySelector('iframe'),
@@ -114,7 +114,19 @@ window.screensInit = function screensInit() {
 			updateIDs();
 			DOM.container.classList.toggle('state-disconnected', !viewer.ready());
 			DOM.container.classList.remove('state-active', 'state-hello', 'state-loading');
-			DOM.container.classList.add(viewer.getUrl() ? 'state-active' : (viewer.ready() ? 'state-hello' : 'state-loading'));
+			
+			let state;
+			
+			if (viewer.getUrl()){
+				state = 'state-active';
+			} else if(viewer.ready()){
+				state = 'state-hello';
+			} else {
+				state = 'state-loading';
+			}
+			
+			DOM.container.classList.add(state);
+
 		}, 1000);
 	});
 	
