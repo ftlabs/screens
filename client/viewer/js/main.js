@@ -28,7 +28,7 @@ const storage = {
 		
 	} 
 }
-
+	
 // Called by the script loader once the page has loaded
 window.screensInit = function screensInit() {
 
