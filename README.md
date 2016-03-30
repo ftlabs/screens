@@ -36,7 +36,6 @@ The integration tests have been written as robustly as possible but due to compl
 - open /admin view in a laptop browser tab
    - ditto a /viewer view
 - open/check the Labs' Intel Compute Stick instance (electron instance)
-- 
 
 ##### deploy!
 
