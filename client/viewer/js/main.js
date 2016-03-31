@@ -27,7 +27,7 @@ const storage = {
 		}
 
 	}
-}
+};
 
 // Called by the script loader once the page has loaded
 window.screensInit = function screensInit() {
@@ -75,17 +75,18 @@ window.screensInit = function screensInit() {
 	}
 
 	function iframeLoaded() {
-		kickOutIframe(document.querySelector('iframe.active'));
+		const currentActive = document.querySelector('iframe.active');
+		if (currentActive) kickOutIframe(currentActive);
 		this.classList.remove('buffering');
 		this.classList.add('active');
 		this.removeEventListener('load', iframeLoaded);
 	}
 
 	function kickOutIframe(iframe) {
-		if (!iframe) return;
 		iframe.classList.remove('active');
 		iframe.classList.remove('buffering');
-		iframe.src = '';
+		iframe.classList.add('done');
+		setTimeout(() => iframe.src = 'about:blank', 500);
 		iframe.removeEventListener('load', iframeLoaded);
 
 		// remove self from the list
@@ -95,6 +96,7 @@ window.screensInit = function screensInit() {
 	function prepareIframetoLoad(iframe, url) {
 		usedIframes.push(iframe);
 		iframe.classList.add('buffering');
+		iframe.classList.remove('done');
 		iframe.src = url;
 		iframe.addEventListener('load', iframeLoaded);
 	}
@@ -102,21 +104,23 @@ window.screensInit = function screensInit() {
 	const availableIframes = [
 		DOM.Iframe1,
 		DOM.Iframe2
-	]
-	const usedIframes = [];
+	];
+	const usedIframes = [
+		DOM.Iframe1
+	];
 	function updateUrl(url) {
+		if (!url) {
+			return;
+		}
+
 		DOM.Iframe1.style.pointerEvents = 'none';
 		DOM.Iframe2.style.pointerEvents = 'none';
-
-		// No urls currently loaded (first load)
-		if (usedIframes.length === 0) {
-			prepareIframetoLoad(DOM.Iframe1, url);
-		}
 
 		// another url has been added
 		if (usedIframes.length < availableIframes.length) {
 			const nextIframe = availableIframes.filter(iframe => usedIframes.indexOf(iframe) === -1)[0];
 			prepareIframetoLoad(nextIframe, url);
+			return;
 		}
 
 		// a third has been added kick up the first one so the next one can load
@@ -127,6 +131,7 @@ window.screensInit = function screensInit() {
 
 			// load the next iframe regardless
 			iframeLoaded.bind(usedIframes[0])();
+			return;
 		}
 	}
 
@@ -147,7 +152,7 @@ window.screensInit = function screensInit() {
 		if (Carousel.isCarousel(url)) {
 			carousel = new Carousel(url, host);
 			carousel.on('change', updateUrl);
-			DOM.Iframe.src = carousel.getCurrentURL();
+			updateUrl(carousel.getCurrentURL());
 		} else {
 			updateUrl(url);
 		}
@@ -169,7 +174,7 @@ window.screensInit = function screensInit() {
 		DOM.container.classList.add('state-disconnected');
 	});
 
-	viewer.on('ready', function(e){
+	viewer.on('ready', function(){
 		setInterval(function () {
 			updateTitle();
 			updateIDs();

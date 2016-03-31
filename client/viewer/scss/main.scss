@@ -28,16 +28,16 @@ body,
 	cursor: none;
 }
 
-.first, .second {
+.buffering {
 	transform: translateX(100%);
 }
-.buffering {
-	transition: transform 1s ease;
-	transform: translateX(-100%);
-}
 .active {
-	transition: transform 1s ease;
+	transition: transform 0.5s ease;
 	transform: translateX(0);
+}
+.done {
+	transition: transform 0.5s ease;
+	transform: translateX(-100%);
 }
 .full {
 	position: absolute;
