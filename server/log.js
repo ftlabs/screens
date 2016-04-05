@@ -12,7 +12,7 @@ const screens = require('./screens');
 
 const MAX_LOG_LENGTH   = process.env.REDIS_LOG_LENGTH || 5000;
 const LOG_KEY          = process.env.REDIS_LOG_KEY    || 'FTLABS_SCREENS_LOG';
-const VIEW_LIST_LENGTH = 500;
+const VIEW_LIST_LENGTH = process.env.VIEW_LIST_LENGTH || 500;
 
 const eventTypes = {
 	screenDisconnected:      { id:  0, longDesc: 'Viewer Disconnected' },
