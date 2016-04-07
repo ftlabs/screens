@@ -24,6 +24,7 @@
     "express-ftwebservice": "^2.1.2",
     "express-handlebars": "^2.0.1",
     "fetch-er": "0.0.10",
+    "file-type": "^3.8.0",
     "ftlabs-screens-carousel": "github:ftlabs/screens-carousel#v1.0.7",
     "ftlabs-screens-viewer": "^3.0.0",
     "gulp": "latest",
