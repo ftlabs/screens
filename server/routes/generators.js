@@ -88,6 +88,17 @@ router.get('/ftvideo', function(req, res) {
 	}
 });
 
+router.get('/video', function(req, res) {
+	if (req.query.src !== undefined) {
+		res.render('generators-video-viewer', {
+			title: 'html5 video',
+			src: req.query.src
+		});
+	} else {
+		res.send('To use video simply assign a video URL to the screen and the generator will be used automatically');
+	}
+});
+
 router.get('/standby', function(req, res) {
 	applyCSP(res);
 	res.render('generators-standby-viewer', {
