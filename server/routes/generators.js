@@ -84,7 +84,18 @@ router.get('/ftvideo', function(req, res) {
 			})
 		;
 	} else {
-		res.send('To use FT video simply assign a video URL to the screen and the generator will be used automatically');
+		res.send('To use FT video assign a video URL to the screen and the generator will be used automatically');
+	}
+});
+
+router.get('/video', function(req, res) {
+	if (req.query.src !== undefined) {
+		res.render('generators-video-viewer', {
+			title: 'html5 video',
+			src: req.query.src
+		});
+	} else {
+		res.send('To use video assign a video URL to the screen and the generator will be used automatically');
 	}
 });
 
