@@ -1,7 +1,6 @@
 'use strict'; //eslint-disable-line strict
 const parseQueryString = require('query-string').parse;
 const imageType = require('image-type');
-const fileType = require('file-type');
 const request = require('request');
 const debug = require('debug')('screens:server:urls');
 const RESPONSE_TIMEOUT = process.env.RESPONSE_TIMEOUT || 1500;
@@ -28,31 +27,6 @@ function isImage(url){
 				const imageMimeType = imageType(chunk) ? imageType(chunk).mime : '';
 				const isImage = imageMimeType ? imageMimeType.indexOf('image') > -1 : false;
 				resolve(isImage);
-			})
-			.on('error', function(err){
-				if (err.code === 'ETIMEDOUT') {
-			    	debug(`Timed-out requesting ${url}`);
-			    }
-				reject(err);
-			})
-		;
-
-	});
-
-}
-
-function isVideo(url){
-
-	return new Promise(function(resolve, reject){
-		request(url, {timeout: RESPONSE_TIMEOUT})
-			.on('response', function(res){
-				res.on('end', () => reject('No data in response'));
-				res.destroy();
-			})
-			.on('data', function(chunk) {
-				const mimeType = fileType(chunk) ? fileType(chunk).mime : '';
-				const isVideo = mimeType ? mimeType.indexOf('video') > -1 : false;
-				resolve(isVideo);
 			})
 			.on('error', function(err){
 				if (err.code === 'ETIMEDOUT') {
@@ -99,10 +73,6 @@ function tranformFTVideo(url, host) {
 	return 'http://' + host + '/generators/ftvideo/?id=' + id;
 }
 
-function tranformVideo(url, host) {
-	return 'http://' + host + '/generators/video/?src=' + url;
-}
-
 module.exports = function transform (url, host) {
 	let promise;
 
@@ -123,9 +93,6 @@ module.exports = function transform (url, host) {
 	} else if (isFTVideo(url)){
 		console.log('transform: isFTVideo, url=', url);
 		promise = Promise.resolve(tranformFTVideo(url, host));
-	} else if (isVideo(url)) {
-		console.log('transform: isFTVideo, url=', url);
-		promise = Promise.resolve(tranformVideo(url, host));
 	} else {
 		console.log('transform: unknown so checking isImage, url=', url);
 		promise = isImage(url)
