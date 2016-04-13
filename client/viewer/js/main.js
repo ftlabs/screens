@@ -33,6 +33,7 @@ const storage = {
 window.screensInit = function screensInit() {
 
 	const viewer = new Viewer(host, storage);
+	let loadEvent = 'load';
 
 	const DOM = {
 		container: document.getElementById('container'),
@@ -43,6 +44,7 @@ window.screensInit = function screensInit() {
 
 	function switchOutIframeForWebview() {
 
+		loadEvent = "dom-ready";
 		const webViewElement1 = document.createElement('webview');
 		const webViewElement2 = document.createElement('webview');
 
@@ -75,11 +77,11 @@ window.screensInit = function screensInit() {
 	}
 
 	function iframeLoaded() {
-		const currentActive = document.querySelector('iframe.active');
+		const currentActive = document.querySelector('.active');
 		if (currentActive) kickOutIframe(currentActive);
 		this.classList.remove('buffering');
 		this.classList.add('active');
-		this.removeEventListener('load', iframeLoaded);
+		this.removeEventListener(loadEvent, iframeLoaded);
 	}
 
 	function kickOutIframe(iframe) {
@@ -87,7 +89,7 @@ window.screensInit = function screensInit() {
 		iframe.classList.remove('buffering');
 		iframe.classList.add('done');
 		setTimeout(() => iframe.src = 'about:blank', 500);
-		iframe.removeEventListener('load', iframeLoaded);
+		iframe.removeEventListener(loadEvent, iframeLoaded);
 
 		// remove self from the list
 		usedIframes.splice(usedIframes.indexOf(iframe), 1);
@@ -98,7 +100,7 @@ window.screensInit = function screensInit() {
 		iframe.classList.add('buffering');
 		iframe.classList.remove('done');
 		iframe.src = url;
-		iframe.addEventListener('load', iframeLoaded);
+		iframe.addEventListener(loadEvent, iframeLoaded);
 	}
 
 	const availableIframes = [
