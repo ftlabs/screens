@@ -75,7 +75,7 @@ window.screensInit = function screensInit() {
 	}
 
 	function iframeLoaded() {
-		const currentActive = document.querySelector('iframe.active');
+		const currentActive = document.querySelector('.active');
 		if (currentActive) kickOutIframe(currentActive);
 		this.classList.remove('buffering');
 		this.classList.add('active');
@@ -175,6 +175,7 @@ window.screensInit = function screensInit() {
 	});
 
 	viewer.on('ready', function(){
+		updateUrl(viewer.url);
 		setInterval(function () {
 			updateTitle();
 			updateIDs();
