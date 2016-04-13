@@ -80,6 +80,7 @@ window.screensInit = function screensInit() {
 		this.classList.remove('buffering');
 		this.classList.add('active');
 		this.removeEventListener('load', iframeLoaded);
+		this.removeEventListener('loadstop', iframeLoaded);
 	}
 
 	function kickOutIframe(iframe) {
@@ -88,6 +89,7 @@ window.screensInit = function screensInit() {
 		iframe.classList.add('done');
 		setTimeout(() => iframe.src = 'about:blank', 500);
 		iframe.removeEventListener('load', iframeLoaded);
+		iframe.removeEventListener('loadstop', iframeLoaded);
 
 		// remove self from the list
 		usedIframes.splice(usedIframes.indexOf(iframe), 1);
@@ -99,6 +101,7 @@ window.screensInit = function screensInit() {
 		iframe.classList.remove('done');
 		iframe.src = url;
 		iframe.addEventListener('load', iframeLoaded);
+		iframe.addEventListener('loadstop', iframeLoaded);
 	}
 
 	const availableIframes = [
