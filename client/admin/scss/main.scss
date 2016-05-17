@@ -87,7 +87,9 @@ button {
 	max-height: 100%;
 	overflow: scroll;
 	padding-bottom: 25vh;
-	display: block;
+    display: inline-table;
+	width: 100%;
+	border-collapse:collapse;
 	td,
 	th {
 		border-top: 1px solid #bbbbbb;
@@ -101,12 +103,13 @@ button {
 	}
 
 	@include oGridRespondTo(M) {
-		border-collapse: collapse;
 		width: 100%;
 		border-bottom: 1px solid #bbbbbb;
 		margin: 5px 0;
 		// Add some extra space for the floating action baron large screen
 		margin-bottom: 8em;
+		padding-bottom: 0;
+		display: block;
 	}
 }
 
@@ -149,8 +152,10 @@ button {
 	cursor: pointer;
 }
 .screen:hover .action-rename {
-	visibility: visible;
-	cursor: pointer;
+	@include oGridRespondTo(M) {
+		visibility: visible;
+		cursor: pointer;
+	}
 }
 
 .screen-offline,
@@ -258,26 +263,24 @@ h6 {
 	margin: 0 -0.25em 0.5em;
 
 	position: fixed;
-	bottom: 0;
 	left: 0;
+	bottom: 0;
 	padding: 10px;
 	background: #fff1e0;
 	margin-bottom: 0;
 	box-shadow: 0 0 5px black;
-
+	
+	width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+	
 	@include oGridRespondTo(M) {
 		flex-direction: row;
 
 		// On large screen float the action bar to give it easy access,
 		// not on small because it takes up a lot screen real estate
-		position: fixed;
-		box-shadow: 0 0 1em rgba(0,0,0,0.5);
-		background: #fff1e0;
-		left: 0;
-		bottom: 0;
-		right: 0;
-		padding: 0.5em;
-		margin: 0;
+
+		
 	}
 
 	.action-form-group {
