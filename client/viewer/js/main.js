@@ -38,7 +38,8 @@ window.screensInit = function screensInit() {
 	const DOM = {
 		container: document.getElementById('container'),
 		Iframe1: document.querySelector('iframe.first'),
-		Iframe2: document.querySelector('iframe.second')
+		Iframe2: document.querySelector('iframe.second'),
+		carouselCountdown: document.querySelector('#carousel-countdown')
 	};
 	let carousel;
 
@@ -149,11 +150,24 @@ window.screensInit = function screensInit() {
 			// stop timers
 			carousel.destroy();
 			carousel = null;
+			DOM.carouselCountdown.style.transform = 'scaleX(0)';
+			DOM.carouselCountdown.style.transition = 'none';
+			DOM.carouselCountdown.style.offsetHeight;
 		}
 
 		if (Carousel.isCarousel(url)) {
 			carousel = new Carousel(url, host);
-			carousel.on('change', updateUrl);
+			carousel.on('change', function (url) {
+				updateUrl(url);
+				DOM.carouselCountdown.style.transition = 'none';
+				DOM.carouselCountdown.style.transform = 'scaleX(1)';
+
+				setTimeout(() => {
+					let duration = carousel.timeUntilNext();
+					DOM.carouselCountdown.style.transition = `transform ${duration}ms linear`;
+					DOM.carouselCountdown.style.transform = 'scaleX(0)';
+				}, 100);
+			});
 			updateUrl(carousel.getCurrentURL());
 		} else {
 			updateUrl(url);

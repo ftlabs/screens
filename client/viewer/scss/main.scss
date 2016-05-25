@@ -122,3 +122,13 @@ h3 {
 .state-disconnected .panel-disconnected {
 	visibility: visible;
 }
+
+#carousel-countdown {
+	position: fixed;
+	bottom: 0;
+	height: 0.5em;
+	@include oColorsFor(product-brand, background);
+	width: 100vw;
+	transform-origin: 0 0;
+	transform: scaleX(1);
+}
