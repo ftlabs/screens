@@ -17,7 +17,7 @@ router.get('/', function(req, res) {
 
 // Render a generator
 
-const auth = require('../middleware/auth');
+const auth = require('../middleware/auth/'+(process.env.AUTH_BACKEND || 'ft-s3o'));
 
 router.route('/').all(auth);
 router.get('/layout', function(req, res) {

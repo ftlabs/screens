@@ -1,6 +1,7 @@
 .DS_Store
-.env.json
 .sass-cache/
+/.env
+/.npmrc
 /bower_components/
 /node_modules/
 /public/build/
