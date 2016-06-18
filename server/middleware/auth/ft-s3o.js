@@ -17,14 +17,21 @@ module.exports = function(req, res, next) {
 		next();
 	} else {
 
-		// since it maybe used in a middleware restore original url to the request object.
+		// since it may be used in a middleware restore original url to the request object.
 		const oldUrl = req.url;
 		req.url = req.originalUrl;
 		authS3O(req, res, function () {
 
 			// restore the old url for routing purposes
 			req.url = oldUrl;
-			next();
+
+			// AB: I don't know how this would be encountered, but I moved it from
+			// api.js to fully abstract auth into backend-specific modules
+			if (!req.cookies.s3o_username) {
+				return res.status(403).send('Not logged in.');
+			} else {
+				next();
+			}
 		});
 	}
 };

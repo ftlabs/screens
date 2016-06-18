@@ -10,7 +10,7 @@ const transform = require('../urls');
 const transformedUrls = {};
 const log = require('../log');
 const pages = require('../pages');
-const auth = require('../middleware/auth');
+const auth = require('../middleware/auth/'+(process.env.AUTH_BACKEND || 'ft-s3o'));
 
 function checkIsViewable(url){
 
@@ -105,10 +105,6 @@ router.get('/transformUrl/:url', function(req, res){
 });
 
 router.post('*', auth);
-router.post('*', function (req, res, next) {
-	if (!req.cookies.s3o_username) return res.status(403).send('Not logged in.');
-	next();
-});
 
 router.post('/addUrl', function(req, res) {
 	if (!req.body.url) return res.status(400).send('Missing url');

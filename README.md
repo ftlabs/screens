@@ -12,12 +12,16 @@
 - Clone the repository -- `git clone git@github.com:ftlabs/screens.git`
 - Change in repository directory -- `cd screens`
 - Install project dependencies -- `bower install && npm install`
+- (optional) Set environment variables:
+	- `AUTH_BACKEND`: "ft-s3o" or "http-basic"
+	- `AUTH_HTTP_BASIC_NAME`: Username if using HTTP Basic auth
+	- `AUTH_HTTP_BASIC_PASS`: Password if using HTTP Basic auth
 - Start the web server -- `npm start`
 - Open the website in your browser of choice -- `open "localhost:3010"`
 
 #### Tests
 
-*Warning* Some tests may fail due to flakiness in the integration tests. This makes them unreliable for finding intermittent bugs, e.g. due to the clock or race conditions. 
+*Warning* Some tests may fail due to flakiness in the integration tests. This makes them unreliable for finding intermittent bugs, e.g. due to the clock or race conditions.
 
 You may have to run the tests again to get them to pass.
 
