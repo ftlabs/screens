@@ -25,7 +25,6 @@ const storage = {
 		} else {
 			callback( JSON.parse( info ) );
 		}
-
 	}
 };
 
