@@ -149,11 +149,6 @@ function screensInit() {
 		if ($(this).is('#actions_set-content')) {
 			data.url = $('#txturl').val();
 			data.duration = $('#selurlduration').val();
-
-			if ($('#date').val() || $('#time').val()) {
-				data.dateTimeSchedule = moment(`${$('#date').val() || moment().format('YYYY-MM-DD')} ${$('#time').val() || moment().format('HH:mm')}`).valueOf();
-			}
-
 			api('addUrl', data)
 				.then(function(res){
 					const canBeViewed = res.viewable;

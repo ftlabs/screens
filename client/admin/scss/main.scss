@@ -14,18 +14,6 @@ select {
 	width: auto;
 }
 
-.input-date {
-	@include oFormsCommonField;
-	width: auto;
-	flex: 1;
-}
-
-.input-time {
-	@include oFormsCommonField;
-	width: auto;
-	flex: 1;
-}
-
 label {
 	user-select: none;
 }
