@@ -83,15 +83,15 @@ function waitForIFrameUrl(urlIn, timeout) {
 	console.log('Waiting for iframe to become url: ' + urlIn + ', ' + timeout + ' timeout');
 
 	return tabs['viewer'].switchTo()
-		.waitForExist('iframe.panel-active:not(.done)')
-		.getAttribute('iframe.panel-active:not(.done)','src')
+		.waitForExist('iframe.active')
+		.getAttribute('iframe.active','src')
 		.then(url => console.log(`Url was initially ${url}`))
 		.waitUntil(function() {
 
 			// wait for the iframe's url to change
 			return browser
-			.waitForExist('iframe.panel-active:not(.done)')
-			.getAttribute('iframe.panel-active:not(.done)','src')
+			.waitForExist('iframe.active')
+			.getAttribute('iframe.active','src')
 			.then(url => {
 				debouncedLog('Last url: ' + url);
 				oldUrl = url;
@@ -268,7 +268,7 @@ describe('Viewer responds to API requests', () => {
 	* Expect the id to be changed
 	*/
 
-	it('will have it\'s id reassigned', function () {
+	xit('will have it\'s id reassigned', function () {
 		this.timeout(120000);
 
 		return tabs['viewer'].close()
