@@ -7,6 +7,10 @@ const browserLogs = require('./lib/logs')(browser);
 const tabController = require('./lib/tabs').getTabController(browser);
 const tabs = tabController.tabs;
 const Tab = tabController.Tab;
+const debounce = require('lodash.debounce');
+const debouncedLog = debounce(function (a) {
+	console.log(a);
+}, 1500);
 chai.use(chaiAsPromised);
 
 const expect = chai.expect;
@@ -14,33 +18,7 @@ const expect = chai.expect;
 const emptyScreenWebsite = 'http://localhost:3010/generators/empty-screen?id=12345';
 
 function waitABit() {
-	return new Promise(resolve => setTimeout(resolve, 3000));
-}
-
-function setDateTimeValue (selector, value) {
-	return browser.elements(selector).then(function(res) {
-		const self = browser;
-		const elementIdValueCommands = res.value.map(function(elem) {
-			return self.elementIdValue(elem.ELEMENT, String(value));
-		});
-
-		return this.unify(elementIdValueCommands, {
-			extractValue: true
-		});
-	});
-}
-
-function resetDateTimeValue (selector) {
-	return browser.elements(selector).then(function(res) {
-		const self = browser;
-		const elementIdValueCommands = res.value.map(function(elem) {
-			return self.elementIdValue(elem.ELEMENT, '');
-		});
-
-		return this.unify(elementIdValueCommands, {
-			extractValue: true
-		});
-	});
+	return new Promise(resolve => setTimeout(resolve, 10000));
 }
 
 // go to the admin page set a url
@@ -51,17 +29,12 @@ function addItem(url, duration, scheduledTime) {
 
 	// Log to the console what is about to be done
 	console.log(`Setting Url: ${url}
-Duration: ${duration}
-Scheduled: ${scheduledTime}`);
+Duration: ${duration}`);
 
 	return tabs['admin'].switchTo()
 		.waitForExist('#chkscreen-12345')
 		.click(`#selection option[value="set-content"]`)
 		.click(`#selurlduration option[value="${duration}"]`)
-		.then(function () {
-			if (scheduledTime) return setDateTimeValue('#time', scheduledTime);
-			return resetDateTimeValue('#time');
-		})
 		.setValue('#txturl', url)
 		.isSelected('#chkscreen-12345')
 		.then(tick => {
@@ -110,19 +83,24 @@ function waitForIFrameUrl(urlIn, timeout) {
 	console.log('Waiting for iframe to become url: ' + urlIn + ', ' + timeout + ' timeout');
 
 	return tabs['viewer'].switchTo()
-		.getAttribute('iframe','src')
-		.then(url => console.log(`Url currently is ${url}`))
+		.waitForExist('iframe.panel-active:not(.done)')
+		.getAttribute('iframe.panel-active:not(.done)','src')
+		.then(url => console.log(`Url was initially ${url}`))
 		.waitUntil(function() {
 
 			// wait for the iframe's url to change
-			return browser.getAttribute('iframe','src')
+			return browser
+			.waitForExist('iframe.panel-active:not(.done)')
+			.getAttribute('iframe.panel-active:not(.done)','src')
 			.then(url => {
+				debouncedLog('Last url: ' + url);
 				oldUrl = url;
 				return url.indexOf(urlIn) === 0;
 			});
 		}, timeout) // default timeout is
-
-		.then(undefined, e => {
+		.then(() => debouncedLog('MATCH!!'))
+		.then(waitABit)
+		.catch(e => {
 			const newMessage = `Errored waiting for url to load in iframe: ${urlIn} url was ${oldUrl}`;
 			console.log(e.message);
 			console.log(newMessage);
@@ -133,7 +111,7 @@ function waitForIFrameUrl(urlIn, timeout) {
 
 describe('Viewer responds to API requests', () => {
 
-	const initialUrl = 'http://example.com/?initial-url';
+	const initialUrl = 'http://ftlabs-screens.herokuapp.com/generators/markdown?md=%23Initial&theme=dark';
 
 	before('gets an ID', function () {
 
@@ -169,6 +147,8 @@ describe('Viewer responds to API requests', () => {
 
 	it('can have a url assigned', function () {
 
+		this.timeout(45000);
+
 		return addItem(initialUrl, -1)
 			.then(() => waitForIFrameUrl(initialUrl))
 			.then(logs, printLogOnError);
@@ -179,7 +159,8 @@ describe('Viewer responds to API requests', () => {
 	*/
 
 	it('removes a url via the admin panel', function () {
-		const testWebsite = 'http://example.com/?1';
+
+		const testWebsite = 'http://ftlabs-screens.herokuapp.com/generators/markdown?md=%23One&theme=dark';
 
 		this.timeout(60000);
 
@@ -195,12 +176,88 @@ describe('Viewer responds to API requests', () => {
 
 	it('Can add a url which has an empty response', function () {
 
+		this.timeout(45000);
+
 		const emptyResponseUrl = 'http://localhost:3011/emptyresponse';
 		return addItem(emptyResponseUrl)
 			.then(() => tabs['viewer'].switchTo())
 			.then(() => waitForIFrameUrl(emptyResponseUrl))
 			.then(() => removeItem(emptyResponseUrl))
 			.then(() => waitForIFrameUrl(initialUrl))
+			.then(logs, printLogOnError);
+	});
+
+
+	/**
+	 * Can correctly idenitify an image
+	 */
+
+	it('correctly processes an image url', function () {
+
+		this.timeout(45000);
+
+		const imageGeneratorUrl = 'http://localhost:3010/generators/image/?https%3A%2F%2Fimage.webservices.ft.com%2Fv1%2Fimages%2Fraw%2Fhttps%253A%252F%252Fupload.wikimedia.org%252Fwikipedia%252Fcommons%252Fthumb%252F3%252F30%252FSmall_bird_perching_on_a_branch.jpg%252F512px-Small_bird_perching_on_a_branch.jpg%3Fsource%3Dscreens&title=512px-Small_bird_perching_on_a_branch.jpg';
+		const imageResponseUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Small_bird_perching_on_a_branch.jpg/512px-Small_bird_perching_on_a_branch.jpg';
+		return addItem(imageResponseUrl)
+			.then(() => waitForIFrameUrl(imageGeneratorUrl))
+			.then(() => removeItem(imageGeneratorUrl))
+			.then(() => waitForIFrameUrl(initialUrl))
+			.then(logs, printLogOnError);
+	});
+
+
+	/**
+	* Clear all Urls
+	*
+	* It should hide the iframe or display the empty-screen generator
+	*
+	* Restore the initial url at the end
+	*/
+
+	it('can clear the stack of content via admin panel', function () {
+
+		this.timeout(45000);
+		const testWebsite = 'http://ftlabs-screens.herokuapp.com/generators/markdown?md=%23Two&theme=dark';
+		return addItem(testWebsite)
+		.then(() => waitForIFrameUrl(testWebsite))
+		.then(() => tabs['admin'].switchTo())
+		.click('#selection option[value="clear"]')
+		.isSelected('#chkscreen-12345').then(tick => {
+			if (!tick) {
+				return browser.click('label[for=chkscreen-12345]');
+			}
+		})
+		.click('#btnclear')
+		.then(() => waitForIFrameUrl(emptyScreenWebsite))
+		.then(() => addItem(initialUrl, -1))
+		.then(() => waitForIFrameUrl(initialUrl))
+		.then(logs, printLogOnError);
+	});
+
+
+	/**
+	* Load another Url to the screen that expires after 60s
+	*
+	* Add a url to a screen it should now be the new url
+	*
+	* After 60s it should be removed
+	*/
+
+	it('removes a url after a specified amount of time', function () {
+		this.timeout(120000);
+
+		let startTime;
+		const testWebsite = 'http://ftlabs-screens.herokuapp.com/generators/markdown?md=%23Three&theme=dark';
+
+		return addItem(testWebsite)
+			.then(() => waitForIFrameUrl(testWebsite))
+			.then(() => (startTime = Date.now()))
+			.then(() => waitForIFrameUrl(initialUrl, 69000))
+			.then(function () {
+				if (Date.now() - startTime < 59000) {
+					throw Error('The website expired too quickly! ' + (Date.now() - startTime));
+				}
+			})
 			.then(logs, printLogOnError);
 	});
 
@@ -240,113 +297,6 @@ describe('Viewer responds to API requests', () => {
 
 			return expect(id).to.eventually.not.equal('12345')
 		})
-		.then(logs, printLogOnError);
-	});
-
-
-	/**
-	 * Can correctly idenitify an image
-	 */
-
-	it('correctly processes an image url', function () {
-		const imageGeneratorUrl = 'http://localhost:3010/generators/image/?https%3A%2F%2Fimage.webservices.ft.com%2Fv1%2Fimages%2Fraw%2Fhttps%253A%252F%252Fupload.wikimedia.org%252Fwikipedia%252Fcommons%252Fthumb%252F3%252F30%252FSmall_bird_perching_on_a_branch.jpg%252F512px-Small_bird_perching_on_a_branch.jpg%3Fsource%3Dscreens&title=512px-Small_bird_perching_on_a_branch.jpg';
-		const imageResponseUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Small_bird_perching_on_a_branch.jpg/512px-Small_bird_perching_on_a_branch.jpg';
-		return addItem(imageResponseUrl)
-			.then(() => waitForIFrameUrl(imageGeneratorUrl))
-			.then(() => removeItem(imageGeneratorUrl))
-			.then(() => waitForIFrameUrl(initialUrl))
-			.then(logs, printLogOnError);
-	});
-
-
-	/**
-	* Clear all Urls
-	*
-	* It should hide the iframe or display the empty-screen generator
-	*
-	* Restore the initial url at the end
-	*/
-
-	it('can clear the stack of content via admin panel', function () {
-		const testWebsite = 'http://example.com/?4';
-		return addItem(testWebsite)
-		.then(() => waitForIFrameUrl(testWebsite))
-		.then(() => tabs['admin'].switchTo())
-		.click('#selection option[value="clear"]')
-		.isSelected('#chkscreen-12345').then(tick => {
-			if (!tick) {
-				return browser.click('label[for=chkscreen-12345]');
-			}
-		})
-		.click('#btnclear')
-		.then(() => waitForIFrameUrl(emptyScreenWebsite))
-		.then(() => addItem(initialUrl, -1))
-		.then(() => waitForIFrameUrl(initialUrl))
-		.then(logs, printLogOnError);
-	});
-
-
-	/**
-	* Load another Url to the screen that expires after 60s
-	*
-	* Add a url to a screen it should now be the new url
-	*
-	* After 60s it should be removed
-	*/
-
-	it('removes a url after a specified amount of time', function () {
-		this.timeout(120000);
-
-		let startTime;
-		const testWebsite = 'http://example.com/?2';
-
-		return addItem(testWebsite)
-			.then(() => waitForIFrameUrl(testWebsite))
-			.then(() => (startTime = Date.now()))
-			.then(() => waitForIFrameUrl(initialUrl, 69000))
-			.then(function () {
-				if (Date.now() - startTime < 59000) {
-					throw Error('The website expired too quickly! ' + (Date.now() - startTime));
-				}
-			})
-			.then(logs, printLogOnError);
-	});
-
-	/**
-	* Load another Url to the screen this scheduled for the minute after next
-	*
-	* Run this in a fresh tab it'll be fine continuing where it left off
-	*
-	* Add a url to a screen it should not change until the minute ticks over
-	*/
-
-	xit('loads a url on a specified time', function () {
-		const testWebsite = 'http://example.com/?3';
-		const now = new Date();
-		const hours = now.getHours();
-		const minutes = now.getMinutes() + 2;
-		const minutesStr = String(minutes).length === 1 ? '0' + minutes : minutes;
-		const scheduledTime = hours + ':' + minutesStr;
-
-		this.timeout(190000);
-
-		/*
-			Close the browser tab and reopen it, this allows it to regain a connection it seems to lose
-			it during the previous test.
-		 */
-		return tabs['viewer'].close()
-		.then(function () {
-			const newViewerTab = new Tab('viewer', {
-				url: '/'
-			});
-			return newViewerTab.ready();
-		})
-		.then(() => waitForIFrameUrl(initialUrl))
-		.then(waitABit) // Wait for all syncing to be done
-		.then(() => addItem(testWebsite, -1, scheduledTime))
-		.then(() => waitForIFrameUrl(testWebsite, 185000))
-		.then(() => removeItem(testWebsite))
-		.then(() => waitForIFrameUrl(initialUrl))
 		.then(logs, printLogOnError);
 	});
 });
