@@ -88,6 +88,8 @@ const previouslySeenScreens = {};
 // Serve websocket connections
 app.io.on('connection', function(socket) {
 
+	debug(socket);
+
 	if(socket.handshake.headers.cookie !== undefined){
 
 		const cookies = cookie.parse(socket.handshake.headers.cookie);
