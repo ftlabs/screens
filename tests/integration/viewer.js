@@ -205,36 +205,6 @@ describe('Viewer responds to API requests', () => {
 			.then(logs, printLogOnError);
 	});
 
-
-	/**
-	* Clear all Urls
-	*
-	* It should hide the iframe or display the empty-screen generator
-	*
-	* Restore the initial url at the end
-	*/
-
-	it('can clear the stack of content via admin panel', function () {
-
-		this.timeout(45000);
-		const testWebsite = 'http://ftlabs-screens.herokuapp.com/generators/markdown?md=%23Two&theme=dark';
-		return addItem(testWebsite)
-		.then(() => waitForIFrameUrl(testWebsite))
-		.then(() => tabs['admin'].switchTo())
-		.click('#selection option[value="clear"]')
-		.isSelected('#chkscreen-12345').then(tick => {
-			if (!tick) {
-				return browser.click('label[for=chkscreen-12345]');
-			}
-		})
-		.click('#btnclear')
-		.then(() => waitForIFrameUrl(emptyScreenWebsite))
-		.then(() => addItem(initialUrl, -1))
-		.then(() => waitForIFrameUrl(initialUrl))
-		.then(logs, printLogOnError);
-	});
-
-
 	/**
 	* Load another Url to the screen that expires after 60s
 	*
