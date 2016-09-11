@@ -1,0 +1,72 @@
+version: v1.5.0
+ignore:
+  'npm:hawk:20160119':
+    - bower > request > hawk:
+        reason: None given
+        expires: '2016-10-11T18:57:42.820Z'
+    - bower > bower-registry-client > request > hawk:
+        reason: None given
+        expires: '2016-10-11T18:57:42.821Z'
+  'npm:uglify-js:20150824':
+    - simplewebrtc > socket.io-client > uglify-js:
+        reason: None given
+        expires: '2016-10-11T18:57:42.821Z'
+    - bower > handlebars > uglify-js:
+        reason: None given
+        expires: '2016-10-11T18:57:42.821Z'
+    - express-handlebars > handlebars > uglify-js:
+        reason: None given
+        expires: '2016-10-11T18:57:42.821Z'
+  'npm:uglify-js:20151024':
+    - simplewebrtc > socket.io-client > uglify-js:
+        reason: None given
+        expires: '2016-10-11T18:57:42.821Z'
+    - bower > handlebars > uglify-js:
+        reason: None given
+        expires: '2016-10-11T18:57:42.822Z'
+    - express-handlebars > handlebars > uglify-js:
+        reason: None given
+        expires: '2016-10-11T18:57:42.822Z'
+  'npm:ws:20160624':
+    - simplewebrtc > socket.io-client > ws:
+        reason: None given
+        expires: '2016-10-11T18:57:42.822Z'
+    - socket.io > engine.io > ws:
+        reason: None given
+        expires: '2016-10-11T18:57:42.822Z'
+    - socket.io-client > engine.io-client > ws:
+        reason: None given
+        expires: '2016-10-11T18:57:42.879Z'
+    - socket.io > socket.io-client > engine.io-client > ws:
+        reason: None given
+        expires: '2016-10-11T18:57:42.879Z'
+patch:
+  'npm:minimatch:20160620':
+    - origami-build-tools > gulp > vinyl-fs > glob-stream > minimatch:
+        patched: '2016-09-11T18:57:43.000Z'
+    - origami-build-tools > nightwatch > minimatch:
+        patched: '2016-09-11T18:57:43.000Z'
+    - origami-build-tools > gulp > vinyl-fs > glob-watcher > gaze > globule > minimatch:
+        patched: '2016-09-11T18:57:43.000Z'
+    - gulp > vinyl-fs > glob-watcher > gaze > globule > glob > minimatch:
+        patched: '2016-09-11T18:57:43.000Z'
+    - origami-build-tools > gulp > vinyl-fs > glob-watcher > gaze > globule > glob > minimatch:
+        patched: '2016-09-11T18:57:43.000Z'
+    - gulp > vinyl-fs > glob-stream > minimatch:
+        patched: '2016-09-11T18:57:43.000Z'
+    - gulp > vinyl-fs > glob-watcher > gaze > globule > minimatch:
+        patched: '2016-09-11T18:57:43.000Z'
+    - gulp > vinyl-fs > glob-stream > glob > minimatch:
+        patched: '2016-09-11T18:57:43.000Z'
+    - origami-build-tools > gulp > vinyl-fs > glob-stream > glob > minimatch:
+        patched: '2016-09-11T18:57:43.000Z'
+    - origami-build-tools > babel-core > minimatch:
+        patched: '2016-09-11T18:57:43.000Z'
+    - origami-build-tools > babel-loader > babel-core > minimatch:
+        patched: '2016-09-11T18:57:43.000Z'
+  'npm:negotiator:20160616':
+    - socket.io > engine.io > accepts > negotiator:
+        patched: '2016-09-11T18:57:43.000Z'
+  'npm:ws:20160104':
+    - simplewebrtc > socket.io-client > ws:
+        patched: '2016-09-11T18:57:43.000Z'
