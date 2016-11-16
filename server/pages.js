@@ -14,7 +14,7 @@ module.exports = function(url) {
 	let source;
 
 	function getTitle() {
-		return $ ? $('title').text() : null;
+		return null;
 	}
 
 	source = cache.get(url);
