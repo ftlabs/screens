@@ -14,7 +14,7 @@ module.exports = function(url) {
 	let source;
 
 	function getTitle() {
-		return null;
+		return $ ? $('head title').text() : null;
 	}
 
 	source = cache.get(url);
@@ -23,6 +23,7 @@ module.exports = function(url) {
 			.then(function(resp) { return resp.text(); })
 			.then(function(body) {
 				debug('Loaded URL '+url+' ('+body.length+'b)');
+				debug(body);
 				cache.set(url, body);
 				$ = cheerio.load(body);
 			})
