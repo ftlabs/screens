@@ -23,7 +23,6 @@ module.exports = function(url) {
 			.then(function(resp) { return resp.text(); })
 			.then(function(body) {
 				debug('Loaded URL '+url+' ('+body.length+'b)');
-				debug(body);
 				cache.set(url, body);
 				$ = cheerio.load(body);
 			})
