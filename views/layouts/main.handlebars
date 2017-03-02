@@ -90,7 +90,7 @@
 		https://cdn.polyfill.io/
 	-->
 	<script src="//polyfill.webservices.ft.com/v1/polyfill.min.js?features=default,fetch,Promise,Array.prototype.find"></script>
-	
+
 	<!--
 		Perform your cuts the mustard test.
 	-->
@@ -137,13 +137,13 @@
 					if(window.screensInit){
 						window.screensInit();
 					}
-				
+
 				}).catch(function (e) {
 					console.log(e.message || e);
 				});
 			}([
-				{{#if app}}'/build/{{{app}}}/bundle.js',{{/if}} 
-				'https://cdn.socket.io/socket.io-1.3.5.js'
+				{{#if app}}'/build/{{{app}}}/bundle.js',{{/if}}
+				'https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.7/socket.io.min.js'
 			]));
 		</script>
 	{{/redirect}}
