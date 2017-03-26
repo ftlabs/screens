@@ -60,7 +60,7 @@ function transformYoutubeURL(queryParams, host){
 
 function transformImageWithImageService(url, host) {
 	const title = url.match(/[^/]+$/)[0];
-	return 'http://' + host + '/generators/image/?' + encodeURIComponent('https://image.webservices.ft.com/v1/images/raw/' + encodeURIComponent(url) + '?source=screens') + '&title=' + title;
+	return 'http://' + host + '/generators/image/?' + encodeURIComponent('https://www.ft.com/__origami/service/image/v2/images/raw/' + encodeURIComponent(url) + '?source=screens') + '&title=' + title;
 }
 
 function transformImage(url, host) {
