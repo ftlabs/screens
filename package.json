@@ -8,7 +8,7 @@
     "build": "gulp build",
     "unittests": "mocha ./tests/unit",
     "integrationtests": "wdio",
-    "test": "npm run unittests &&  npm run integrationtests"
+    "test": "npm run unittests"
   },
   "dependencies": {
     "basic-auth": "^1.0.4",
