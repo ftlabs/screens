@@ -1,9 +1,9 @@
 /* global console */
 'use strict'; //eslint-disable-line strict
 const fs = require('fs');
+const path = require('path');
 const gulp = require('gulp');
-const obt = require('origami-build-tools');
-const spawn = require('child_process').spawn;
+const {spawn, execFile} = require('child_process');
 let node;
 
 gulp.task('serve', gulp.series(done => {
@@ -20,90 +20,87 @@ gulp.task('serve', gulp.series(done => {
 }));
 
 function build(app) {
-	const obtConfig = {
-		buildFolder: `public/build/${app}`
-	};
+	const obtArgs = [
+		`--build-folder=${path.resolve('public', 'build', app)}`
+	]
 
-	const jsPath = `./client/${app}/js/main.js`
+	const jsPath = path.resolve('client', app, 'js', 'main.js');
 	if (fs.existsSync(jsPath)) {
-		obtConfig.js = jsPath;
-		obtConfig.buildJs = 'bundle.js';
+		obtArgs.push(`--js=${jsPath}`);
+		obtArgs.push(`--build-js=bundle.js`);
 	}
 
-	const sassPath = `./client/${app}/scss/main.scss`
+	const sassPath = path.resolve('client', app, 'scss', 'main.scss');
 	if (fs.existsSync(sassPath)) {
-		obtConfig.sass = sassPath
-		obtConfig.buildCss = 'bundle.css';
+		obtArgs.push(`--sass=${sassPath}`);
+		obtArgs.push(`--build-css=bundle.css`);
 	}
 
-	return obt.build(gulp, obtConfig);
+	return new Promise((resolve, reject) => {
+		execFile('obt', ['build', ...obtArgs], (error, stdout, stderr) => {
+			console.log(stdout)
+			process.stderr.write(stderr)
+			if (error) {
+				return reject(error)
+			}
+			resolve(stdout)
+		})
+	})
 }
 
-gulp.task('buildLogs', done => {
-	build('logs');
+gulp.task('buildLogs', async done => {
+	await build('logs');
 	done();
 });
 
-gulp.task('buildAdmin', done => {
-	build('admin');
+gulp.task('buildAdmin', async done => {
+	await build('admin');
 	done();
 });
 
-gulp.task('buildViewer', done => {
-	build('viewer');
+gulp.task('buildViewer', async done => {
+	await build('viewer');
 	done();
 });
 
-gulp.task('buildGeneratorLayoutView', done => {
-	build('generator-layout-view');
+gulp.task('buildGeneratorLayoutView', async done => {
+	await build('generator-layout-view');
 	done();
 });
 
-gulp.task('buildGeneratorLayoutAdmin', done => {
-	build('generator-layout-admin');
+gulp.task('buildGeneratorLayoutAdmin', async done => {
+	await build('generator-layout-admin');
 	done();
 });
 
-gulp.task('buildGeneratorCarouselView', done => {
-	build('generator-carousel-view');
+gulp.task('buildGeneratorCarouselView', async done => {
+	await build('generator-carousel-view');
 	done();
 });
 
-gulp.task('buildGeneratorCarouselAdmin', done => {
-	build('generator-carousel-admin');
+gulp.task('buildGeneratorCarouselAdmin', async done => {
+	await build('generator-carousel-admin');
 	done();
 });
 
-gulp.task('buildGeneratorRtcView', done => {
-	build('generator-rtc-view');
+gulp.task('buildGeneratorRtcView', async done => {
+	await build('generator-rtc-view');
 	done();
 });
 
-gulp.task('buildGeneratorRtcAdmin', done => {
-	build('generator-rtc-admin');
+gulp.task('buildGeneratorRtcAdmin', async done => {
+	await build('generator-rtc-admin');
 	done();
 });
 
-gulp.task('buildGeneratorYoutube', done => {
-	build('generator-youtube-player');
+gulp.task('buildGeneratorYoutube', async done => {
+	await build('generator-youtube-player');
 	done();
 });
 
 gulp.task('buildGenerators', gulp.parallel('buildGeneratorLayoutView', 'buildGeneratorLayoutAdmin', 'buildGeneratorCarouselView', 'buildGeneratorCarouselAdmin', 'buildGeneratorRtcView', 'buildGeneratorRtcAdmin', 'buildGeneratorYoutube'));
 
 gulp.task('build', gulp.parallel('buildLogs', 'buildAdmin', 'buildViewer', 'buildGenerators'));
-
-gulp.task('verify', done => {
-	obt.verify(gulp, {
-
-		// Files to exclude from Origami verify
-		excludeFiles: [
-			'!server/**',  // Server side code
-			'!client/admin/scss/lib/**' //
-		]
-	});
-	done();
-});
 
 gulp.task('watch', gulp.series('build', 'serve', done => {
 	gulp.watch('./client/**/*', ['build']);
@@ -112,7 +109,7 @@ gulp.task('watch', gulp.series('build', 'serve', done => {
 	done();
 }));
 
-gulp.task('default', gulp.series('verify', done => {
+gulp.task('default', done => {
 	gulp.run('watch');
 	done();
-}));
+});
